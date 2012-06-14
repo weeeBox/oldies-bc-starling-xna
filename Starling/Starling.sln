@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Starling", "Starling\Starling.csproj", "{515C53D7-7BF3-4BE5-B28A-AD2D122CC93E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarlingTest", "StarlingTest\StarlingTest\StarlingTest.csproj", "{FC20D737-D4D7-4EA3-882C-D580A0C3F33C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{515C53D7-7BF3-4BE5-B28A-AD2D122CC93E} = {515C53D7-7BF3-4BE5-B28A-AD2D122CC93E}
+	EndProjectSection
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "StarlingTestContent", "StarlingTest\StarlingTestContent\StarlingTestContent.contentproj", "{79807E2F-CBDD-4D9F-9686-1DC36AF94617}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{515C53D7-7BF3-4BE5-B28A-AD2D122CC93E}.Debug|x86.ActiveCfg = Debug|x86
+		{515C53D7-7BF3-4BE5-B28A-AD2D122CC93E}.Debug|x86.Build.0 = Debug|x86
+		{515C53D7-7BF3-4BE5-B28A-AD2D122CC93E}.Release|x86.ActiveCfg = Release|x86
+		{515C53D7-7BF3-4BE5-B28A-AD2D122CC93E}.Release|x86.Build.0 = Release|x86
+		{FC20D737-D4D7-4EA3-882C-D580A0C3F33C}.Debug|x86.ActiveCfg = Debug|x86
+		{FC20D737-D4D7-4EA3-882C-D580A0C3F33C}.Debug|x86.Build.0 = Debug|x86
+		{FC20D737-D4D7-4EA3-882C-D580A0C3F33C}.Release|x86.ActiveCfg = Release|x86
+		{FC20D737-D4D7-4EA3-882C-D580A0C3F33C}.Release|x86.Build.0 = Release|x86
+		{79807E2F-CBDD-4D9F-9686-1DC36AF94617}.Debug|x86.ActiveCfg = Debug|x86
+		{79807E2F-CBDD-4D9F-9686-1DC36AF94617}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
