@@ -18,31 +18,31 @@ namespace bc.flash.display3D
 		}
 		public virtual void clear(float red, float green, float blue, float alpha, float depth, uint stencil)
 		{
-			clear(red, green, blue, alpha, depth, stencil, (uint)(4.294967295E9f));
+			clear(red, green, blue, alpha, depth, stencil, (uint)(0xffffffff));
 		}
 		public virtual void clear(float red, float green, float blue, float alpha, float depth)
 		{
-			clear(red, green, blue, alpha, depth, (uint)(0), (uint)(4.294967295E9f));
+			clear(red, green, blue, alpha, depth, (uint)(0), (uint)(0xffffffff));
 		}
 		public virtual void clear(float red, float green, float blue, float alpha)
 		{
-			clear(red, green, blue, alpha, 1.0f, (uint)(0), (uint)(4.294967295E9f));
+			clear(red, green, blue, alpha, 1.0f, (uint)(0), (uint)(0xffffffff));
 		}
 		public virtual void clear(float red, float green, float blue)
 		{
-			clear(red, green, blue, 1.0f, 1.0f, (uint)(0), (uint)(4.294967295E9f));
+			clear(red, green, blue, 1.0f, 1.0f, (uint)(0), (uint)(0xffffffff));
 		}
 		public virtual void clear(float red, float green)
 		{
-			clear(red, green, 0.0f, 1.0f, 1.0f, (uint)(0), (uint)(4.294967295E9f));
+			clear(red, green, 0.0f, 1.0f, 1.0f, (uint)(0), (uint)(0xffffffff));
 		}
 		public virtual void clear(float red)
 		{
-			clear(red, 0.0f, 0.0f, 1.0f, 1.0f, (uint)(0), (uint)(4.294967295E9f));
+			clear(red, 0.0f, 0.0f, 1.0f, 1.0f, (uint)(0), (uint)(0xffffffff));
 		}
 		public virtual void clear()
 		{
-			clear(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, (uint)(0), (uint)(4.294967295E9f));
+			clear(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, (uint)(0), (uint)(0xffffffff));
 		}
 		public virtual void configureBackBuffer(int width, int height, int antiAlias, bool enableDepthAndStencil)
 		{

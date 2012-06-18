@@ -7,7 +7,6 @@ using bc.flash.system;
 using bc.flash.utils;
 using bc.flash.resources;
 using bc.flash.events;
-using bc.core.display;
 using System.Diagnostics;
 
 namespace bc.flash.display

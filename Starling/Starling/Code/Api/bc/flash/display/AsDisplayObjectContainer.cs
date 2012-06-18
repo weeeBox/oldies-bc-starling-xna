@@ -15,19 +15,23 @@ namespace bc.flash.display
 		private AsVector<AsDisplayObject> mChildren;
 		private static AsMatrix sHelperMatrix = new AsMatrix();
 		private static AsPoint sHelperPoint = new AsPoint();
+		private static AsVector<AsDisplayObject> sListenersList = new AsVector<AsDisplayObject>();
+		private static AsEvent sAddedEvent = new AsEvent(AsEvent.ADDED, true);
+		private static AsEvent sRemovedEvent = new AsEvent(AsEvent.REMOVED, true);
+		private static AsEvent sAddedToStageEvent = new AsEvent(AsEvent.ADDED_TO_STAGE);
+		private static AsEvent sRemovedFromStageEvent = new AsEvent(AsEvent.REMOVED_FROM_STAGE);
 		public AsDisplayObjectContainer()
 		{
 			if((AsGlobal.getQualifiedClassName(this) == "DisplayObjectContainer"))
 			{
 				throw new AsAbstractClassError();
 			}
-			mChildren = new AsVector<AsDisplayObject>();
 		}
 		public override void dispose()
 		{
-			int numChildren = (int)(mChildren.getLength());
+			int childsCount = getNumChildren();
 			int i = 0;
-			for (; (i < numChildren); ++i)
+			for (; (i < childsCount); ++i)
 			{
 				mChildren[i].dispose();
 			}
@@ -39,15 +43,19 @@ namespace bc.flash.display
 		}
 		public virtual void addChildAt(AsDisplayObject child, int index)
 		{
+			if((mChildren == null))
+			{
+				mChildren = new AsVector<AsDisplayObject>();
+			}
 			if(((index >= 0) && (index <= getNumChildren())))
 			{
 				child.removeFromParent();
 				mChildren.splice(index, (uint)(0), child);
 				child.setParent(this);
-				child.dispatchEvent(new AsEvent(AsEvent.ADDED, true));
+				child.dispatchEvent(sAddedEvent);
 				if(getStage() != null)
 				{
-					child.dispatchEventOnChildren(new AsEvent(AsEvent.ADDED_TO_STAGE));
+					child.dispatchEventOnChildren(sAddedToStageEvent);
 				}
 			}
 			else
@@ -72,10 +80,10 @@ namespace bc.flash.display
 			if(((index >= 0) && (index < getNumChildren())))
 			{
 				AsDisplayObject child = mChildren[index];
-				child.dispatchEvent(new AsEvent(AsEvent.REMOVED, true));
+				child.dispatchEvent(sRemovedEvent);
 				if(getStage() != null)
 				{
-					child.dispatchEventOnChildren(new AsEvent(AsEvent.REMOVED_FROM_STAGE));
+					child.dispatchEventOnChildren(sRemovedFromStageEvent);
 				}
 				child.setParent(null);
 				mChildren.splice(index, (uint)(1));
@@ -130,9 +138,9 @@ namespace bc.flash.display
 		}
 		public virtual AsDisplayObject getChildByName(String name)
 		{
-			int numChildren = (int)(mChildren.getLength());
+			int childsCount = getNumChildren();
 			int i = 0;
-			for (; (i < numChildren); ++i)
+			for (; (i < childsCount); ++i)
 			{
 				if((mChildren[i].getName() == name))
 				{
@@ -178,9 +186,9 @@ namespace bc.flash.display
 			{
 				return true;
 			}
-			int numChildren = (int)(mChildren.getLength());
+			int childsCount = getNumChildren();
 			int i = 0;
-			for (; (i < numChildren); ++i)
+			for (; (i < childsCount); ++i)
 			{
 				AsDisplayObject currentChild = mChildren[i];
 				AsDisplayObjectContainer currentChildContainer = ((currentChild is AsDisplayObjectContainer) ? ((AsDisplayObjectContainer)(currentChild)) : null);
@@ -204,8 +212,8 @@ namespace bc.flash.display
 			{
 				resultRect = new AsRectangle();
 			}
-			int numChildren = (int)(mChildren.getLength());
-			if((numChildren == 0))
+			int childsCount = getNumChildren();
+			if((childsCount == 0))
 			{
 				getTransformationMatrix(targetSpace, sHelperMatrix);
 				AsGlobal.transformCoords(sHelperMatrix, 0.0f, 0.0f, sHelperPoint);
@@ -216,7 +224,7 @@ namespace bc.flash.display
 			}
 			else
 			{
-				if((numChildren == 1))
+				if((childsCount == 1))
 				{
 					return mChildren[0].getBounds(targetSpace, resultRect);
 				}
@@ -227,7 +235,7 @@ namespace bc.flash.display
 					float minY = AsMathHelper.MAX_NUMBER;
 					float maxY = -AsMathHelper.MAX_NUMBER;
 					int i = 0;
-					for (; (i < numChildren); ++i)
+					for (; (i < childsCount); ++i)
 					{
 						mChildren[i].getBounds(targetSpace, resultRect);
 						minX = (((minX < resultRect.x)) ? (minX) : (resultRect.x));
@@ -255,8 +263,8 @@ namespace bc.flash.display
 			}
 			float localX = localPoint.x;
 			float localY = localPoint.y;
-			int numChildren = (int)(mChildren.getLength());
-			int i = (numChildren - 1);
+			int childsCount = getNumChildren();
+			int i = (childsCount - 1);
 			for (; (i >= 0); --i)
 			{
 				AsDisplayObject child = mChildren[i];
@@ -277,9 +285,9 @@ namespace bc.flash.display
 		public override void render(AsRenderSupport support, float alpha)
 		{
 			alpha = (alpha * this.getAlpha());
-			int numChildren = (int)(mChildren.getLength());
+			int childsCount = getNumChildren();
 			int i = 0;
-			for (; (i < numChildren); ++i)
+			for (; (i < childsCount); ++i)
 			{
 				AsDisplayObject child = mChildren[i];
 				if(((((child.getAlpha() != 0.0f) && child.getVisible()) && (child.getScaleX() != 0.0f)) && (child.getScaleY() != 0.0f)))
@@ -301,14 +309,14 @@ namespace bc.flash.display
 		}
 		public override void dispatchEventOnChildren(AsEvent _event)
 		{
-			AsVector<AsDisplayObject> listeners = new AsVector<AsDisplayObject>();
-			getChildEventListeners(this, _event.getType(), listeners);
-			int numListeners = (int)(listeners.getLength());
+			getChildEventListeners(this, _event.getType(), sListenersList);
+			int numListeners = (int)(sListenersList.getLength());
 			int i = 0;
 			for (; (i < numListeners); ++i)
 			{
-				listeners[i].dispatchEvent(_event);
+				sListenersList[i].dispatchEvent(_event);
 			}
+			sListenersList.setLength(0);
 		}
 		private void getChildEventListeners(AsDisplayObject _object, String eventType, AsVector<AsDisplayObject> listeners)
 		{
@@ -317,7 +325,7 @@ namespace bc.flash.display
 			{
 				listeners.push(_object);
 			}
-			if(container != null)
+			if(((container != null) && (container.getNumChildren() > 0)))
 			{
 				AsVector<AsDisplayObject> children = container.mChildren;
 				int numChildren = (int)(children.getLength());
@@ -330,7 +338,7 @@ namespace bc.flash.display
 		}
 		public virtual int getNumChildren()
 		{
-			return (int)(mChildren.getLength());
+			return (((mChildren == null)) ? (0) : (((int)(mChildren.getLength()))));
 		}
 	}
 }
