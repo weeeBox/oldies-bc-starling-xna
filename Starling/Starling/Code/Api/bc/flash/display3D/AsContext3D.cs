@@ -4,7 +4,7 @@ using bc.flash;
 using bc.flash.display;
 using bc.flash.display3D;
 using bc.flash.display3D.textures;
-using bc.flash.error;
+using bc.flash.errors;
 using bc.flash.geom;
 using bc.flash.utils;
  

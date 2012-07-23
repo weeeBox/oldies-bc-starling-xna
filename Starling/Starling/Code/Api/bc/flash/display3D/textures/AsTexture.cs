@@ -2,7 +2,7 @@ using System;
  
 using bc.flash.display;
 using bc.flash.display3D.textures;
-using bc.flash.error;
+using bc.flash.errors;
 using bc.flash.utils;
  
 namespace bc.flash.display3D.textures

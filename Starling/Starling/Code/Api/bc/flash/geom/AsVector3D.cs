@@ -1,7 +1,7 @@
 using System;
  
 using bc.flash;
-using bc.flash.error;
+using bc.flash.errors;
 using bc.flash.geom;
 using bc.flash.utils;
  

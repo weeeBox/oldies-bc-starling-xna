@@ -2,7 +2,7 @@ using System;
  
 using bc.flash;
 using bc.flash.display;
-using bc.flash.error;
+using bc.flash.errors;
 using bc.flash.events;
 using bc.flash.geom;
  
@@ -42,6 +42,10 @@ namespace bc.flash.display
 		public static AsStage getInstance()
 		{
 			return mCurrentStage;
+		}
+		public virtual AsVector<AsStage3D> getStage3Ds()
+		{
+			throw new AsNotImplementedError();
 		}
 		public virtual void tick(float dt)
 		{

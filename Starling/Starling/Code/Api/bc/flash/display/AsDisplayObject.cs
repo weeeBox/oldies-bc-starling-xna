@@ -3,7 +3,7 @@ using System;
 using bc.flash;
 using bc.flash.core;
 using bc.flash.display;
-using bc.flash.error;
+using bc.flash.errors;
 using bc.flash.events;
 using bc.flash.geom;
 using bc.flash.utils;

@@ -6,8 +6,8 @@ namespace bc.flash.utils
 {
 	public class AsMathHelper : AsObject
 	{
-		private const float epsilon = 0.00001f;
-		public const float MAX_NUMBER = 0x7fffffff;
+		private static float epsilon = 0.00001f;
+		public static float MAX_NUMBER = 0x7fffffff;
 		public static float toRadians(float degrees)
 		{
 			return (0.0174532925199433f * degrees);

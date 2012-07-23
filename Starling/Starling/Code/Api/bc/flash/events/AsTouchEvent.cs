@@ -2,6 +2,7 @@ using System;
  
 using bc.flash;
 using bc.flash.display;
+using bc.flash.errors;
 using bc.flash.events;
  
 namespace bc.flash.events
@@ -129,6 +130,22 @@ namespace bc.flash.events
 		public virtual bool getCtrlKey()
 		{
 			return mCtrlKey;
+		}
+		public virtual float getStageX()
+		{
+			throw new AsNotImplementedError();
+		}
+		public virtual float getStageY()
+		{
+			throw new AsNotImplementedError();
+		}
+		public virtual int getTouchPointID()
+		{
+			throw new AsNotImplementedError();
+		}
+		public virtual void setTouchPointID(int _value)
+		{
+			throw new AsNotImplementedError();
 		}
 	}
 }

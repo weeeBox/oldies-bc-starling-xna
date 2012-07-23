@@ -1,6 +1,7 @@
 using System;
  
 using bc.flash;
+using bc.flash.errors;
  
 namespace bc.flash.ui
 {
@@ -23,6 +24,10 @@ namespace bc.flash.ui
 		public static void show()
 		{
 			mHidden = false;
+		}
+		public static bool getSupportsCursor()
+		{
+			throw new AsNotImplementedError();
 		}
 	}
 }

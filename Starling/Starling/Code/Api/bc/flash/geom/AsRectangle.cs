@@ -1,7 +1,7 @@
 using System;
  
 using bc.flash;
-using bc.flash.error;
+using bc.flash.errors;
 using bc.flash.geom;
  
 namespace bc.flash.geom
@@ -144,6 +144,13 @@ namespace bc.flash.geom
 		{
 			x = _value.x;
 			y = _value.y;
+		}
+		public virtual void setTo(float xa, float ya, float widtha, float heighta)
+		{
+			x = xa;
+			y = ya;
+			width = widtha;
+			height = heighta;
 		}
 		public virtual AsRectangle union(AsRectangle toUnion)
 		{

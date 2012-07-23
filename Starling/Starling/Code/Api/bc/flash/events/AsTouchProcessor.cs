@@ -9,8 +9,8 @@ namespace bc.flash.events
 {
 	public class AsTouchProcessor : AsObject
 	{
-		private const float MULTITAP_TIME = 0.3f;
-		private const float MULTITAP_DISTANCE = 25;
+		private static float MULTITAP_TIME = 0.3f;
+		private static float MULTITAP_DISTANCE = 25;
 		private AsStage mStage;
 		private float mElapsedTime;
 		private float mOffsetTime;

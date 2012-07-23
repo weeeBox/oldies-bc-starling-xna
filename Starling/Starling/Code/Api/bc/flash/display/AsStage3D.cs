@@ -2,7 +2,7 @@ using System;
  
 using bc.flash;
 using bc.flash.display3D;
-using bc.flash.error;
+using bc.flash.errors;
 using bc.flash.events;
  
 namespace bc.flash.display

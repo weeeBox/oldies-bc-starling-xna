@@ -7,19 +7,19 @@ namespace bc.flash.xml
 {
 	public class AsXMLElement : AsXML
 	{
-		private AsXMLList mAttributes;
-		private AsXMLList mChildren;
+		private bc.flash.xml.AsXMLList mAttributes;
+		private bc.flash.xml.AsXMLList mChildren;
 		public AsXMLElement(String name)
 		 : base(name)
 		{
-			mAttributes = new AsXMLList();
-			mChildren = new AsXMLList();
+			mAttributes = new bc.flash.xml.AsXMLList();
+			mChildren = new bc.flash.xml.AsXMLList();
 		}
-		public override AsXML appendChild(AsXML child)
+		public override bc.flash.xml.AsXML appendChild(bc.flash.xml.AsXML child)
 		{
 			return mChildren.appendChild(child);
 		}
-		public virtual AsXML appendAttribute(String name, String _value)
+		public virtual bc.flash.xml.AsXML appendAttribute(String name, String _value)
 		{
 			return mAttributes.appendChild(new AsXMLAttribute(name, _value));
 		}
@@ -42,17 +42,17 @@ namespace bc.flash.xml
 			}
 			return null;
 		}
-		public override AsXMLList attributes()
+		public override bc.flash.xml.AsXMLList attributes()
 		{
 			return mAttributes;
 		}
-		public override AsXMLList child(String name)
+		public override bc.flash.xml.AsXMLList child(String name)
 		{
-			AsXMLList result = new AsXMLList();
+			bc.flash.xml.AsXMLList result = new bc.flash.xml.AsXMLList();
 			AsVector<AsXML> __childs_ = mChildren.list();
 			if (__childs_ != null)
 			{
-				foreach (AsXML child in __childs_)
+				foreach (bc.flash.xml.AsXML child in __childs_)
 				{
 					if((child.name() == name))
 					{
@@ -62,7 +62,7 @@ namespace bc.flash.xml
 			}
 			return result;
 		}
-		public override AsXMLList children()
+		public override bc.flash.xml.AsXMLList children()
 		{
 			return mChildren;
 		}
@@ -81,17 +81,17 @@ namespace bc.flash.xml
 			}
 			return false;
 		}
-		public override AsXMLList elements(String name)
+		public override bc.flash.xml.AsXMLList elements(String name)
 		{
 			if((name == "*"))
 			{
 				return mChildren;
 			}
-			AsXMLList result = new AsXMLList();
+			bc.flash.xml.AsXMLList result = new bc.flash.xml.AsXMLList();
 			AsVector<AsXML> __childs_ = mChildren.list();
 			if (__childs_ != null)
 			{
-				foreach (AsXML child in __childs_)
+				foreach (bc.flash.xml.AsXML child in __childs_)
 				{
 					if(((child.name() == name) && (child.nodeKind() == nodeKind())))
 					{
@@ -101,7 +101,7 @@ namespace bc.flash.xml
 			}
 			return result;
 		}
-		public virtual AsXMLList elements()
+		public virtual bc.flash.xml.AsXMLList elements()
 		{
 			return elements("*");
 		}
