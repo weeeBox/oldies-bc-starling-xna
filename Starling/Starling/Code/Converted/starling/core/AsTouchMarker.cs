@@ -15,6 +15,7 @@ namespace starling.core
 		public AsTouchMarker()
 		{
 			mCenter = new AsPoint();
+			// FIXME: Block of code is cut here
 			int i = 0;
 			for (; (i < 2); ++i)
 			{

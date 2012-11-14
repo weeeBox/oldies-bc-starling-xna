@@ -1,10 +1,10 @@
 using System;
  
 using bc.flash;
-using bc.flash.errors;
 using bc.flash.geom;
 using starling.display;
 using starling.events;
+using starling.utils;
  
 namespace starling.events
 {
@@ -29,25 +29,53 @@ namespace starling.events
 			mPhase = phase;
 			mTarget = target;
 		}
+		public virtual AsPoint getLocation(AsDisplayObject space, AsPoint resultPoint)
+		{
+			if((resultPoint == null))
+			{
+				resultPoint = new AsPoint();
+			}
+			mTarget.get_base().getTransformationMatrix(space, sHelperMatrix);
+			return AsMatrixUtil.transformCoords(sHelperMatrix, mGlobalX, mGlobalY, resultPoint);
+		}
 		public virtual AsPoint getLocation(AsDisplayObject space)
 		{
-			AsPoint point = new AsPoint(mGlobalX, mGlobalY);
+			return getLocation(space, null);
+		}
+		public virtual AsPoint getPreviousLocation(AsDisplayObject space, AsPoint resultPoint)
+		{
+			if((resultPoint == null))
+			{
+				resultPoint = new AsPoint();
+			}
 			mTarget.get_base().getTransformationMatrix(space, sHelperMatrix);
-			return sHelperMatrix.transformPoint(point);
+			return AsMatrixUtil.transformCoords(sHelperMatrix, mPreviousGlobalX, mPreviousGlobalY, resultPoint);
 		}
 		public virtual AsPoint getPreviousLocation(AsDisplayObject space)
 		{
-			AsPoint point = new AsPoint(mPreviousGlobalX, mPreviousGlobalY);
-			mTarget.get_base().getTransformationMatrix(space, sHelperMatrix);
-			return sHelperMatrix.transformPoint(point);
+			return getPreviousLocation(space, null);
+		}
+		public virtual AsPoint getMovement(AsDisplayObject space, AsPoint resultPoint)
+		{
+			if((resultPoint == null))
+			{
+				resultPoint = new AsPoint();
+			}
+			getLocation(space, resultPoint);
+			float x = resultPoint.x;
+			float y = resultPoint.y;
+			getPreviousLocation(space, resultPoint);
+			resultPoint.setTo((x - resultPoint.x), (y - resultPoint.y));
+			return resultPoint;
 		}
 		public virtual AsPoint getMovement(AsDisplayObject space)
 		{
-			return getLocation(space).subtract(getPreviousLocation(space));
+			return getMovement(space, null);
 		}
 		public virtual String toString()
 		{
-			throw new AsNotImplementedError();
+			// FIXME: Block of code is cut here
+			return null;
 		}
 		public virtual AsTouch clone()
 		{

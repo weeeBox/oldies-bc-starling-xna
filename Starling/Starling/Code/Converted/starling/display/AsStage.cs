@@ -35,6 +35,10 @@ namespace starling.display
 			{
 				return null;
 			}
+			if(((((localPoint.x < 0) || (localPoint.x > mWidth)) || (localPoint.y < 0)) || (localPoint.y > mHeight)))
+			{
+				return null;
+			}
 			AsDisplayObject target = base.hitTest(localPoint, forTouch);
 			if((target == null))
 			{

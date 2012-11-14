@@ -5,6 +5,7 @@ using bc.flash.display3D.textures;
 using bc.flash.geom;
 using starling.textures;
 using starling.utils;
+using AsTexture = starling.textures.AsTexture;
  
 namespace starling.textures
 {
@@ -85,6 +86,10 @@ namespace starling.textures
 		public override AsTextureBase get_base()
 		{
 			return mParent.get_base();
+		}
+		public override String getFormat()
+		{
+			return mParent.getFormat();
 		}
 		public override float getWidth()
 		{

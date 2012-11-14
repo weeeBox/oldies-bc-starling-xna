@@ -29,6 +29,10 @@ namespace starling.text
 		private AsVector<AsCharLocation> mCharLocationPool;
 		public AsBitmapFont(AsTexture texture, AsXML fontXml)
 		{
+			if(((texture == null) && (fontXml == null)))
+			{
+				// FIXME: Block of code is cut here
+			}
 			mName = "unknown";
 			mLineHeight = mSize = mBaseline = 14;
 			mTexture = texture;
@@ -63,7 +67,7 @@ namespace starling.text
 			mSize = (AsGlobal.parseFloat(fontXml.elements("info").attribute("size")) / scale);
 			mLineHeight = (AsGlobal.parseFloat(fontXml.elements("common").attribute("lineHeight")) / scale);
 			mBaseline = (AsGlobal.parseFloat(fontXml.elements("common").attribute("base")) / scale);
-			if((fontXml.elements("info").attribute("smooth").toString() == "0"))
+			if((fontXml.elements("info").attribute("smooth").ToString() == "0"))
 			{
 				setSmoothing(AsTextureSmoothing.NONE);
 			}
@@ -99,7 +103,7 @@ namespace starling.text
 					int first = (int)(AsGlobal.parseInt(kerningElement.attribute("first")));
 					int second = (int)(AsGlobal.parseInt(kerningElement.attribute("second")));
 					float amount = (AsGlobal.parseFloat(kerningElement.attribute("amount")) / scale);
-					if((second in mChars))
+					if(mChars.containsKey(second))
 					{
 						getChar(second).addKerning(first, amount);
 					}
@@ -114,10 +118,53 @@ namespace starling.text
 		{
 			mChars[charID] = bitmapChar;
 		}
+		public virtual AsSprite createSprite(float width, float height, String text, float fontSize, uint color, String hAlign, String vAlign, bool autoScale, bool kerning)
+		{
+			AsVector<AsCharLocation> charLocations = arrangeChars(width, height, text, fontSize, hAlign, vAlign, autoScale, kerning);
+			int numChars = (int)(charLocations.getLength());
+			AsSprite sprite = new AsSprite();
+			int i = 0;
+			for (; (i < numChars); ++i)
+			{
+				AsCharLocation charLocation = charLocations[i];
+				AsImage _char = charLocation._char.createImage();
+				_char.setX(charLocation.x);
+				_char.setY(charLocation.y);
+				_char.setScaleX(_char.setScaleY(charLocation.scale));
+				_char.setColor(color);
+				sprite.addChild(_char);
+			}
+			return sprite;
+		}
+		public virtual AsSprite createSprite(float width, float height, String text, float fontSize, uint color, String hAlign, String vAlign, bool autoScale)
+		{
+			return createSprite(width, height, text, fontSize, color, hAlign, vAlign, autoScale, true);
+		}
+		public virtual AsSprite createSprite(float width, float height, String text, float fontSize, uint color, String hAlign, String vAlign)
+		{
+			return createSprite(width, height, text, fontSize, color, hAlign, vAlign, true, true);
+		}
+		public virtual AsSprite createSprite(float width, float height, String text, float fontSize, uint color, String hAlign)
+		{
+			return createSprite(width, height, text, fontSize, color, hAlign, "center", true, true);
+		}
+		public virtual AsSprite createSprite(float width, float height, String text, float fontSize, uint color)
+		{
+			return createSprite(width, height, text, fontSize, color, "center", "center", true, true);
+		}
+		public virtual AsSprite createSprite(float width, float height, String text, float fontSize)
+		{
+			return createSprite(width, height, text, fontSize, (uint)(0xffffff), "center", "center", true, true);
+		}
+		public virtual AsSprite createSprite(float width, float height, String text)
+		{
+			return createSprite(width, height, text, -1, (uint)(0xffffff), "center", "center", true, true);
+		}
 		public virtual void fillQuadBatch(AsQuadBatch quadBatch, float width, float height, String text, float fontSize, uint color, String hAlign, String vAlign, bool autoScale, bool kerning)
 		{
 			AsVector<AsCharLocation> charLocations = arrangeChars(width, height, text, fontSize, hAlign, vAlign, autoScale, kerning);
 			int numChars = (int)(charLocations.getLength());
+			mHelperImage.setColor(color);
 			if((numChars > 8192))
 			{
 				throw new AsArgumentError("Bitmap Font text is limited to 8192 characters.");
@@ -126,13 +173,11 @@ namespace starling.text
 			for (; (i < numChars); ++i)
 			{
 				AsCharLocation charLocation = charLocations[i];
-				AsBitmapChar _char = charLocation._char;
-				mHelperImage.setTexture(_char.getTexture());
+				mHelperImage.setTexture(charLocation._char.getTexture());
 				mHelperImage.readjustSize();
 				mHelperImage.setX(charLocation.x);
 				mHelperImage.setY(charLocation.y);
 				mHelperImage.setScaleX(mHelperImage.setScaleY(charLocation.scale));
-				mHelperImage.setColor(color);
 				quadBatch.addImage(mHelperImage);
 			}
 		}
@@ -172,7 +217,6 @@ namespace starling.text
 			}
 			AsVector<AsVector<AsCharLocation>> lines = null;
 			bool finished = false;
-			AsBitmapChar _char = null;
 			AsCharLocation charLocation = null;
 			int numChars = 0;
 			float containerWidth = 0;
@@ -197,44 +241,46 @@ namespace starling.text
 					{
 						bool lineFull = false;
 						int charID = (int)(String.charCodeAt(text, i));
+						AsBitmapChar _char = getChar(charID);
 						if((charID == CHAR_NEWLINE))
 						{
 							lineFull = true;
 						}
 						else
 						{
-							_char = getChar(charID);
 							if((_char == null))
 							{
 								AsGlobal.trace(("[Starling] Missing character: " + charID));
-								continue;
 							}
-							if(((charID == CHAR_SPACE) || (charID == CHAR_TAB)))
+							else
 							{
-								lastWhiteSpace = i;
-							}
-							if(kerning)
-							{
-								currentX = (currentX + _char.getKerning(lastCharID));
-							}
-							charLocation = (AsCharLocation)((((mCharLocationPool.getLength()) != 0) ? (mCharLocationPool.pop()) : (new AsCharLocation(_char))));
-							charLocation._char = _char;
-							charLocation.x = (currentX + _char.getXOffset());
-							charLocation.y = (currentY + _char.getYOffset());
-							currentLine.push(charLocation);
-							currentX = (currentX + _char.getXAdvance());
-							lastCharID = charID;
-							if(((charLocation.x + _char.getWidth()) > containerWidth))
-							{
-								int numCharsToRemove = (((lastWhiteSpace == -1)) ? (1) : ((i - lastWhiteSpace)));
-								int removeIndex = (int)((currentLine.getLength() - numCharsToRemove));
-								currentLine.splice(removeIndex, (uint)(numCharsToRemove));
-								if((currentLine.getLength() == 0))
+								if(((charID == CHAR_SPACE) || (charID == CHAR_TAB)))
 								{
-									break;
+									lastWhiteSpace = i;
 								}
-								i = (i - numCharsToRemove);
-								lineFull = true;
+								if(kerning)
+								{
+									currentX = (currentX + _char.getKerning(lastCharID));
+								}
+								charLocation = (((mCharLocationPool.getLength()) != 0) ? (mCharLocationPool.pop()) : (new AsCharLocation(_char)));
+								charLocation._char = _char;
+								charLocation.x = (currentX + _char.getXOffset());
+								charLocation.y = (currentY + _char.getYOffset());
+								currentLine.push(charLocation);
+								currentX = (currentX + _char.getXAdvance());
+								lastCharID = charID;
+								if(((charLocation.x + _char.getWidth()) > containerWidth))
+								{
+									int numCharsToRemove = (((lastWhiteSpace == -1)) ? (1) : ((i - lastWhiteSpace)));
+									int removeIndex = (int)((currentLine.getLength() - numCharsToRemove));
+									currentLine.splice(removeIndex, (uint)(numCharsToRemove));
+									if((currentLine.getLength() == 0))
+									{
+										break;
+									}
+									i = (i - numCharsToRemove);
+									lineFull = true;
+								}
 							}
 						}
 						if((i == (numChars - 1)))

@@ -27,28 +27,7 @@ namespace starling.display
 			if((textures.getLength() > 0))
 			{
 				__$super$__(textures[0]);
-				if((fps <= 0))
-				{
-					throw new AsArgumentError(("Invalid fps: " + fps));
-				}
-				mDefaultFrameDuration = (1.0f / fps);
-				mLoop = true;
-				mPlaying = true;
-				mTotalTime = 0.0f;
-				mCurrentTime = 0.0f;
-				mCurrentFrame = 0;
-				mTextures = new AsVector<AsTexture>();
-				mSounds = new AsVector<AsSound>();
-				mDurations = new AsVector<float>();
-				mStartTimes = new AsVector<float>();
-				AsVector<AsTexture> __textures_ = textures;
-				if (__textures_ != null)
-				{
-					foreach (AsTexture texture in __textures_)
-					{
-						addFrame(texture);
-					}
-				}
+				init(textures, fps);
 			}
 			else
 			{
@@ -58,6 +37,30 @@ namespace starling.display
 		public AsMovieClip(AsVector<AsTexture> textures)
 		 : this(textures, 12)
 		{
+		}
+		private void init(AsVector<AsTexture> textures, float fps)
+		{
+			if((fps <= 0))
+			{
+				throw new AsArgumentError(("Invalid fps: " + fps));
+			}
+			int numFrames = (int)(textures.getLength());
+			mDefaultFrameDuration = (1.0f / fps);
+			mLoop = true;
+			mPlaying = true;
+			mCurrentTime = 0.0f;
+			mCurrentFrame = 0;
+			mTotalTime = (mDefaultFrameDuration * numFrames);
+			mTextures = textures.concat();
+			mSounds = new AsVector<AsSound>(numFrames);
+			mDurations = new AsVector<float>(numFrames);
+			mStartTimes = new AsVector<float>(numFrames);
+			int i = 0;
+			for (; (i < numFrames); ++i)
+			{
+				mDurations[i] = mDefaultFrameDuration;
+				mStartTimes[i] = (i * mDefaultFrameDuration);
+			}
 		}
 		public virtual void addFrame(AsTexture texture, AsSound sound, float duration)
 		{

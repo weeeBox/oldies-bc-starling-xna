@@ -27,6 +27,7 @@ namespace starling.display
 		private static AsMatrix sHelperMatrix = new AsMatrix();
 		private static AsVector<float> sRenderAlpha = new AsVector<float>();
 		private static AsMatrix3D sRenderMatrix = new AsMatrix3D();
+		private static AsDictionary sProgramNameCache = new AsDictionary();
 		public AsQuadBatch()
 		{
 			mVertexData = new AsVertexData(0, true);
@@ -34,11 +35,11 @@ namespace starling.display
 			mNumQuads = 0;
 			mTinted = false;
 			mSyncRequired = false;
-			AsStarling.getCurrent().addEventListener(AsEvent.CONTEXT3D_CREATE, onContextCreated);
+			AsStarling.getCurrent().getStage3D().addEventListener(AsEvent.CONTEXT3D_CREATE, onContextCreated, false, 0, true);
 		}
 		public override void dispose()
 		{
-			AsStarling.getCurrent().removeEventListener(AsEvent.CONTEXT3D_CREATE, onContextCreated);
+			AsStarling.getCurrent().getStage3D().removeEventListener(AsEvent.CONTEXT3D_CREATE, onContextCreated);
 			if(mVertexBuffer != null)
 			{
 				mVertexBuffer.dispose();
@@ -49,7 +50,7 @@ namespace starling.display
 			}
 			base.dispose();
 		}
-		private void onContextCreated(AsEvent _event)
+		private void onContextCreated(AsObject _event)
 		{
 			createBuffers();
 			registerPrograms();
@@ -153,7 +154,7 @@ namespace starling.display
 			bool pma = mVertexData.getPremultipliedAlpha();
 			AsContext3D context = AsStarling.getContext();
 			bool tinted = (mTinted || (parentAlpha != 1.0f));
-			String programName = ((mTexture != null) ? (getImageProgramName(tinted, mTexture.getMipMapping(), mTexture.getRepeat(), mSmoothing)) : (QUAD_PROGRAM_NAME));
+			String programName = ((mTexture != null) ? (getImageProgramName(tinted, mTexture.getMipMapping(), mTexture.getRepeat(), mTexture.getFormat(), mSmoothing)) : (QUAD_PROGRAM_NAME));
 			sRenderAlpha[0] = sRenderAlpha[1] = sRenderAlpha[2] = ((pma) ? (parentAlpha) : (1.0f));
 			sRenderAlpha[3] = parentAlpha;
 			AsMatrixUtil.convertTo3D(mvpMatrix, sRenderMatrix);
@@ -304,7 +305,7 @@ namespace starling.display
 		{
 			addQuadBatch(quadBatch, 1.0f, null, null);
 		}
-		public virtual bool isStateChange(bool tinted, float parentAlpha, AsTexture texture, String smoothing, String blendMode)
+		public virtual bool isStateChange(bool tinted, float parentAlpha, AsTexture texture, String smoothing, String blendMode, int numQuads)
 		{
 			if((mNumQuads == 0))
 			{
@@ -312,7 +313,7 @@ namespace starling.display
 			}
 			else
 			{
-				if((mNumQuads == 8192))
+				if(((mNumQuads + numQuads) > 8192))
 				{
 					return true;
 				}
@@ -336,6 +337,10 @@ namespace starling.display
 				}
 			}
 		}
+		public virtual bool isStateChange(bool tinted, float parentAlpha, AsTexture texture, String smoothing, String blendMode)
+		{
+			return isStateChange(tinted, parentAlpha, texture, smoothing, blendMode, 1);
+		}
 		public override AsRectangle getBounds(AsDisplayObject targetSpace, AsRectangle resultRect)
 		{
 			if((resultRect == null))
@@ -352,6 +357,7 @@ namespace starling.display
 		public override void render(AsRenderSupport support, float parentAlpha)
 		{
 			support.finishQuadBatch();
+			support.raiseDrawCount();
 			renderCustom(support.getMvpMatrix(), (getAlpha() * parentAlpha), support.getBlendMode());
 		}
 		public static void compile(AsDisplayObjectContainer container, AsVector<AsQuadBatch> quadBatches)
@@ -406,21 +412,24 @@ namespace starling.display
 					AsTexture texture = null;
 					String smoothing = null;
 					bool tinted = false;
+					int numQuads = 0;
 					if(quad != null)
 					{
 						AsImage image = ((quad is AsImage) ? ((AsImage)(quad)) : null);
 						texture = ((image != null) ? (image.getTexture()) : (null));
 						smoothing = ((image != null) ? (image.getSmoothing()) : (null));
 						tinted = quad.getTinted();
+						numQuads = 1;
 					}
 					else
 					{
 						texture = batch.mTexture;
 						smoothing = batch.mSmoothing;
 						tinted = batch.mTinted;
+						numQuads = batch.mNumQuads;
 					}
 					quadBatch = quadBatches[quadBatchID];
-					if(quadBatch.isStateChange(tinted, (alpha * objectAlpha), texture, smoothing, blendMode))
+					if(quadBatch.isStateChange(tinted, (alpha * objectAlpha), texture, smoothing, blendMode, numQuads))
 					{
 						quadBatchID++;
 						if((quadBatches.getLength() <= quadBatchID))
@@ -446,10 +455,7 @@ namespace starling.display
 			}
 			if(isRootObject)
 			{
-				for (i = (int)((quadBatches.getLength() - 1)); (i > quadBatchID); --i)
-				{
-					((AsQuad)(quadBatches.pop())).dispose();
-				}
+				// FIXME: Block of code is cut here
 			}
 			return quadBatchID;
 		}
@@ -483,183 +489,28 @@ namespace starling.display
 		}
 		private static void registerPrograms()
 		{
+			// FIXME: Block of code is cut here
 		}
-		private static String getImageProgramName(bool tinted, bool mipMap, bool repeat, String smoothing)
+		private static String getImageProgramName(bool tinted, bool mipMap, bool repeat, String format, String smoothing)
 		{
-			if(tinted)
-			{
-				if(mipMap)
-				{
-					if(repeat)
-					{
-						if((smoothing == "bilinear"))
-						{
-							return "QB_i*MRB";
-						}
-						else
-						{
-							if((smoothing == "trilinear"))
-							{
-								return "QB_i*MRT";
-							}
-							else
-							{
-								return "QB_i*MRN";
-							}
-						}
-					}
-					else
-					{
-						if((smoothing == "bilinear"))
-						{
-							return "QB_i*MB";
-						}
-						else
-						{
-							if((smoothing == "trilinear"))
-							{
-								return "QB_i*MT";
-							}
-							else
-							{
-								return "QB_i*MN";
-							}
-						}
-					}
-				}
-				else
-				{
-					if(repeat)
-					{
-						if((smoothing == "bilinear"))
-						{
-							return "QB_i*RB";
-						}
-						else
-						{
-							if((smoothing == "trilinear"))
-							{
-								return "QB_i*RT";
-							}
-							else
-							{
-								return "QB_i*RN";
-							}
-						}
-					}
-					else
-					{
-						if((smoothing == "bilinear"))
-						{
-							return "QB_i*B";
-						}
-						else
-						{
-							if((smoothing == "trilinear"))
-							{
-								return "QB_i*T";
-							}
-							else
-							{
-								return "QB_i*N";
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				if(mipMap)
-				{
-					if(repeat)
-					{
-						if((smoothing == "bilinear"))
-						{
-							return "QB_i'MRB";
-						}
-						else
-						{
-							if((smoothing == "trilinear"))
-							{
-								return "QB_i'MRT";
-							}
-							else
-							{
-								return "QB_i'MRN";
-							}
-						}
-					}
-					else
-					{
-						if((smoothing == "bilinear"))
-						{
-							return "QB_i'MB";
-						}
-						else
-						{
-							if((smoothing == "trilinear"))
-							{
-								return "QB_i'MT";
-							}
-							else
-							{
-								return "QB_i'MN";
-							}
-						}
-					}
-				}
-				else
-				{
-					if(repeat)
-					{
-						if((smoothing == "bilinear"))
-						{
-							return "QB_i'RB";
-						}
-						else
-						{
-							if((smoothing == "trilinear"))
-							{
-								return "QB_i'RT";
-							}
-							else
-							{
-								return "QB_i'RN";
-							}
-						}
-					}
-					else
-					{
-						if((smoothing == "bilinear"))
-						{
-							return "QB_i'B";
-						}
-						else
-						{
-							if((smoothing == "trilinear"))
-							{
-								return "QB_i'T";
-							}
-							else
-							{
-								return "QB_i'N";
-							}
-						}
-					}
-				}
-			}
+			// FIXME: Block of code is cut here
+			return null;
+		}
+		private static String getImageProgramName(bool tinted, bool mipMap, bool repeat, String format)
+		{
+			return getImageProgramName(tinted, mipMap, repeat, format, "bilinear");
 		}
 		private static String getImageProgramName(bool tinted, bool mipMap, bool repeat)
 		{
-			return getImageProgramName(tinted, mipMap, repeat, "bilinear");
+			return getImageProgramName(tinted, mipMap, repeat, "bgra", "bilinear");
 		}
 		private static String getImageProgramName(bool tinted, bool mipMap)
 		{
-			return getImageProgramName(tinted, mipMap, false, "bilinear");
+			return getImageProgramName(tinted, mipMap, false, "bgra", "bilinear");
 		}
 		private static String getImageProgramName(bool tinted)
 		{
-			return getImageProgramName(tinted, true, false, "bilinear");
+			return getImageProgramName(tinted, true, false, "bgra", "bilinear");
 		}
 	}
 }

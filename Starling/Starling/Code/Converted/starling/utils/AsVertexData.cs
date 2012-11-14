@@ -15,7 +15,6 @@ namespace starling.utils
 		private AsVector<float> mRawData;
 		private bool mPremultipliedAlpha;
 		private int mNumVertices;
-		private static AsVector<float> sPositions = new AsVector<float>(8);
 		private static AsPoint sHelperPoint = new AsPoint();
 		public AsVertexData(int numVertices, bool premultipliedAlpha)
 		{
@@ -60,8 +59,7 @@ namespace starling.utils
 			int i = sourceIndex;
 			for (; (i < dataLength); ++i)
 			{
-				targetRawData[targetIndex] = mRawData[i];
-				targetIndex = (targetIndex + 1);
+				targetRawData[targetIndex++] = mRawData[i];
 			}
 		}
 		public virtual void copyTo(AsVertexData targetData, int targetVertexID, int vertexID)
@@ -355,6 +353,19 @@ namespace starling.utils
 		}
 		public virtual void setNumVertices(int _value)
 		{
+			mRawData._fixed = false;
+			int i = 0;
+			int delta = (_value - mNumVertices);
+			for (i = 0; (i < delta); ++i)
+			{
+				mRawData.push(0, 0, 0, 0, 0, 1, 0, 0);
+			}
+			for (i = 0; (i < -(delta * ELEMENTS_PER_VERTEX)); ++i)
+			{
+				mRawData.pop();
+			}
+			mNumVertices = _value;
+			mRawData._fixed = true;
 		}
 		public virtual AsVector<float> getRawData()
 		{

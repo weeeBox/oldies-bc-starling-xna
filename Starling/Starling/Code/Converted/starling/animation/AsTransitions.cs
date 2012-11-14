@@ -5,7 +5,6 @@ using starling.errors;
  
 namespace starling.animation
 {
-	public delegate void AsTransitionCallback(float ratio);
 	public class AsTransitions : AsObject
 	{
 		public static String LINEAR = "linear";

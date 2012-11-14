@@ -4,7 +4,7 @@ using bc.flash;
  
 namespace bc.flash
 {
-	public class AsError : AsObject
+	public class AsError : Exception
 	{
 		public String message;
 		public String name;

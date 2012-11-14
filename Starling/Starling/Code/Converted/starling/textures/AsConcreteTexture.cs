@@ -4,7 +4,6 @@ using bc.flash;
 using bc.flash.display;
 using bc.flash.display3D;
 using bc.flash.display3D.textures;
-using bc.flash.utils;
 using starling.core;
 using starling.events;
 using starling.textures;
@@ -14,6 +13,7 @@ namespace starling.textures
 	public class AsConcreteTexture : AsTexture
 	{
 		private AsTextureBase mBase;
+		private String mFormat;
 		private int mWidth;
 		private int mHeight;
 		private bool mMipMapping;
@@ -21,22 +21,23 @@ namespace starling.textures
 		private bool mOptimizedForRenderTexture;
 		private AsObject mData;
 		private float mScale;
-		public AsConcreteTexture(AsTextureBase _base, int width, int height, bool mipMapping, bool premultipliedAlpha, bool optimizedForRenderTexture, float scale)
+		public AsConcreteTexture(AsTextureBase _base, String format, int width, int height, bool mipMapping, bool premultipliedAlpha, bool optimizedForRenderTexture, float scale)
 		{
 			mScale = (((scale <= 0)) ? (1.0f) : (scale));
 			mBase = _base;
+			mFormat = format;
 			mWidth = width;
 			mHeight = height;
 			mMipMapping = mipMapping;
 			mPremultipliedAlpha = premultipliedAlpha;
 			mOptimizedForRenderTexture = optimizedForRenderTexture;
 		}
-		public AsConcreteTexture(AsTextureBase _base, int width, int height, bool mipMapping, bool premultipliedAlpha, bool optimizedForRenderTexture)
-		 : this(_base, width, height, mipMapping, premultipliedAlpha, optimizedForRenderTexture, 1)
+		public AsConcreteTexture(AsTextureBase _base, String format, int width, int height, bool mipMapping, bool premultipliedAlpha, bool optimizedForRenderTexture)
+		 : this(_base, format, width, height, mipMapping, premultipliedAlpha, optimizedForRenderTexture, 1)
 		{
 		}
-		public AsConcreteTexture(AsTextureBase _base, int width, int height, bool mipMapping, bool premultipliedAlpha)
-		 : this(_base, width, height, mipMapping, premultipliedAlpha, false, 1)
+		public AsConcreteTexture(AsTextureBase _base, String format, int width, int height, bool mipMapping, bool premultipliedAlpha)
+		 : this(_base, format, width, height, mipMapping, premultipliedAlpha, false, 1)
 		{
 		}
 		public override void dispose()
@@ -64,7 +65,7 @@ namespace starling.textures
 		{
 			AsContext3D context = AsStarling.getContext();
 			AsBitmapData bitmapData = ((mData is AsBitmapData) ? ((AsBitmapData)(mData)) : null);
-			AsByteArray byteData = ((mData is AsByteArray) ? ((AsByteArray)(mData)) : null);
+			AsAtfData atfData = ((mData is AsAtfData) ? ((AsAtfData)(mData)) : null);
 			bc.flash.display3D.textures.AsTexture nativeTexture = null;
 			if(bitmapData != null)
 			{
@@ -73,11 +74,10 @@ namespace starling.textures
 			}
 			else
 			{
-				if(byteData != null)
+				if(atfData != null)
 				{
-					String format = (((byteData.getOwnProperty(6) == 2)) ? (AsContext3DTextureFormat.COMPRESSED) : (AsContext3DTextureFormat.BGRA));
-					nativeTexture = context.createTexture(mWidth, mHeight, format, mOptimizedForRenderTexture);
-					AsTexture.uploadAtfData(nativeTexture, byteData);
+					nativeTexture = context.createTexture(atfData.getWidth(), atfData.getHeight(), atfData.getFormat(), mOptimizedForRenderTexture);
+					AsTexture.uploadAtfData(nativeTexture, atfData.getData());
 				}
 			}
 			mBase = nativeTexture;
@@ -89,6 +89,10 @@ namespace starling.textures
 		public override AsTextureBase get_base()
 		{
 			return mBase;
+		}
+		public override String getFormat()
+		{
+			return mFormat;
 		}
 		public override float getWidth()
 		{

@@ -3,11 +3,13 @@ using System;
 using bc.flash;
 using bc.flash.display3D;
 using bc.flash.display3D.textures;
+using bc.flash.geom;
 using starling.core;
 using starling.display;
 using starling.errors;
 using starling.textures;
 using starling.utils;
+using AsTexture = starling.textures.AsTexture;
  
 namespace starling.textures
 {
@@ -57,17 +59,58 @@ namespace starling.textures
 		}
 		public virtual void draw(AsDisplayObject _object, int antiAliasing)
 		{
+			// FIXME: Block of code is cut here
 		}
 		public virtual void draw(AsDisplayObject _object)
 		{
 			draw(_object, 0);
 		}
-		public virtual void drawBundled(AsObject drawingBlock, int antiAliasing)
+		public virtual void drawBundled(AsDrawingBlockCallback drawingBlock, int antiAliasing)
 		{
+			float scale = mActiveTexture.getScale();
+			AsContext3D context = AsStarling.getContext();
+			if((context == null))
+			{
+				throw new AsMissingContextError();
+			}
+			context.setScissorRectangle(new AsRectangle(0, 0, (mActiveTexture.getWidth() * scale), (mActiveTexture.getHeight() * scale)));
+			if(getIsPersistent())
+			{
+				AsTexture tmpTexture = mActiveTexture;
+				mActiveTexture = mBufferTexture;
+				mBufferTexture = tmpTexture;
+				mHelperImage.setTexture(mBufferTexture);
+			}
+			context.setRenderToTexture(mActiveTexture.get_base(), false, antiAliasing);
+			AsRenderSupport.clear();
+			mSupport.setOrthographicProjection((mNativeWidth / scale), (mNativeHeight / scale));
+			mSupport.applyBlendMode(true);
+			if(getIsPersistent())
+			{
+				mHelperImage.render(mSupport, 1.0f);
+			}
+			try
+			{
+				mDrawing = true;
+				if((drawingBlock != null))
+				{
+					drawingBlock();
+				}
+			}
+			catch ()
+			{
+			}
+			finally{
+				mDrawing = false;
+				mSupport.finishQuadBatch();
+				mSupport.nextFrame();
+				context.setScissorRectangle(null);
+				context.setRenderToBackBuffer();
+			}
 		}
-		public virtual void drawBundled(AsObject drawingBlock)
+		public virtual void drawBundled(AsDrawingBlockCallback drawingBlock)
 		{
-			drawBundled((AsObject)(drawingBlock), 0);
+			drawBundled(drawingBlock, 0);
 		}
 		public virtual void clear()
 		{

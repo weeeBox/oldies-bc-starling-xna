@@ -8,6 +8,7 @@ using starling.core;
 using starling.display;
 using starling.errors;
 using starling.events;
+using starling.utils;
  
 namespace starling.display
 {
@@ -19,6 +20,8 @@ namespace starling.display
 		private float mPivotY;
 		private float mScaleX;
 		private float mScaleY;
+		private float mSkewX;
+		private float mSkewY;
 		private float mRotation;
 		private float mAlpha;
 		private bool mVisible;
@@ -39,7 +42,7 @@ namespace starling.display
 			{
 				throw new AsAbstractClassError();
 			}
-			mX = mY = mPivotX = mPivotY = mRotation = 0.0f;
+			mX = mY = mPivotX = mPivotY = mRotation = mSkewX = mSkewY = 0.0f;
 			mScaleX = mScaleY = mAlpha = 1.0f;
 			mVisible = mTouchable = true;
 			mLastTouchTimestamp = -1;
@@ -55,11 +58,7 @@ namespace starling.display
 		{
 			if(mParent != null)
 			{
-				mParent.removeChild(this);
-			}
-			if(dispose)
-			{
-				this.dispose();
+				mParent.removeChild(this, dispose);
 			}
 		}
 		public virtual void removeFromParent()
@@ -186,16 +185,24 @@ namespace starling.display
 		{
 			return hitTest(localPoint, false);
 		}
-		public virtual AsPoint localToGlobal(AsPoint localPoint)
+		public virtual AsPoint localToGlobal(AsPoint localPoint, AsPoint resultPoint)
 		{
 			getTransformationMatrix(get_base(), sHelperMatrix);
-			return sHelperMatrix.transformPoint(localPoint);
+			return AsMatrixUtil.transformCoords(sHelperMatrix, localPoint.x, localPoint.y, resultPoint);
 		}
-		public virtual AsPoint globalToLocal(AsPoint globalPoint)
+		public virtual AsPoint localToGlobal(AsPoint localPoint)
+		{
+			return localToGlobal(localPoint, null);
+		}
+		public virtual AsPoint globalToLocal(AsPoint globalPoint, AsPoint resultPoint)
 		{
 			getTransformationMatrix(get_base(), sHelperMatrix);
 			sHelperMatrix.invert();
-			return sHelperMatrix.transformPoint(globalPoint);
+			return AsMatrixUtil.transformCoords(sHelperMatrix, globalPoint.x, globalPoint.y, resultPoint);
+		}
+		public virtual AsPoint globalToLocal(AsPoint globalPoint)
+		{
+			return globalToLocal(globalPoint, null);
 		}
 		public virtual void render(AsRenderSupport support, float parentAlpha)
 		{
@@ -233,15 +240,31 @@ namespace starling.display
 				mParent = _value;
 			}
 		}
+		public virtual bool getHasVisibleArea()
+		{
+			return ((((mAlpha != 0.0f) && mVisible) && (mScaleX != 0.0f)) && (mScaleY != 0.0f));
+		}
+		private float normalizeAngle(float angle)
+		{
+			while((angle < -AsMath.PI))
+			{
+				angle = (angle + (AsMath.PI * 2.0f));
+			}
+			while((angle > AsMath.PI))
+			{
+				angle = (angle - (AsMath.PI * 2.0f));
+			}
+			return angle;
+		}
 		public virtual AsMatrix getTransformationMatrix()
 		{
 			if(mOrientationChanged)
 			{
 				mOrientationChanged = false;
 				mTransformationMatrix.identity();
-				if(((mPivotX != 0.0f) || (mPivotY != 0.0f)))
+				if(((mSkewX != 0.0f) || (mSkewY != 0.0f)))
 				{
-					mTransformationMatrix.translate(-mPivotX, -mPivotY);
+					AsMatrixUtil.skew(mTransformationMatrix, mSkewX, mSkewY);
 				}
 				if(((mScaleX != 1.0f) || (mScaleY != 1.0f)))
 				{
@@ -255,8 +278,46 @@ namespace starling.display
 				{
 					mTransformationMatrix.translate(mX, mY);
 				}
+				if(((mPivotX != 0.0f) || (mPivotY != 0.0f)))
+				{
+					mTransformationMatrix.tx = ((mX - (mTransformationMatrix.a * mPivotX)) - (mTransformationMatrix.c * mPivotY));
+					mTransformationMatrix.ty = ((mY - (mTransformationMatrix.b * mPivotX)) - (mTransformationMatrix.d * mPivotY));
+				}
 			}
 			return mTransformationMatrix;
+		}
+		public virtual void setTransformationMatrix(AsMatrix matrix)
+		{
+			mOrientationChanged = false;
+			mX = matrix.tx;
+			mY = matrix.ty;
+			float a = matrix.a;
+			float b = matrix.b;
+			float c = matrix.c;
+			float d = matrix.d;
+			mScaleX = AsMath.sqrt(((a * a) + (b * b)));
+			if((mScaleX != 0))
+			{
+				mRotation = AsMath.atan2(b, a);
+			}
+			else
+			{
+				mRotation = 0;
+			}
+			float cosTheta = AsMath.cos(mRotation);
+			float sinTheta = AsMath.sin(mRotation);
+			mScaleY = ((d * cosTheta) - (c * sinTheta));
+			if((mScaleY != 0))
+			{
+				mSkewX = AsMath.atan2(((d * sinTheta) + (c * cosTheta)), mScaleY);
+			}
+			else
+			{
+				mSkewX = 0;
+			}
+			mSkewY = 0;
+			mPivotX = 0;
+			mPivotY = 0;
 		}
 		public virtual bool getUseHandCursor()
 		{
@@ -392,20 +453,39 @@ namespace starling.display
 				mOrientationChanged = true;
 			}
 		}
+		public virtual float getSkewX()
+		{
+			return mSkewX;
+		}
+		public virtual void setSkewX(float _value)
+		{
+			_value = normalizeAngle(_value);
+			if((mSkewX != _value))
+			{
+				mSkewX = _value;
+				mOrientationChanged = true;
+			}
+		}
+		public virtual float getSkewY()
+		{
+			return mSkewY;
+		}
+		public virtual void setSkewY(float _value)
+		{
+			_value = normalizeAngle(_value);
+			if((mSkewY != _value))
+			{
+				mSkewY = _value;
+				mOrientationChanged = true;
+			}
+		}
 		public virtual float getRotation()
 		{
 			return mRotation;
 		}
 		public virtual void setRotation(float _value)
 		{
-			while((_value < -AsMath.PI))
-			{
-				_value = (_value + (AsMath.PI * 2.0f));
-			}
-			while((_value > AsMath.PI))
-			{
-				_value = (_value - (AsMath.PI * 2.0f));
-			}
+			_value = normalizeAngle(_value);
 			if((mRotation != _value))
 			{
 				mRotation = _value;

@@ -127,6 +127,7 @@
     <Compile Include="Code\Api\bc\flash\events\AsErrorEvent.cs" />
     <Compile Include="Code\Api\bc\flash\events\AsEvent.cs" />
     <Compile Include="Code\Api\bc\flash\events\AsEventDispatcher.cs" />
+    <Compile Include="Code\Api\bc\flash\events\AsFunctions.cs" />
     <Compile Include="Code\Api\bc\flash\events\AsGamePadEvent.cs" />
     <Compile Include="Code\Api\bc\flash\events\AsIOErrorEvent.cs" />
     <Compile Include="Code\Api\bc\flash\events\AsKeyboardEvent.cs" />
@@ -173,6 +174,7 @@
     <Compile Include="Code\Converted\com\foo\AsStage.cs" />
     <Compile Include="Code\Converted\pg\AsPlayGround.cs" />
     <Compile Include="Code\Converted\starling\animation\AsDelayedCall.cs" />
+    <Compile Include="Code\Converted\starling\animation\AsFunctions.cs" />
     <Compile Include="Code\Converted\starling\animation\AsIAnimatable.cs" />
     <Compile Include="Code\Converted\starling\animation\AsJuggler.cs" />
     <Compile Include="Code\Converted\starling\animation\AsTransitions.cs" />
@@ -180,6 +182,7 @@
     <Compile Include="Code\Converted\starling\core\AsRenderSupport.cs" />
     <Compile Include="Code\Converted\starling\core\AsStarling.cs" />
     <Compile Include="Code\Converted\starling\core\AsStatsDisplay.cs" />
+    <Compile Include="Code\Converted\starling\core\AsTouchData.cs" />
     <Compile Include="Code\Converted\starling\core\AsTouchMarker.cs" />
     <Compile Include="Code\Converted\starling\core\AsTouchProcessor.cs" />
     <Compile Include="Code\Converted\starling\display\AsBlendMode.cs" />
@@ -198,11 +201,13 @@
     <Compile Include="Code\Converted\starling\events\AsEnterFrameEvent.cs" />
     <Compile Include="Code\Converted\starling\events\AsEvent.cs" />
     <Compile Include="Code\Converted\starling\events\AsEventDispatcher.cs" />
+    <Compile Include="Code\Converted\starling\events\AsFunctions.cs" />
     <Compile Include="Code\Converted\starling\events\AsKeyboardEvent.cs" />
     <Compile Include="Code\Converted\starling\events\AsResizeEvent.cs" />
     <Compile Include="Code\Converted\starling\events\AsTouch.cs" />
     <Compile Include="Code\Converted\starling\events\AsTouchEvent.cs" />
     <Compile Include="Code\Converted\starling\events\AsTouchPhase.cs" />
+    <Compile Include="Code\Converted\starling\textures\AsAtfData.cs" />
     <Compile Include="Code\Converted\starling\textures\AsConcreteTexture.cs" />
     <Compile Include="Code\Converted\starling\textures\AsRenderTexture.cs" />
     <Compile Include="Code\Converted\starling\textures\AsSubTexture.cs" />
@@ -211,6 +216,7 @@
     <Compile Include="Code\Converted\starling\textures\AsTextureSmoothing.cs" />
     <Compile Include="Code\Converted\starling\text\AsBitmapChar.cs" />
     <Compile Include="Code\Converted\starling\text\AsBitmapFont.cs" />
+    <Compile Include="Code\Converted\starling\text\AsCharLocation.cs" />
     <Compile Include="Code\Converted\starling\text\AsTextField.cs" />
     <Compile Include="Code\Converted\starling\utils\AsColor.cs" />
     <Compile Include="Code\Converted\starling\utils\AsHAlign.cs" />
@@ -244,6 +250,7 @@
     <Compile Include="Code\Platform\bc\flash\AsError.cs" />
     <Compile Include="Code\Platform\bc\flash\AsGlobal.cs" />
     <Compile Include="Code\Platform\bc\flash\AsMath.cs" />
+    <Compile Include="Code\Platform\bc\flash\AsNumber.cs" />
     <Compile Include="Code\Platform\bc\flash\AsObject.cs" />
     <Compile Include="Code\Platform\bc\flash\AsRangeError.cs" />
     <Compile Include="Code\Platform\bc\flash\AsString.cs" />
@@ -265,6 +272,10 @@
     <Compile Include="Code\Platform\bc\flash\system\AsSystem.cs" />
     <Compile Include="Code\Platform\bc\flash\utils\AsByteArray.cs" />
     <Compile Include="Code\Platform\bc\flash\utils\AsMathHelper.cs" />
+    <Compile Include="Code\Platform\bc\flash\xml\AsXML.cs" />
+    <Compile Include="Code\Platform\bc\flash\xml\AsXMLAttribute.cs" />
+    <Compile Include="Code\Platform\bc\flash\xml\AsXMLElement.cs" />
+    <Compile Include="Code\Platform\bc\flash\xml\AsXMLList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -23,7 +23,7 @@ namespace starling.display
 		public static AsArray getBlendFactors(String mode, bool premultipliedAlpha)
 		{
 			AsObject modes = (AsObject)(sBlendFactors[((int)(premultipliedAlpha))]);
-			if((mode in modes))
+			if(modes.hasOwnProperty(mode))
 			{
 				return (AsArray)(modes.getOwnProperty(mode));
 			}
@@ -41,7 +41,7 @@ namespace starling.display
 			AsObject modes = (AsObject)(sBlendFactors[((int)(premultipliedAlpha))]);
 			modes.setOwnProperty(name, new AsArray(sourceFactor, destFactor));
 			AsObject otherModes = (AsObject)(sBlendFactors[((int)(!(premultipliedAlpha)))]);
-			if((name in otherModes))
+			if(otherModes.hasOwnProperty(name))
 			{
 				otherModes.setOwnProperty(name, new AsArray(sourceFactor, destFactor));
 			}

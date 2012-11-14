@@ -26,7 +26,6 @@ namespace starling.display
 			if((mFlattenedContents == null))
 			{
 				mFlattenedContents = new AsVector<AsQuadBatch>();
-				AsStarling.getCurrent().addEventListener(AsEvent.CONTEXT3D_CREATE, onContextCreated);
 			}
 			AsQuadBatch.compile(this, mFlattenedContents);
 		}
@@ -34,7 +33,6 @@ namespace starling.display
 		{
 			if(mFlattenedContents != null)
 			{
-				AsStarling.getCurrent().removeEventListener(AsEvent.CONTEXT3D_CREATE, onContextCreated);
 				int numBatches = (int)(mFlattenedContents.getLength());
 				int i = 0;
 				for (; (i < numBatches); ++i)
@@ -42,14 +40,6 @@ namespace starling.display
 					mFlattenedContents[i].dispose();
 				}
 				mFlattenedContents = null;
-			}
-		}
-		private void onContextCreated(AsEvent _event)
-		{
-			if(mFlattenedContents != null)
-			{
-				mFlattenedContents = new AsVector<AsQuadBatch>();
-				flatten();
 			}
 		}
 		public virtual bool getIsFlattened()
@@ -60,10 +50,11 @@ namespace starling.display
 		{
 			if(mFlattenedContents != null)
 			{
-				support.finishQuadBatch();
 				float alpha = (parentAlpha * this.getAlpha());
 				int numBatches = (int)(mFlattenedContents.getLength());
 				AsMatrix mvpMatrix = support.getMvpMatrix();
+				support.finishQuadBatch();
+				support.raiseDrawCount((uint)(numBatches));
 				int i = 0;
 				for (; (i < numBatches); ++i)
 				{

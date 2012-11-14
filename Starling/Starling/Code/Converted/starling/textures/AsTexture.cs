@@ -4,7 +4,6 @@ using bc.flash;
 using bc.flash.display;
 using bc.flash.display3D;
 using bc.flash.display3D.textures;
-using bc.flash.errors;
 using bc.flash.geom;
 using bc.flash.system;
 using bc.flash.utils;
@@ -12,6 +11,7 @@ using starling.core;
 using starling.errors;
 using starling.textures;
 using starling.utils;
+using AsTexture = bc.flash.display3D.textures.AsTexture;
  
 namespace starling.textures
 {
@@ -50,8 +50,8 @@ namespace starling.textures
 		{
 			int origWidth = data.getWidth();
 			int origHeight = data.getHeight();
-			int legalWidth = AsGlobal.getNextPowerOfTwo(data.getWidth());
-			int legalHeight = AsGlobal.getNextPowerOfTwo(data.getHeight());
+			int legalWidth = AsGlobal.getNextPowerOfTwo(origWidth);
+			int legalHeight = AsGlobal.getNextPowerOfTwo(origHeight);
 			AsContext3D context = AsStarling.getContext();
 			AsBitmapData potData = null;
 			if((context == null))
@@ -66,7 +66,7 @@ namespace starling.textures
 				data = potData;
 			}
 			uploadBitmapData(nativeTexture, data, generateMipMaps);
-			AsConcreteTexture concreteTexture = new AsConcreteTexture(nativeTexture, legalWidth, legalHeight, generateMipMaps, true, optimizeForRenderTexture, scale);
+			AsConcreteTexture concreteTexture = new AsConcreteTexture(nativeTexture, AsContext3DTextureFormat.BGRA, legalWidth, legalHeight, generateMipMaps, true, optimizeForRenderTexture, scale);
 			if(AsStarling.getHandleLostContext())
 			{
 				concreteTexture.restoreOnLostContext(data);
@@ -101,7 +101,20 @@ namespace starling.textures
 		}
 		public static AsTexture fromAtfData(AsByteArray data, float scale)
 		{
-			throw new AsNotImplementedError();
+			AsContext3D context = AsStarling.getContext();
+			if((context == null))
+			{
+				throw new AsMissingContextError();
+			}
+			AsAtfData atfData = new AsAtfData(data);
+			bc.flash.display3D.textures.AsTexture nativeTexture = context.createTexture(atfData.getWidth(), atfData.getHeight(), atfData.getFormat(), false);
+			uploadAtfData(nativeTexture, data);
+			AsConcreteTexture concreteTexture = new AsConcreteTexture(nativeTexture, atfData.getFormat(), atfData.getWidth(), atfData.getHeight(), (atfData.getNumTextures() > 1), false, false, scale);
+			if(AsStarling.getHandleLostContext())
+			{
+				concreteTexture.restoreOnLostContext(atfData);
+			}
+			return concreteTexture;
 		}
 		public static AsTexture fromAtfData(AsByteArray data)
 		{
@@ -231,6 +244,10 @@ namespace starling.textures
 		public virtual AsTextureBase get_base()
 		{
 			return null;
+		}
+		public virtual String getFormat()
+		{
+			return AsContext3DTextureFormat.BGRA;
 		}
 		public virtual bool getMipMapping()
 		{

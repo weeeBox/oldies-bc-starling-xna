@@ -6,11 +6,11 @@ namespace starling.errors
 {
 	public class AsMissingContextError : AsError
 	{
-		public AsMissingContextError(As* message, As* id)
+		public AsMissingContextError(Object message, Object id)
 		 : base(message, id)
 		{
 		}
-		public AsMissingContextError(As* message)
+		public AsMissingContextError(Object message)
 		 : this(message, 0)
 		{
 		}

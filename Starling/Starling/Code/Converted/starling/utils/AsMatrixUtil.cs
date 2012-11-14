@@ -46,6 +46,23 @@ namespace starling.utils
 		{
 			return transformCoords(matrix, x, y, null);
 		}
+		public static void skew(AsMatrix matrix, float skewX, float skewY)
+		{
+			float a = matrix.a;
+			float b = matrix.b;
+			float c = matrix.c;
+			float d = matrix.d;
+			float tx = matrix.tx;
+			float ty = matrix.ty;
+			float sinX = AsMath.sin(skewX);
+			float cosX = AsMath.cos(skewX);
+			float sinY = AsMath.sin(skewY);
+			float cosY = AsMath.cos(skewY);
+			matrix.a = ((a * cosY) + (c * sinY));
+			matrix.b = ((b * cosY) + (d * sinY));
+			matrix.c = ((c * cosX) - (a * sinX));
+			matrix.d = ((d * cosX) - (b * sinX));
+		}
 		public static void prependTranslation(AsMatrix matrix, float tx, float ty)
 		{
 			matrix.tx = (matrix.tx + ((matrix.a * tx) + (matrix.c * ty)));

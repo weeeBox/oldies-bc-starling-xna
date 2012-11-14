@@ -6,7 +6,6 @@ using starling.events;
  
 namespace starling.animation
 {
-	public delegate void AsDelayedCallback();
 	public class AsDelayedCall : AsEventDispatcher, AsIAnimatable
 	{
 		private float mCurrentTime = 0;
@@ -30,6 +29,7 @@ namespace starling.animation
 			mCurrentTime = AsMath.min(mTotalTime, (mCurrentTime + time));
 			if(((previousTime < mTotalTime) && (mCurrentTime >= mTotalTime)))
 			{
+				// FIXME: Block of code is cut here
 				if((mRepeatCount > 1))
 				{
 					mRepeatCount = (mRepeatCount - 1);

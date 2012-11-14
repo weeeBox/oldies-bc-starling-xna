@@ -35,16 +35,25 @@ namespace starling.display
 			}
 			base.dispose();
 		}
-		public virtual void addChild(AsDisplayObject child)
+		public virtual AsDisplayObject addChild(AsDisplayObject child)
 		{
 			addChildAt(child, getNumChildren());
+			return child;
 		}
-		public virtual void addChildAt(AsDisplayObject child, int index)
+		public virtual AsDisplayObject addChildAt(AsDisplayObject child, int index)
 		{
-			if(((index >= 0) && (index <= getNumChildren())))
+			int numChildren = (int)(mChildren.getLength());
+			if(((index >= 0) && (index <= numChildren)))
 			{
 				child.removeFromParent();
-				mChildren.splice(index, (uint)(0), child);
+				if((index == numChildren))
+				{
+					mChildren.push(child);
+				}
+				else
+				{
+					mChildren.splice(index, (uint)(0), child);
+				}
 				child.setParent(this);
 				child.dispatchEventWith(AsEvent.ADDED, true);
 				if(getStage() != null)
@@ -59,25 +68,27 @@ namespace starling.display
 						child.dispatchEventWith(AsEvent.ADDED_TO_STAGE);
 					}
 				}
+				return child;
 			}
 			else
 			{
 				throw new AsRangeError("Invalid child index");
 			}
 		}
-		public virtual void removeChild(AsDisplayObject child, bool dispose)
+		public virtual AsDisplayObject removeChild(AsDisplayObject child, bool dispose)
 		{
 			int childIndex = getChildIndex(child);
 			if((childIndex != -1))
 			{
 				removeChildAt(childIndex, dispose);
 			}
+			return child;
 		}
-		public virtual void removeChild(AsDisplayObject child)
+		public virtual AsDisplayObject removeChild(AsDisplayObject child)
 		{
-			removeChild(child, false);
+			return removeChild(child, false);
 		}
-		public virtual void removeChildAt(int index, bool dispose)
+		public virtual AsDisplayObject removeChildAt(int index, bool dispose)
 		{
 			if(((index >= 0) && (index < getNumChildren())))
 			{
@@ -96,20 +107,25 @@ namespace starling.display
 					}
 				}
 				child.setParent(null);
-				mChildren.splice(index, (uint)(1));
+				index = mChildren.indexOf(child);
+				if((index >= 0))
+				{
+					mChildren.splice(index, (uint)(1));
+				}
 				if(dispose)
 				{
 					child.dispose();
 				}
+				return child;
 			}
 			else
 			{
 				throw new AsRangeError("Invalid child index");
 			}
 		}
-		public virtual void removeChildAt(int index)
+		public virtual AsDisplayObject removeChildAt(int index)
 		{
-			removeChildAt(index, false);
+			return removeChildAt(index, false);
 		}
 		public virtual void removeChildren(int beginIndex, int endIndex, bool dispose)
 		{
@@ -189,6 +205,10 @@ namespace starling.display
 			AsDisplayObject child2 = getChildAt(index2);
 			mChildren[index1] = child2;
 			mChildren[index2] = child1;
+		}
+		public virtual void sortChildren(AsDisplayObjectContainerCompareFunction compareFunction)
+		{
+			mChildren = mChildren.sort(compareFunction);
 		}
 		public virtual bool contains(AsDisplayObject child)
 		{
@@ -284,7 +304,7 @@ namespace starling.display
 			for (; (i < numChildren); ++i)
 			{
 				AsDisplayObject child = mChildren[i];
-				if(((((child.getAlpha() != 0.0f) && child.getVisible()) && (child.getScaleX() != 0.0f)) && (child.getScaleY() != 0.0f)))
+				if(child.getHasVisibleArea())
 				{
 					String blendMode = child.getBlendMode();
 					bool blendModeChange = (blendMode != AsBlendMode.AUTO);

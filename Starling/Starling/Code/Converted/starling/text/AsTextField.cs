@@ -10,6 +10,10 @@ using starling.events;
 using starling.text;
 using starling.textures;
 using starling.utils;
+using AsTextField = bc.flash.text.AsTextField;
+using AsDisplayObjectContainer = starling.display.AsDisplayObjectContainer;
+using AsDisplayObject = starling.display.AsDisplayObject;
+using AsSprite = starling.display.AsSprite;
  
 namespace starling.text
 {
@@ -26,6 +30,7 @@ namespace starling.text
 		private bool mUnderline;
 		private bool mAutoScale;
 		private bool mKerning;
+		private AsArray mNativeFilters;
 		private bool mRequiresRedraw;
 		private bool mIsRenderedText;
 		private AsRectangle mTextBounds;
@@ -128,6 +133,7 @@ namespace starling.text
 			sNativeTextField.setWordWrap(true);
 			sNativeTextField.setText(mText);
 			sNativeTextField.setEmbedFonts(true);
+			sNativeTextField.filters = mNativeFilters;
 			if(((sNativeTextField.getTextWidth() == 0.0f) || (sNativeTextField.getTextHeight() == 0.0f)))
 			{
 				sNativeTextField.setEmbedFonts(false);
@@ -178,12 +184,13 @@ namespace starling.text
 			}
 			AsBitmapData bitmapData = new AsBitmapData(width, height, true, 0x0);
 			bitmapData.draw(sNativeTextField, new AsMatrix(1, 0, 0, 1, 0, (((int)(yOffset)) - 2)));
+			sNativeTextField.setText("");
 			if((mTextBounds == null))
 			{
 				mTextBounds = new AsRectangle();
 			}
 			mTextBounds.setTo((xOffset / scale), (yOffset / scale), (textWidth / scale), (textHeight / scale));
-			AsTexture texture = AsTexture.fromBitmapData(bitmapData, true, false, scale);
+			AsTexture texture = AsTexture.fromBitmapData(bitmapData, false, false, scale);
 			if((mImage == null))
 			{
 				mImage = new AsImage(texture);
@@ -318,13 +325,7 @@ namespace starling.text
 		{
 			if((mFontName != _value))
 			{
-				if(((_value == AsBitmapFont.MINI) && (sBitmapFonts[_value] == null)))
-				{
-					registerBitmapFont(new AsBitmapFont());
-				}
-				mFontName = _value;
-				mRequiresRedraw = true;
-				mIsRenderedText = (sBitmapFonts[_value] == null);
+				// FIXME: Block of code is cut here
 			}
 		}
 		public virtual float getFontSize()
@@ -470,20 +471,35 @@ namespace starling.text
 				mRequiresRedraw = true;
 			}
 		}
-		public static void registerBitmapFont(AsBitmapFont bitmapFont, String name)
+		public virtual AsArray getNativeFilters()
 		{
-			sBitmapFonts[((name != null) ? (name) : (bitmapFont.getName()))] = bitmapFont;
+			return mNativeFilters;
 		}
-		public static void registerBitmapFont(AsBitmapFont bitmapFont)
+		public virtual void setNativeFilters(AsArray _value)
 		{
-			registerBitmapFont(bitmapFont, null);
+			if(!(mIsRenderedText))
+			{
+				throw new AsError("The TextField.nativeFilters property cannot be used on Bitmap fonts.");
+			}
+			mNativeFilters = _value.concat();
+			mRequiresRedraw = true;
+		}
+		public static String registerBitmapFont(AsBitmapFont bitmapFont, String name)
+		{
+			if((name == null))
+			{
+				name = bitmapFont.getName();
+			}
+			sBitmapFonts[name] = bitmapFont;
+			return name;
+		}
+		public static String registerBitmapFont(AsBitmapFont bitmapFont)
+		{
+			return registerBitmapFont(bitmapFont, null);
 		}
 		public static void unregisterBitmapFont(String name, bool dispose)
 		{
-			if((dispose && (sBitmapFonts[name] != null)))
-			{
-				((AsBitmapFont)(sBitmapFonts[name])).dispose();
-			}
+			// FIXME: Block of code is cut here
 			sBitmapFonts.remove(name);
 		}
 		public static void unregisterBitmapFont(String name)

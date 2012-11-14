@@ -6,11 +6,11 @@ namespace starling.errors
 {
 	public class AsAbstractMethodError : AsError
 	{
-		public AsAbstractMethodError(As* message, As* id)
+		public AsAbstractMethodError(Object message, Object id)
 		 : base(message, id)
 		{
 		}
-		public AsAbstractMethodError(As* message)
+		public AsAbstractMethodError(Object message)
 		 : this(message, 0)
 		{
 		}

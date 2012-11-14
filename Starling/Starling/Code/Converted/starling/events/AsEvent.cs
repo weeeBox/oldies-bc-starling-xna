@@ -1,7 +1,6 @@
 using System;
  
 using bc.flash;
-using bc.flash.errors;
 using starling.events;
  
 namespace starling.events
@@ -52,7 +51,8 @@ namespace starling.events
 		}
 		public virtual String toString()
 		{
-			throw new AsNotImplementedError();
+			// FIXME: Block of code is cut here
+			return null;
 		}
 		public virtual bool getBubbles()
 		{
@@ -94,7 +94,7 @@ namespace starling.events
 		{
 			if((sEventPool.getLength()) != 0)
 			{
-				return ((AsEvent)(sEventPool.pop())).reset(type, bubbles, (AsObject)(data));
+				return sEventPool.pop().reset(type, bubbles, (AsObject)(data));
 			}
 			else
 			{
@@ -111,6 +111,7 @@ namespace starling.events
 		}
 		public static void toPool(AsEvent _event)
 		{
+			_event.mData = _event.mTarget = _event.mCurrentTarget = null;
 			sEventPool.push(_event);
 		}
 		public virtual AsEvent reset(String type, bool bubbles, AsObject data)

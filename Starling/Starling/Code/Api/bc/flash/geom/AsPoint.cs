@@ -26,6 +26,11 @@ namespace bc.flash.geom
 		{
 			return new AsPoint((x + v.x), (y + v.y));
 		}
+		public virtual void setTo(float xa, float ya)
+		{
+			x = xa;
+			y = ya;
+		}
 		public virtual AsPoint clone()
 		{
 			return new AsPoint(x, y);

@@ -1,7 +1,6 @@
 using System;
  
 using bc.flash;
-using bc.flash.errors;
 using bc.flash.geom;
 using starling.core;
 using starling.display;
@@ -23,7 +22,7 @@ namespace starling.core
 		private bool mShiftDown = false;
 		private bool mCtrlDown = false;
 		private static AsVector<int> sProcessedTouchIDs = new AsVector<int>();
-		private static AsVector<AsObject> sHoveringTouchData = new AsVector<AsObject>();
+		private static AsVector<AsTouchData> sHoveringTouchData = new AsVector<AsTouchData>();
 		public AsTouchProcessor(AsStage stage)
 		{
 			mStage = stage;
@@ -72,9 +71,32 @@ namespace starling.core
 						{
 							touch.setPhase(AsTouchPhase.STATIONARY);
 						}
-						if((touch.getTarget().getStage() == null))
+						if(((touch.getTarget() != null) && (touch.getTarget().getStage() == null)))
 						{
 							touch.setTarget(mStage.hitTest(new AsPoint(touch.getGlobalX(), touch.getGlobalY()), true));
+						}
+					}
+				}
+				while(((mQueue.getLength() > 0) && (sProcessedTouchIDs.indexOf((AsObject)(mQueue[(mQueue.getLength() - 1)][0])) == -1)))
+				{
+					AsArray touchArgs = mQueue.pop();
+					// FIXME: Block of code is cut here
+					touch = getCurrentTouch(touchID);
+					if((((touch != null) && (touch.getPhase() == AsTouchPhase.HOVER)) && (touch.getTarget() != null)))
+					{
+						sHoveringTouchData.push(new AsTouchData(touch, touch.getTarget()));
+					}
+					// FIXME: Block of code is cut here
+					sProcessedTouchIDs.push(touchID);
+				}
+				AsVector<AsTouchData> __touchDatas_ = sHoveringTouchData;
+				if (__touchDatas_ != null)
+				{
+					foreach (AsTouchData touchData in __touchDatas_)
+					{
+						if((touchData.getTouch().getTarget() != touchData.getTarget()))
+						{
+							touchData.getTarget().dispatchEvent(new AsTouchEvent(AsTouchEvent.TOUCH, mCurrentTouches, mShiftDown, mCtrlDown));
 						}
 					}
 				}
@@ -102,7 +124,12 @@ namespace starling.core
 		}
 		public virtual void enqueue(int touchID, String phase, float globalX, float globalY)
 		{
-			throw new AsNotImplementedError();
+			// FIXME: Block of code is cut here
+			if(((mCtrlDown && getSimulateMultitouch()) && (touchID == 0)))
+			{
+				mTouchMarker.moveMarker(globalX, globalY, mShiftDown);
+				mQueue.unshift(new AsArray(1, phase, mTouchMarker.getMockX(), mTouchMarker.getMockY()));
+			}
 		}
 		private void processTouch(int touchID, String phase, float globalX, float globalY)
 		{

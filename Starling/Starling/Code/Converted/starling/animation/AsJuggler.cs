@@ -6,7 +6,6 @@ using starling.events;
  
 namespace starling.animation
 {
-	public delegate void AsDelayedCallback();
 	public class AsJuggler : AsObject, AsIAnimatable
 	{
 		private AsVector<AsIAnimatable> mObjects;
@@ -18,14 +17,14 @@ namespace starling.animation
 		}
 		public virtual void _add(AsIAnimatable _object)
 		{
-			if((_object != null))
+			if(((_object != null) && (mObjects.indexOf(_object) == -1)))
 			{
 				mObjects.push(_object);
-			}
-			AsEventDispatcher dispatcher = ((_object is AsEventDispatcher) ? ((AsEventDispatcher)(_object)) : null);
-			if(dispatcher != null)
-			{
-				dispatcher.addEventListener(AsEvent.REMOVE_FROM_JUGGLER, onRemove);
+				AsEventDispatcher dispatcher = ((_object is AsEventDispatcher) ? ((AsEventDispatcher)(_object)) : null);
+				if(dispatcher != null)
+				{
+					dispatcher.addEventListener(AsEvent.REMOVE_FROM_JUGGLER, onRemove);
+				}
 			}
 		}
 		public virtual void _remove(AsIAnimatable _object)
@@ -39,13 +38,10 @@ namespace starling.animation
 			{
 				dispatcher.removeEventListener(AsEvent.REMOVE_FROM_JUGGLER, onRemove);
 			}
-			int i = (int)((mObjects.getLength() - 1));
-			for (; (i >= 0); --i)
+			int index = mObjects.indexOf(_object);
+			if((index != -1))
 			{
-				if((mObjects[i] == _object))
-				{
-					mObjects.splice(i, (uint)(1));
-				}
+				mObjects[index] = null;
 			}
 		}
 		public virtual void removeTweens(AsObject target)
@@ -61,7 +57,7 @@ namespace starling.animation
 				AsTween tween = ((mObjects[i] is AsTween) ? ((AsTween)(mObjects[i])) : null);
 				if(((tween != null) && (tween.getTarget() == target)))
 				{
-					mObjects.splice(i, (uint)(1));
+					mObjects[i] = null;
 				}
 			}
 		}
@@ -77,7 +73,7 @@ namespace starling.animation
 				}
 			}
 		}
-		public virtual AsDelayedCall delayCall(AsDelayedCallback call, float delay, AsArray args)
+		public virtual AsDelayedCall delayCall(AsDelayedCallback call, float delay, params Object[] args)
 		{
 			if((call == null))
 			{
@@ -89,17 +85,36 @@ namespace starling.animation
 		}
 		public virtual void advanceTime(float time)
 		{
+			int numObjects = (int)(mObjects.getLength());
+			int currentIndex = 0;
+			int i = 0;
 			mElapsedTime = (mElapsedTime + time);
-			if((mObjects.getLength() == 0))
+			if((numObjects == 0))
 			{
 				return;
 			}
-			int numObjects = (int)(mObjects.getLength());
-			AsVector<AsIAnimatable> objectCopy = mObjects.concat();
-			int i = 0;
-			for (; (i < numObjects); ++i)
+			for (i = 0; (i < numObjects); ++i)
 			{
-				objectCopy[i].advanceTime(time);
+				AsIAnimatable _object = mObjects[i];
+				if(_object != null)
+				{
+					_object.advanceTime(time);
+					if((currentIndex != i))
+					{
+						mObjects[currentIndex] = _object;
+						mObjects[i] = null;
+					}
+					++currentIndex;
+				}
+			}
+			if((currentIndex != i))
+			{
+				numObjects = (int)(mObjects.getLength());
+				while((i < numObjects))
+				{
+					mObjects[currentIndex++] = mObjects[i++];
+				}
+				mObjects.setLength(currentIndex);
 			}
 		}
 		private void onRemove(AsEvent _event)

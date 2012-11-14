@@ -63,11 +63,18 @@ namespace starling.display
 			mVertexData.setTexCoords(vertexID, coords.x, coords.y);
 			onVertexDataChanged();
 		}
+		public virtual AsPoint getTexCoords(int vertexID, AsPoint resultPoint)
+		{
+			if((resultPoint == null))
+			{
+				resultPoint = new AsPoint();
+			}
+			mVertexData.getTexCoords(vertexID, resultPoint);
+			return resultPoint;
+		}
 		public virtual AsPoint getTexCoords(int vertexID)
 		{
-			AsPoint coords = new AsPoint();
-			mVertexData.getTexCoords(vertexID, coords);
-			return coords;
+			return getTexCoords(vertexID, null);
 		}
 		public override void copyVertexDataTo(AsVertexData targetData, int targetVertexID)
 		{

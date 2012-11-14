@@ -33,14 +33,8 @@ namespace starling.text
 		}
 		public virtual float getKerning(int charID)
 		{
-			if(((mKernings == null) || (mKernings[charID] == null)))
-			{
-				return 0.0f;
-			}
-			else
-			{
-				return (float)(mKernings[charID]);
-			}
+			// FIXME: Block of code is cut here
+			return (float)(mKernings[charID]);
 		}
 		public virtual AsImage createImage()
 		{

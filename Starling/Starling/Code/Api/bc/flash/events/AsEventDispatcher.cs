@@ -6,7 +6,6 @@ using bc.flash.events;
  
 namespace bc.flash.events
 {
-	public delegate void AsEventListenerCallback(AsEvent _event);
 	public class AsEventDispatcher : AsObject
 	{
 		private AsDictionary mEventListeners;

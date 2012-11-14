@@ -6,7 +6,6 @@ using starling.events;
  
 namespace starling.animation
 {
-	public delegate void AsTransitionCallback(float ratio);
 	public class AsTween : AsEventDispatcher, AsIAnimatable
 	{
 		private AsObject mTarget;
@@ -79,7 +78,7 @@ namespace starling.animation
 				return;
 			}
 			mProperties.push(property);
-			mStartValues.push(0);
+			mStartValues.push(AsNumber.NaN);
 			mEndValues.push(targetValue);
 		}
 		public virtual void scaleTo(float factor)
@@ -108,9 +107,7 @@ namespace starling.animation
 			{
 				return;
 			}
-			if((((getOnStart() != null) && (previousTime <= 0)) && (mCurrentTime >= 0)))
-			{
-			}
+			// FIXME: Block of code is cut here
 			float ratio = (AsMath.min(mTotalTime, mCurrentTime) / mTotalTime);
 			int numAnimatedProperties = (int)(mStartValues.getLength());
 			int i = 0;
@@ -131,12 +128,11 @@ namespace starling.animation
 				}
 				mTarget.setOwnProperty(mProperties[i], currentValue);
 			}
-			if((getOnUpdate() != null))
-			{
-			}
+			// FIXME: Block of code is cut here
 			if(((previousTime < mTotalTime) && (mCurrentTime >= mTotalTime)))
 			{
 				dispatchEventWith(AsEvent.REMOVE_FROM_JUGGLER);
+				// FIXME: Block of code is cut here
 			}
 		}
 		public virtual bool getIsComplete()

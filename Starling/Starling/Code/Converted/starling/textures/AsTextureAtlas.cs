@@ -30,7 +30,7 @@ namespace starling.textures
 		{
 			mAtlasTexture.dispose();
 		}
-		private void parseAtlasXml(AsXML atlasXml)
+		protected virtual void parseAtlasXml(AsXML atlasXml)
 		{
 			float scale = mAtlasTexture.getScale();
 			AsSubTexture __subTextures_ = atlasXml.SubTexture;
@@ -95,13 +95,18 @@ namespace starling.textures
 		{
 			return getTextures("");
 		}
+		public virtual AsRectangle getRegion(String name)
+		{
+			return (AsRectangle)(mTextureRegions[name]);
+		}
+		public virtual AsRectangle getFrame(String name)
+		{
+			return (AsRectangle)(mTextureFrames[name]);
+		}
 		public virtual void addRegion(String name, AsRectangle region, AsRectangle frame)
 		{
 			mTextureRegions[name] = region;
-			if(frame != null)
-			{
-				mTextureFrames[name] = frame;
-			}
+			mTextureFrames[name] = frame;
 		}
 		public virtual void addRegion(String name, AsRectangle region)
 		{
@@ -110,6 +115,7 @@ namespace starling.textures
 		public virtual void removeRegion(String name)
 		{
 			mTextureRegions.remove(name);
+			mTextureFrames.remove(name);
 		}
 	}
 }
