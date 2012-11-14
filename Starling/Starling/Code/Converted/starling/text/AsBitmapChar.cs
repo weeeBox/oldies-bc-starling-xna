@@ -33,7 +33,7 @@ namespace starling.text
 		}
 		public virtual float getKerning(int charID)
 		{
-			// FIXME: Block of code is cut here
+			NOT.IMPLEMENTED();
 			return (float)(mKernings[charID]);
 		}
 		public virtual AsImage createImage()

@@ -29,7 +29,7 @@ namespace starling.animation
 			mCurrentTime = AsMath.min(mTotalTime, (mCurrentTime + time));
 			if(((previousTime < mTotalTime) && (mCurrentTime >= mTotalTime)))
 			{
-				// FIXME: Block of code is cut here
+				NOT.IMPLEMENTED();
 				if((mRepeatCount > 1))
 				{
 					mRepeatCount = (mRepeatCount - 1);

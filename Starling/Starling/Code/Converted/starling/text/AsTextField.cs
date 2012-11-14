@@ -325,7 +325,7 @@ namespace starling.text
 		{
 			if((mFontName != _value))
 			{
-				// FIXME: Block of code is cut here
+				NOT.IMPLEMENTED();
 			}
 		}
 		public virtual float getFontSize()
@@ -499,7 +499,7 @@ namespace starling.text
 		}
 		public static void unregisterBitmapFont(String name, bool dispose)
 		{
-			// FIXME: Block of code is cut here
+			NOT.IMPLEMENTED();
 			sBitmapFonts.remove(name);
 		}
 		public static void unregisterBitmapFont(String name)

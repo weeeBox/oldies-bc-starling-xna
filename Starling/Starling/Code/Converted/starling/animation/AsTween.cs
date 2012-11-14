@@ -107,7 +107,7 @@ namespace starling.animation
 			{
 				return;
 			}
-			// FIXME: Block of code is cut here
+			NOT.IMPLEMENTED();
 			float ratio = (AsMath.min(mTotalTime, mCurrentTime) / mTotalTime);
 			int numAnimatedProperties = (int)(mStartValues.getLength());
 			int i = 0;
@@ -128,11 +128,11 @@ namespace starling.animation
 				}
 				mTarget.setOwnProperty(mProperties[i], currentValue);
 			}
-			// FIXME: Block of code is cut here
+			NOT.IMPLEMENTED();
 			if(((previousTime < mTotalTime) && (mCurrentTime >= mTotalTime)))
 			{
 				dispatchEventWith(AsEvent.REMOVE_FROM_JUGGLER);
-				// FIXME: Block of code is cut here
+				NOT.IMPLEMENTED();
 			}
 		}
 		public virtual bool getIsComplete()

@@ -59,7 +59,7 @@ namespace starling.textures
 		}
 		public virtual void draw(AsDisplayObject _object, int antiAliasing)
 		{
-			// FIXME: Block of code is cut here
+			NOT.IMPLEMENTED();
 		}
 		public virtual void draw(AsDisplayObject _object)
 		{

@@ -164,10 +164,6 @@
     <Compile Include="Code\Api\bc\flash\ui\AsMultitouch.cs" />
     <Compile Include="Code\Api\bc\flash\ui\AsMultitouchInputMode.cs" />
     <Compile Include="Code\Api\bc\flash\utils\AsEndian.cs" />
-    <Compile Include="Code\Api\bc\flash\xml\AsXML.cs" />
-    <Compile Include="Code\Api\bc\flash\xml\AsXMLAttribute.cs" />
-    <Compile Include="Code\Api\bc\flash\xml\AsXMLElement.cs" />
-    <Compile Include="Code\Api\bc\flash\xml\AsXMLList.cs" />
     <Compile Include="Code\Converted\AsCharLocation.cs" />
     <Compile Include="Code\Converted\com\bar\AsFoo.cs" />
     <Compile Include="Code\Converted\com\foo\AsFoo.cs" />

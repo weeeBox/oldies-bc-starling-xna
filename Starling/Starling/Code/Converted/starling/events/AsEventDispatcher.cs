@@ -97,7 +97,7 @@ namespace starling.events
 			if((numListeners) != 0)
 			{
 				_event.setCurrentTarget(this);
-				// FIXME: Block of code is cut here
+				NOT.IMPLEMENTED();
 				return _event.getStopsPropagation();
 			}
 			else

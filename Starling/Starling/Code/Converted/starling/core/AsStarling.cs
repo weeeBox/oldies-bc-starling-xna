@@ -107,7 +107,7 @@ namespace starling.core
 				mStage3D.addEventListener(AsErrorEvent.ERROR, onStage3DError, false, 1, true);
 				try
 				{
-					// FIXME: Block of code is cut here
+					NOT.IMPLEMENTED();
 					{
 						mStage3D.requestContext3D(renderMode);
 					}
@@ -204,7 +204,7 @@ namespace starling.core
 			{
 				return;
 			}
-			// FIXME: Block of code is cut here
+			NOT.IMPLEMENTED();
 		}
 		public virtual void nextFrame()
 		{
@@ -513,7 +513,7 @@ namespace starling.core
 		}
 		public virtual void showStatsAt(String hAlign, String vAlign)
 		{
-			// FIXME: Block of code is cut here
+			NOT.IMPLEMENTED();
 		}
 		public virtual void showStatsAt(String hAlign)
 		{

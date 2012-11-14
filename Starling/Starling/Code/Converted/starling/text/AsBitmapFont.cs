@@ -31,7 +31,7 @@ namespace starling.text
 		{
 			if(((texture == null) && (fontXml == null)))
 			{
-				// FIXME: Block of code is cut here
+				NOT.IMPLEMENTED();
 			}
 			mName = "unknown";
 			mLineHeight = mSize = mBaseline = 14;

@@ -80,13 +80,13 @@ namespace starling.core
 				while(((mQueue.getLength() > 0) && (sProcessedTouchIDs.indexOf((AsObject)(mQueue[(mQueue.getLength() - 1)][0])) == -1)))
 				{
 					AsArray touchArgs = mQueue.pop();
-					// FIXME: Block of code is cut here
+					NOT.IMPLEMENTED();
 					touch = getCurrentTouch(touchID);
 					if((((touch != null) && (touch.getPhase() == AsTouchPhase.HOVER)) && (touch.getTarget() != null)))
 					{
 						sHoveringTouchData.push(new AsTouchData(touch, touch.getTarget()));
 					}
-					// FIXME: Block of code is cut here
+					NOT.IMPLEMENTED();
 					sProcessedTouchIDs.push(touchID);
 				}
 				AsVector<AsTouchData> __touchDatas_ = sHoveringTouchData;
@@ -124,7 +124,7 @@ namespace starling.core
 		}
 		public virtual void enqueue(int touchID, String phase, float globalX, float globalY)
 		{
-			// FIXME: Block of code is cut here
+			NOT.IMPLEMENTED();
 			if(((mCtrlDown && getSimulateMultitouch()) && (touchID == 0)))
 			{
 				mTouchMarker.moveMarker(globalX, globalY, mShiftDown);

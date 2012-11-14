@@ -74,7 +74,7 @@ namespace starling.events
 		}
 		public virtual String toString()
 		{
-			// FIXME: Block of code is cut here
+			NOT.IMPLEMENTED();
 			return null;
 		}
 		public virtual AsTouch clone()

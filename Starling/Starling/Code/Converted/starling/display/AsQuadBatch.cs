@@ -455,7 +455,7 @@ namespace starling.display
 			}
 			if(isRootObject)
 			{
-				// FIXME: Block of code is cut here
+				NOT.IMPLEMENTED();
 			}
 			return quadBatchID;
 		}
@@ -489,11 +489,11 @@ namespace starling.display
 		}
 		private static void registerPrograms()
 		{
-			// FIXME: Block of code is cut here
+			NOT.IMPLEMENTED();
 		}
 		private static String getImageProgramName(bool tinted, bool mipMap, bool repeat, String format, String smoothing)
 		{
-			// FIXME: Block of code is cut here
+			NOT.IMPLEMENTED();
 			return null;
 		}
 		private static String getImageProgramName(bool tinted, bool mipMap, bool repeat, String format)
