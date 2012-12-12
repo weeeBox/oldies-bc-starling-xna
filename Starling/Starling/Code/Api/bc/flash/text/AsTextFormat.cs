@@ -7,51 +7,51 @@ namespace bc.flash.text
 {
 	public class AsTextFormat : AsObject
 	{
-		public AsTextFormat(String font, AsObject size, AsObject color, AsObject bold, AsObject italic, AsObject underline, String url, String target, String align, AsObject leftMargin, AsObject rightMargin, AsObject indent, AsObject leading)
+		public AsTextFormat(String font, Object size, Object color, Object bold, Object italic, Object underline, String url, String target, String align, Object leftMargin, Object rightMargin, Object indent, Object leading)
 		{
 			throw new AsNotImplementedError();
 		}
-		public AsTextFormat(String font, AsObject size, AsObject color, AsObject bold, AsObject italic, AsObject underline, String url, String target, String align, AsObject leftMargin, AsObject rightMargin, AsObject indent)
+		public AsTextFormat(String font, Object size, Object color, Object bold, Object italic, Object underline, String url, String target, String align, Object leftMargin, Object rightMargin, Object indent)
 		 : this(font, size, color, bold, italic, underline, url, target, align, leftMargin, rightMargin, indent, null)
 		{
 		}
-		public AsTextFormat(String font, AsObject size, AsObject color, AsObject bold, AsObject italic, AsObject underline, String url, String target, String align, AsObject leftMargin, AsObject rightMargin)
+		public AsTextFormat(String font, Object size, Object color, Object bold, Object italic, Object underline, String url, String target, String align, Object leftMargin, Object rightMargin)
 		 : this(font, size, color, bold, italic, underline, url, target, align, leftMargin, rightMargin, null, null)
 		{
 		}
-		public AsTextFormat(String font, AsObject size, AsObject color, AsObject bold, AsObject italic, AsObject underline, String url, String target, String align, AsObject leftMargin)
+		public AsTextFormat(String font, Object size, Object color, Object bold, Object italic, Object underline, String url, String target, String align, Object leftMargin)
 		 : this(font, size, color, bold, italic, underline, url, target, align, leftMargin, null, null, null)
 		{
 		}
-		public AsTextFormat(String font, AsObject size, AsObject color, AsObject bold, AsObject italic, AsObject underline, String url, String target, String align)
+		public AsTextFormat(String font, Object size, Object color, Object bold, Object italic, Object underline, String url, String target, String align)
 		 : this(font, size, color, bold, italic, underline, url, target, align, null, null, null, null)
 		{
 		}
-		public AsTextFormat(String font, AsObject size, AsObject color, AsObject bold, AsObject italic, AsObject underline, String url, String target)
+		public AsTextFormat(String font, Object size, Object color, Object bold, Object italic, Object underline, String url, String target)
 		 : this(font, size, color, bold, italic, underline, url, target, null, null, null, null, null)
 		{
 		}
-		public AsTextFormat(String font, AsObject size, AsObject color, AsObject bold, AsObject italic, AsObject underline, String url)
+		public AsTextFormat(String font, Object size, Object color, Object bold, Object italic, Object underline, String url)
 		 : this(font, size, color, bold, italic, underline, url, null, null, null, null, null, null)
 		{
 		}
-		public AsTextFormat(String font, AsObject size, AsObject color, AsObject bold, AsObject italic, AsObject underline)
+		public AsTextFormat(String font, Object size, Object color, Object bold, Object italic, Object underline)
 		 : this(font, size, color, bold, italic, underline, null, null, null, null, null, null, null)
 		{
 		}
-		public AsTextFormat(String font, AsObject size, AsObject color, AsObject bold, AsObject italic)
+		public AsTextFormat(String font, Object size, Object color, Object bold, Object italic)
 		 : this(font, size, color, bold, italic, null, null, null, null, null, null, null, null)
 		{
 		}
-		public AsTextFormat(String font, AsObject size, AsObject color, AsObject bold)
+		public AsTextFormat(String font, Object size, Object color, Object bold)
 		 : this(font, size, color, bold, null, null, null, null, null, null, null, null, null)
 		{
 		}
-		public AsTextFormat(String font, AsObject size, AsObject color)
+		public AsTextFormat(String font, Object size, Object color)
 		 : this(font, size, color, null, null, null, null, null, null, null, null, null, null)
 		{
 		}
-		public AsTextFormat(String font, AsObject size)
+		public AsTextFormat(String font, Object size)
 		 : this(font, size, null, null, null, null, null, null, null, null, null, null, null)
 		{
 		}
@@ -71,35 +71,35 @@ namespace bc.flash.text
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual AsObject getBlockIndent()
+		public virtual Object getBlockIndent()
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void setBlockIndent(AsObject _value)
+		public virtual void setBlockIndent(Object _value)
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual AsObject getBold()
+		public virtual Object getBold()
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void setBold(AsObject _value)
+		public virtual void setBold(Object _value)
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual AsObject getBullet()
+		public virtual Object getBullet()
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void setBullet(AsObject _value)
+		public virtual void setBullet(Object _value)
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual AsObject getColor()
+		public virtual Object getColor()
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void setColor(AsObject _value)
+		public virtual void setColor(Object _value)
 		{
 			throw new AsNotImplementedError();
 		}
@@ -119,67 +119,67 @@ namespace bc.flash.text
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual AsObject getIndent()
+		public virtual Object getIndent()
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void setIndent(AsObject _value)
+		public virtual void setIndent(Object _value)
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual AsObject getItalic()
+		public virtual Object getItalic()
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void setItalic(AsObject _value)
+		public virtual void setItalic(Object _value)
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual AsObject getKerning()
+		public virtual Object getKerning()
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void setKerning(AsObject _value)
+		public virtual void setKerning(Object _value)
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual AsObject getLeading()
+		public virtual Object getLeading()
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void setLeading(AsObject _value)
+		public virtual void setLeading(Object _value)
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual AsObject getLeftMargin()
+		public virtual Object getLeftMargin()
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void setLeftMargin(AsObject _value)
+		public virtual void setLeftMargin(Object _value)
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual AsObject getLetterSpacing()
+		public virtual Object getLetterSpacing()
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void setLetterSpacing(AsObject _value)
+		public virtual void setLetterSpacing(Object _value)
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual AsObject getRightMargin()
+		public virtual Object getRightMargin()
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void setRightMargin(AsObject _value)
+		public virtual void setRightMargin(Object _value)
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual AsObject getSize()
+		public virtual Object getSize()
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void setSize(AsObject _value)
+		public virtual void setSize(Object _value)
 		{
 			throw new AsNotImplementedError();
 		}
@@ -199,11 +199,11 @@ namespace bc.flash.text
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual AsObject getUnderline()
+		public virtual Object getUnderline()
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void setUnderline(AsObject _value)
+		public virtual void setUnderline(Object _value)
 		{
 			throw new AsNotImplementedError();
 		}

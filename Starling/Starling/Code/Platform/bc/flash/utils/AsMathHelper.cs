@@ -10,19 +10,19 @@ namespace bc.flash.utils
 		public static float MAX_NUMBER = 0x7fffffff;
 		public static float toRadians(float degrees)
 		{
-			return (0.0174532925199433f * degrees);
+			return 0.0174532925199433f * degrees;
 		}
 		public static float toDegrees(float radians)
 		{
-			return (57.2957795130823209f * radians);
+			return 57.2957795130823209f * radians;
 		}
 		public static bool epsilonZero(float a)
 		{
-			return (AsMath.abs(a) < epsilon);
+			return AsMath.abs(a) < epsilon;
 		}
 		public static bool epsilonEquals(float a, float b)
 		{
-			return (AsMath.abs((a - b)) < epsilon);
+			return AsMath.abs(a - b) < epsilon;
 		}
 	}
 }

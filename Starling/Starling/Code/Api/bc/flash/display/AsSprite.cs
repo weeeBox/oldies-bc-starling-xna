@@ -26,7 +26,7 @@ namespace bc.flash.display
 		}
 		public virtual void setUseHandCursor(bool _value)
 		{
-			if((_value == mUseHandCursor))
+			if(_value == mUseHandCursor)
 			{
 				return;
 			}

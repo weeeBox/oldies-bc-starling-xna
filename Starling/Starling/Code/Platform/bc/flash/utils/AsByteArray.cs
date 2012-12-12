@@ -8,6 +8,12 @@ namespace bc.flash.utils
 {
 	public class AsByteArray : AsObject
 	{
+        public byte this[int i]
+        {
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
+        }
+
 		public virtual uint getBytesAvailable()
 		{
 			throw new AsNotImplementedError();
@@ -180,5 +186,11 @@ namespace bc.flash.utils
 		{
 			throw new AsNotImplementedError();
 		}
+
+        public void uncompress()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
 	}
 }

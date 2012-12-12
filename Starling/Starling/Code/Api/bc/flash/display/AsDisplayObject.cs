@@ -34,7 +34,7 @@ namespace bc.flash.display
 		private static AsMatrix sTargetMatrix = new AsMatrix();
 		public AsDisplayObject()
 		{
-			if((AsGlobal.getQualifiedClassName(this) == "starling.display::DisplayObject"))
+			if(AsGlobal.getQualifiedClassName(this) == "starling.display::DisplayObject")
 			{
 				throw new AsAbstractClassError();
 			}
@@ -73,7 +73,7 @@ namespace bc.flash.display
 		}
 		public virtual AsDisplayObject hitTest(AsPoint localPoint, bool forTouch)
 		{
-			if((forTouch && (!(mVisible) || !(mTouchable))))
+			if(forTouch && (!mVisible || !mTouchable))
 			{
 				return null;
 			}
@@ -98,7 +98,7 @@ namespace bc.flash.display
 			}
 			sHelperPoint.x = x;
 			sHelperPoint.y = y;
-			return (hitTest(sHelperPoint, true) != null);
+			return hitTest(sHelperPoint, true) != null;
 		}
 		public virtual bool hitTestPoint(float x, float y)
 		{
@@ -115,27 +115,27 @@ namespace bc.flash.display
 				resultMatrix = new AsMatrix();
 			}
 			AsDisplayObject currentObject = this;
-			if((targetSpace == this))
+			if(targetSpace == this)
 			{
 				return resultMatrix;
 			}
 			else
 			{
-				if(((targetSpace == mParent) || ((targetSpace == null) && (mParent == null))))
+				if(targetSpace == mParent || (targetSpace == null && mParent == null))
 				{
-					if(((mPivotX != 0.0f) || (mPivotY != 0.0f)))
+					if(mPivotX != 0.0f || mPivotY != 0.0f)
 					{
 						resultMatrix.translate(-mPivotX, -mPivotY);
 					}
-					if(((mScaleX != 1.0f) || (mScaleY != 1.0f)))
+					if(mScaleX != 1.0f || mScaleY != 1.0f)
 					{
 						resultMatrix.scale(mScaleX, mScaleY);
 					}
-					if((mRotation != 0.0f))
+					if(mRotation != 0.0f)
 					{
 						resultMatrix.rotate(AsMathHelper.toRadians(mRotation));
 					}
-					if(((mX != 0.0f) || (mY != 0.0f)))
+					if(mX != 0.0f || mY != 0.0f)
 					{
 						resultMatrix.translate(mX, mY);
 					}
@@ -143,7 +143,7 @@ namespace bc.flash.display
 				}
 				else
 				{
-					if((targetSpace == null))
+					if(targetSpace == null)
 					{
 						currentObject = this;
 						while(currentObject != null)
@@ -156,7 +156,7 @@ namespace bc.flash.display
 					}
 					else
 					{
-						if((targetSpace.mParent == this))
+						if(targetSpace.mParent == this)
 						{
 							targetSpace.getTransformationMatrix(this, resultMatrix);
 							resultMatrix.invert();
@@ -173,11 +173,11 @@ namespace bc.flash.display
 				currentObject = currentObject.getParent();
 			}
 			currentObject = targetSpace;
-			while(((currentObject != null) && (sAncestors.indexOf(currentObject) == -1)))
+			while(currentObject != null && sAncestors.indexOf(currentObject) == -1)
 			{
 				currentObject = currentObject.getParent();
 			}
-			if((currentObject == null))
+			if(currentObject == null)
 			{
 				throw new AsArgumentError("Object not connected to target");
 			}
@@ -186,7 +186,7 @@ namespace bc.flash.display
 				commonParent = currentObject;
 			}
 			currentObject = this;
-			while((currentObject != commonParent))
+			while(currentObject != commonParent)
 			{
 				currentObject.getTransformationMatrix(currentObject.mParent, sHelperMatrix);
 				resultMatrix.concat(sHelperMatrix);
@@ -194,7 +194,7 @@ namespace bc.flash.display
 			}
 			sTargetMatrix.identity();
 			currentObject = targetSpace;
-			while((currentObject != commonParent))
+			while(currentObject != commonParent)
 			{
 				currentObject.getTransformationMatrix(currentObject.mParent, sHelperMatrix);
 				sTargetMatrix.concat(sHelperMatrix);
@@ -242,7 +242,7 @@ namespace bc.flash.display
 			if(_event is AsTouchEvent)
 			{
 				AsTouchEvent touchEvent = ((_event is AsTouchEvent) ? ((AsTouchEvent)(_event)) : null);
-				if((touchEvent.getTimestamp() == mLastTouchTimestamp))
+				if(touchEvent.getTimestamp() == mLastTouchTimestamp)
 				{
 					return;
 				}
@@ -269,9 +269,9 @@ namespace bc.flash.display
 		{
 			mScaleX = 1.0f;
 			float actualWidth = getWidth();
-			if((actualWidth != 0.0f))
+			if(actualWidth != 0.0f)
 			{
-				setScaleX((_value / actualWidth));
+				setScaleX(_value / actualWidth);
 			}
 			else
 			{
@@ -286,9 +286,9 @@ namespace bc.flash.display
 		{
 			mScaleY = 1.0f;
 			float actualHeight = getHeight();
-			if((actualHeight != 0.0f))
+			if(actualHeight != 0.0f)
 			{
-				setScaleY((_value / actualHeight));
+				setScaleY(_value / actualHeight);
 			}
 			else
 			{
@@ -358,13 +358,13 @@ namespace bc.flash.display
 		}
 		public virtual void setRotation(float _value)
 		{
-			while((_value < -180))
+			while(_value < -180)
 			{
-				_value = (_value + 360);
+				_value = _value + 360;
 			}
-			while((_value > 180))
+			while(_value > 180)
 			{
-				_value = (_value - 360);
+				_value = _value - 360;
 			}
 			mRotation = _value;
 		}
@@ -374,7 +374,7 @@ namespace bc.flash.display
 		}
 		public virtual void setAlpha(float _value)
 		{
-			mAlpha = (((_value < 0.0f)) ? (0.0f) : ((((_value > 1.0f)) ? (1.0f) : (_value))));
+			mAlpha = ((_value < 0.0f) ? (0.0f) : (((_value > 1.0f) ? (1.0f) : (_value))));
 		}
 		public virtual bool getVisible()
 		{

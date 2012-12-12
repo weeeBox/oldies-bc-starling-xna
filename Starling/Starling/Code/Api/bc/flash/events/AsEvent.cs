@@ -70,7 +70,7 @@ namespace bc.flash.events
 		}
 		public virtual String toString()
 		{
-			return ("Event " + mType);
+			return "Event " + mType;
 		}
 		public virtual void setTarget(AsEventDispatcher target)
 		{

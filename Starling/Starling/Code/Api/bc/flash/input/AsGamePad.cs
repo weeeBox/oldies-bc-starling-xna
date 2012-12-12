@@ -12,7 +12,7 @@ namespace bc.flash.input
 		private AsThumbStick mLeftStick;
 		private float mLeftTrigger;
 		private float mRightTrigger;
-		private static AsVector<AsGamePad> mGamePads = new AsVector<AsGamePad>(new AsGamePad(0), new AsGamePad(1), new AsGamePad(2), new AsGamePad(3));
+		private static AsVector<AsGamePad> mGamePads = AsVector<AsGamePad>.create(new AsGamePad(0), new AsGamePad(1), new AsGamePad(2), new AsGamePad(3));
 		public static AsGamePad player(uint index)
 		{
 			return mGamePads[index];

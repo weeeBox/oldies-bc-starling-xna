@@ -5,6 +5,7 @@ using bc.flash.display;
 using bc.flash.error;
 using bc.flash.geom;
 using bc.flash.resources;
+using bc.flash.utils;
 
 namespace bc.flash.display
 {
@@ -94,6 +95,26 @@ namespace bc.flash.display
         public virtual int getHeight()
         {
             return mHeight;
+        }
+
+        public AsRectangle getRect()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void copyPixels(AsBitmapData data, AsRectangle asRectangle, AsPoint sOrigin)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void fillRect(AsRectangle bounds, uint p)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void setPixels(AsRectangle rect, AsByteArray bytes)
+        {
+            throw new NotImplementedException();
         }
     }
 }

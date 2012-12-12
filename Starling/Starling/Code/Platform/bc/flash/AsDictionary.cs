@@ -29,6 +29,11 @@ namespace bc.flash
             }
         }
 
+        public bool containsKey(String key)
+        {
+            return dictionary.ContainsKey(key);
+        }
+
         public void remove(String key)
         {
             if (dictionary.ContainsKey(key))

@@ -19,10 +19,19 @@ namespace bc.flash
             init(elements);
         }
 
+        public AsVector(int length, bool _fixed) : this((uint)length, _fixed)
+        {
+        }
+
         public AsVector(uint length, bool _fixed)
         {
             internalList = new List<T>((int)length);
             setLength(length);
+        }
+
+        public AsVector(int length)
+            : this((uint)length, false)
+        {
         }
 
         public AsVector(uint length)
@@ -97,6 +106,11 @@ namespace bc.flash
             }
         }
 
+        public void setLength(int newLength)
+        {
+            setLength((uint)newLength);
+        }
+
         public virtual int indexOf(T searchElement, int fromIndex)
         {
             return internalList.IndexOf(searchElement, fromIndex);
@@ -135,9 +149,20 @@ namespace bc.flash
             internalList.RemoveAt(lastIndex);
             return lastElement;
         }
-        public virtual int push(T arg)
+        public virtual int push(params T[] args)
         {
-            internalList.Add(arg);
+            if (args.Length == 1)
+            {
+                internalList.Add(args[0]);
+            }
+            else if (args.Length > 1)
+            {
+                foreach (T arg in args)
+                {
+                    internalList.Add(arg);
+                }
+            }
+            
             return internalList.Count;
         }
         public virtual AsVector<T> reverse()
@@ -238,6 +263,16 @@ namespace bc.flash
                 int result = (int)sorter(x, y);
                 return result;
             }
+        }
+
+        public void unshift(params Object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static AsVector<T> create(params T[] args)
+        {
+            throw new NotImplementedException();
         }
     }    
 }

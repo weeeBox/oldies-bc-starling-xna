@@ -8,7 +8,7 @@ namespace bc.flash.net
 	{
 		private String mUrl;
 		private String mContentType;
-		private AsObject mData;
+		private Object mData;
 		private String mDigest;
 		private String mMethod;
 		public AsURLRequest(String url)
@@ -27,13 +27,13 @@ namespace bc.flash.net
 		{
 			mContentType = _value;
 		}
-		public AsObject getData()
+		public Object getData()
 		{
-			return (AsObject)(mData);
+			return mData;
 		}
-		public void setData(AsObject _value)
+		public void setData(Object _value)
 		{
-			mData = (AsObject)(_value);
+			mData = _value;
 		}
 		public String getDigest()
 		{

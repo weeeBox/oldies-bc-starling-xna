@@ -127,5 +127,15 @@ namespace bc.flash
         {
             return AsGlobal.parseBool(str);
         }
+
+        public static int charCodeAt(String str, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static String fromCharCode(params byte[] codes)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

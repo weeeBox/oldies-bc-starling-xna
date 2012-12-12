@@ -37,7 +37,7 @@ namespace bc.flash.geom
 		}
 		public virtual float getBottom()
 		{
-			return (y + height);
+			return y + height;
 		}
 		public virtual void setBottom(float _value)
 		{
@@ -45,7 +45,7 @@ namespace bc.flash.geom
 		}
 		public virtual AsPoint getBottomRight()
 		{
-			return new AsPoint((x + width), (y + height));
+			return new AsPoint(x + width, y + height);
 		}
 		public virtual void setBottomRight(AsPoint _value)
 		{
@@ -69,7 +69,7 @@ namespace bc.flash.geom
 		}
 		public virtual bool equals(AsRectangle toCompare)
 		{
-			return ((((x == toCompare.x) && (y == toCompare.y)) && (width == toCompare.width)) && (height == toCompare.height));
+			return x == toCompare.x && y == toCompare.y && width == toCompare.width && height == toCompare.height;
 		}
 		public virtual void inflate(float dx, float dy)
 		{
@@ -109,7 +109,7 @@ namespace bc.flash.geom
 		}
 		public virtual float getRight()
 		{
-			return (x + width);
+			return x + width;
 		}
 		public virtual void setRight(float _value)
 		{
@@ -158,7 +158,7 @@ namespace bc.flash.geom
 		}
 		public virtual String toString()
 		{
-			return (((((((("(x=" + x) + ", y=") + y) + ", w=") + width) + ", h=") + height) + ")");
+			return "(x=" + x + ", y=" + y + ", w=" + width + ", h=" + height + ")";
 		}
 	}
 }

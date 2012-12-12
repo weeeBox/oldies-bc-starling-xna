@@ -29,6 +29,9 @@ namespace bc.flash.events
 		private bool mShiftKey;
 		private bool mCtrlKey;
 		private float mTimestamp;
+		private float mPressure;
+		private float mSizeX;
+		private float mSizeY;
 		public AsTouchEvent(String type, AsVector<AsTouch> touches, bool shiftKey, bool ctrlKey, bool bubbles)
 		 : base(type, bubbles)
 		{
@@ -38,9 +41,9 @@ namespace bc.flash.events
 			mTimestamp = -1.0f;
 			int numTouches = (int)(touches.getLength());
 			int i = 0;
-			for (; (i < numTouches); ++i)
+			for (; i < numTouches; ++i)
 			{
-				if((touches[i].getTimestamp() > mTimestamp))
+				if(touches[i].getTimestamp() > mTimestamp)
 				{
 					mTimestamp = touches[i].getTimestamp();
 				}
@@ -63,12 +66,12 @@ namespace bc.flash.events
 			AsVector<AsTouch> touchesFound = new AsVector<AsTouch>();
 			int numTouches = (int)(mTouches.getLength());
 			int i = 0;
-			for (; (i < numTouches); ++i)
+			for (; i < numTouches; ++i)
 			{
 				AsTouch touch = mTouches[i];
-				bool correctTarget = ((touch.getTarget() == target) || (target is AsDisplayObjectContainer && ((target is AsDisplayObjectContainer) ? ((AsDisplayObjectContainer)(target)) : null).contains(touch.getTarget())));
-				bool correctPhase = ((phase == null) || (phase == touch.getPhase()));
-				if((correctTarget && correctPhase))
+				bool correctTarget = (touch.getTarget() == target) || ((target is AsDisplayObjectContainer) && ((target is AsDisplayObjectContainer) ? ((AsDisplayObjectContainer)(target)) : null).contains(touch.getTarget()));
+				bool correctPhase = phase == null || phase == touch.getPhase();
+				if(correctTarget && correctPhase)
 				{
 					touchesFound.push(touch);
 				}
@@ -82,7 +85,7 @@ namespace bc.flash.events
 		public virtual AsTouch getTouch(AsDisplayObject target, String phase)
 		{
 			AsVector<AsTouch> touchesFound = getTouches(target, phase);
-			if((touchesFound.getLength() > 0))
+			if(touchesFound.getLength() > 0)
 			{
 				return touchesFound[0];
 			}
@@ -97,17 +100,17 @@ namespace bc.flash.events
 		}
 		public virtual bool interactsWith(AsDisplayObject target)
 		{
-			if((getTouch(target) == null))
+			if(getTouch(target) == null)
 			{
 				return false;
 			}
 			else
 			{
 				AsVector<AsTouch> touches = getTouches(target);
-				int i = (int)((touches.getLength() - 1));
-				for (; (i >= 0); --i)
+				int i = (int)(touches.getLength() - 1);
+				for (; i >= 0; --i)
 				{
-					if((touches[i].getPhase() != AsTouchPhase.ENDED))
+					if(touches[i].getPhase() != AsTouchPhase.ENDED)
 					{
 						return true;
 					}
@@ -130,6 +133,18 @@ namespace bc.flash.events
 		public virtual bool getCtrlKey()
 		{
 			return mCtrlKey;
+		}
+		public virtual float getPressure()
+		{
+			return mPressure;
+		}
+		public virtual float getSizeX()
+		{
+			return mSizeX;
+		}
+		public virtual float getSizeY()
+		{
+			return mSizeY;
 		}
 		public virtual float getStageX()
 		{

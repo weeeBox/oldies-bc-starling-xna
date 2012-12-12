@@ -22,7 +22,7 @@ namespace bc.flash.display
 		private static AsEvent sRemovedFromStageEvent = new AsEvent(AsEvent.REMOVED_FROM_STAGE);
 		public AsDisplayObjectContainer()
 		{
-			if((AsGlobal.getQualifiedClassName(this) == "DisplayObjectContainer"))
+			if(AsGlobal.getQualifiedClassName(this) == "DisplayObjectContainer")
 			{
 				throw new AsAbstractClassError();
 			}
@@ -31,7 +31,7 @@ namespace bc.flash.display
 		{
 			int childsCount = getNumChildren();
 			int i = 0;
-			for (; (i < childsCount); ++i)
+			for (; i < childsCount; ++i)
 			{
 				mChildren[i].dispose();
 			}
@@ -43,11 +43,11 @@ namespace bc.flash.display
 		}
 		public virtual void addChildAt(AsDisplayObject child, int index)
 		{
-			if((mChildren == null))
+			if(mChildren == null)
 			{
 				mChildren = new AsVector<AsDisplayObject>();
 			}
-			if(((index >= 0) && (index <= getNumChildren())))
+			if(index >= 0 && index <= getNumChildren())
 			{
 				child.removeFromParent();
 				mChildren.splice(index, (uint)(0), child);
@@ -66,7 +66,7 @@ namespace bc.flash.display
 		public virtual void removeChild(AsDisplayObject child, bool dispose)
 		{
 			int childIndex = getChildIndex(child);
-			if((childIndex != -1))
+			if(childIndex != -1)
 			{
 				removeChildAt(childIndex, dispose);
 			}
@@ -77,7 +77,7 @@ namespace bc.flash.display
 		}
 		public virtual void removeChildAt(int index, bool dispose)
 		{
-			if(((index >= 0) && (index < getNumChildren())))
+			if(index >= 0 && index < getNumChildren())
 			{
 				AsDisplayObject child = mChildren[index];
 				child.dispatchEvent(sRemovedEvent);
@@ -103,12 +103,12 @@ namespace bc.flash.display
 		}
 		public virtual void removeChildren(int beginIndex, int endIndex, bool dispose)
 		{
-			if(((endIndex < 0) || (endIndex >= getNumChildren())))
+			if(endIndex < 0 || endIndex >= getNumChildren())
 			{
-				endIndex = (getNumChildren() - 1);
+				endIndex = getNumChildren() - 1;
 			}
 			int i = beginIndex;
-			for (; (i <= endIndex); ++i)
+			for (; i <= endIndex; ++i)
 			{
 				removeChildAt(beginIndex, dispose);
 			}
@@ -127,7 +127,7 @@ namespace bc.flash.display
 		}
 		public virtual AsDisplayObject getChildAt(int index)
 		{
-			if(((index >= 0) && (index < getNumChildren())))
+			if(index >= 0 && index < getNumChildren())
 			{
 				return mChildren[index];
 			}
@@ -140,9 +140,9 @@ namespace bc.flash.display
 		{
 			int childsCount = getNumChildren();
 			int i = 0;
-			for (; (i < childsCount); ++i)
+			for (; i < childsCount; ++i)
 			{
-				if((mChildren[i].getName() == name))
+				if(mChildren[i].getName() == name)
 				{
 					return mChildren[i];
 				}
@@ -156,7 +156,7 @@ namespace bc.flash.display
 		public virtual void setChildIndex(AsDisplayObject child, int index)
 		{
 			int oldIndex = getChildIndex(child);
-			if((oldIndex == -1))
+			if(oldIndex == -1)
 			{
 				throw new AsArgumentError("Not a child of this container");
 			}
@@ -167,7 +167,7 @@ namespace bc.flash.display
 		{
 			int index1 = getChildIndex(child1);
 			int index2 = getChildIndex(child2);
-			if(((index1 == -1) || (index2 == -1)))
+			if(index1 == -1 || index2 == -1)
 			{
 				throw new AsArgumentError("Not a child of this container");
 			}
@@ -182,23 +182,23 @@ namespace bc.flash.display
 		}
 		public virtual bool contains(AsDisplayObject child)
 		{
-			if((child == this))
+			if(child == this)
 			{
 				return true;
 			}
 			int childsCount = getNumChildren();
 			int i = 0;
-			for (; (i < childsCount); ++i)
+			for (; i < childsCount; ++i)
 			{
 				AsDisplayObject currentChild = mChildren[i];
 				AsDisplayObjectContainer currentChildContainer = ((currentChild is AsDisplayObjectContainer) ? ((AsDisplayObjectContainer)(currentChild)) : null);
-				if(((currentChildContainer != null) && currentChildContainer.contains(child)))
+				if(currentChildContainer != null && currentChildContainer.contains(child))
 				{
 					return true;
 				}
 				else
 				{
-					if((currentChild == child))
+					if(currentChild == child)
 					{
 						return true;
 					}
@@ -208,12 +208,12 @@ namespace bc.flash.display
 		}
 		public override AsRectangle getBounds(AsDisplayObject targetSpace, AsRectangle resultRect)
 		{
-			if((resultRect == null))
+			if(resultRect == null)
 			{
 				resultRect = new AsRectangle();
 			}
 			int childsCount = getNumChildren();
-			if((childsCount == 0))
+			if(childsCount == 0)
 			{
 				getTransformationMatrix(targetSpace, sHelperMatrix);
 				AsGlobal.transformCoords(sHelperMatrix, 0.0f, 0.0f, sHelperPoint);
@@ -224,7 +224,7 @@ namespace bc.flash.display
 			}
 			else
 			{
-				if((childsCount == 1))
+				if(childsCount == 1)
 				{
 					return mChildren[0].getBounds(targetSpace, resultRect);
 				}
@@ -235,18 +235,18 @@ namespace bc.flash.display
 					float minY = AsMathHelper.MAX_NUMBER;
 					float maxY = -AsMathHelper.MAX_NUMBER;
 					int i = 0;
-					for (; (i < childsCount); ++i)
+					for (; i < childsCount; ++i)
 					{
 						mChildren[i].getBounds(targetSpace, resultRect);
-						minX = (((minX < resultRect.x)) ? (minX) : (resultRect.x));
-						maxX = (((maxX > resultRect.getRight())) ? (maxX) : (resultRect.getRight()));
-						minY = (((minY < resultRect.y)) ? (minY) : (resultRect.y));
-						maxY = (((maxY > resultRect.getBottom())) ? (maxY) : (resultRect.getBottom()));
+						minX = ((minX < resultRect.x) ? (minX) : (resultRect.x));
+						maxX = ((maxX > resultRect.getRight()) ? (maxX) : (resultRect.getRight()));
+						minY = ((minY < resultRect.y) ? (minY) : (resultRect.y));
+						maxY = ((maxY > resultRect.getBottom()) ? (maxY) : (resultRect.getBottom()));
 					}
 					resultRect.x = minX;
 					resultRect.y = minY;
-					resultRect.width = (maxX - minX);
-					resultRect.height = (maxY - minY);
+					resultRect.width = maxX - minX;
+					resultRect.height = maxY - minY;
 					return resultRect;
 				}
 			}
@@ -257,15 +257,15 @@ namespace bc.flash.display
 		}
 		public override AsDisplayObject hitTest(AsPoint localPoint, bool forTouch)
 		{
-			if((forTouch && (!(getVisible()) || !(getTouchable()))))
+			if(forTouch && (!getVisible() || !getTouchable()))
 			{
 				return null;
 			}
 			float localX = localPoint.x;
 			float localY = localPoint.y;
 			int childsCount = getNumChildren();
-			int i = (childsCount - 1);
-			for (; (i >= 0); --i)
+			int i = childsCount - 1;
+			for (; i >= 0; --i)
 			{
 				AsDisplayObject child = mChildren[i];
 				getTransformationMatrix(child, sHelperMatrix);
@@ -284,13 +284,13 @@ namespace bc.flash.display
 		}
 		public override void render(AsRenderSupport support, float alpha)
 		{
-			alpha = (alpha * this.getAlpha());
+			alpha = alpha * this.getAlpha();
 			int childsCount = getNumChildren();
 			int i = 0;
-			for (; (i < childsCount); ++i)
+			for (; i < childsCount; ++i)
 			{
 				AsDisplayObject child = mChildren[i];
-				if(((((child.getAlpha() != 0.0f) && child.getVisible()) && (child.getScaleX() != 0.0f)) && (child.getScaleY() != 0.0f)))
+				if(child.getAlpha() != 0.0f && child.getVisible() && child.getScaleX() != 0.0f && child.getScaleY() != 0.0f)
 				{
 					support.pushMatrix();
 					support.transform(child.getTransform().getMatrix());
@@ -312,7 +312,7 @@ namespace bc.flash.display
 			getChildEventListeners(this, _event.getType(), sListenersList);
 			int numListeners = (int)(sListenersList.getLength());
 			int i = 0;
-			for (; (i < numListeners); ++i)
+			for (; i < numListeners; ++i)
 			{
 				sListenersList[i].dispatchEvent(_event);
 			}
@@ -325,12 +325,12 @@ namespace bc.flash.display
 			{
 				listeners.push(_object);
 			}
-			if(((container != null) && (container.getNumChildren() > 0)))
+			if(container != null && container.getNumChildren() > 0)
 			{
 				AsVector<AsDisplayObject> children = container.mChildren;
 				int numChildren = (int)(children.getLength());
 				int i = 0;
-				for (; (i < numChildren); ++i)
+				for (; i < numChildren; ++i)
 				{
 					getChildEventListeners(children[i], eventType, listeners);
 				}
@@ -338,7 +338,7 @@ namespace bc.flash.display
 		}
 		public virtual int getNumChildren()
 		{
-			return (((mChildren == null)) ? (0) : (((int)(mChildren.getLength()))));
+			return ((mChildren == null) ? (0) : (((int)(mChildren.getLength()))));
 		}
 	}
 }

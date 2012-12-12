@@ -44,5 +44,10 @@ namespace bc.flash
         {
             return "Object";
         }
+
+        public static AsObject createLiteralObject(params Object[] args)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -36,21 +36,21 @@ namespace bc.flash.display
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void gotoAndPlay(AsObject frame, String scene)
+		public virtual void gotoAndPlay(Object frame, String scene)
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void gotoAndPlay(AsObject frame)
+		public virtual void gotoAndPlay(Object frame)
 		{
-			gotoAndPlay((AsObject)(frame), null);
+			gotoAndPlay(frame, null);
 		}
-		public virtual void gotoAndStop(AsObject frame, String scene)
+		public virtual void gotoAndStop(Object frame, String scene)
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual void gotoAndStop(AsObject frame)
+		public virtual void gotoAndStop(Object frame)
 		{
-			gotoAndStop((AsObject)(frame), null);
+			gotoAndStop(frame, null);
 		}
 		public virtual void nextFrame()
 		{

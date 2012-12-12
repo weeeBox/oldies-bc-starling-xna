@@ -41,7 +41,7 @@ namespace bc.flash.geom
 		}
 		public virtual AsVector3D _add(AsVector3D a)
 		{
-			return new AsVector3D((x + a.x), (y + a.y), (z + a.z));
+			return new AsVector3D(x + a.x, y + a.y, z + a.z);
 		}
 		public static float angleBetween(AsVector3D a, AsVector3D b)
 		{
@@ -55,12 +55,12 @@ namespace bc.flash.geom
 			{
 				throw new AsArgumentError();
 			}
-			float dotProd = (((a.x * b.x) + (a.y * b.y)) + (a.z * b.z));
+			float dotProd = a.x * b.x + a.y * b.y + a.z * b.z;
 			if(epsilonEquals(dotProd, 0))
 			{
-				return (0.5f * AsMath.PI);
+				return 0.5f * AsMath.PI;
 			}
-			return AsMath.acos(((dotProd / aLen) / bLen));
+			return AsMath.acos(dotProd / aLen / bLen);
 		}
 		public virtual AsVector3D clone()
 		{
@@ -75,28 +75,28 @@ namespace bc.flash.geom
 		}
 		public virtual AsVector3D crossProduct(AsVector3D a)
 		{
-			return new AsVector3D(((y * a.z) - (z * a.y)), ((z * a.x) - (x * a.z)), ((x * a.y) - (y * a.x)), 1);
+			return new AsVector3D(y * a.z - z * a.y, z * a.x - x * a.z, x * a.y - y * a.x, 1);
 		}
 		public virtual void decrementBy(AsVector3D a)
 		{
-			x = (x - a.x);
-			y = (y - a.y);
-			z = (z - a.z);
+			x = x - a.x;
+			y = y - a.y;
+			z = z - a.z;
 		}
 		public static float distance(AsVector3D pt1, AsVector3D pt2)
 		{
-			float dx = (pt1.x - pt2.x);
-			float dy = (pt1.y - pt2.y);
-			float dz = (pt1.z - pt2.z);
-			return AsMath.sqrt((((dx * dx) + (dy * dy)) + (dz * dz)));
+			float dx = pt1.x - pt2.x;
+			float dy = pt1.y - pt2.y;
+			float dz = pt1.z - pt2.z;
+			return AsMath.sqrt(dx * dx + dy * dy + dz * dz);
 		}
 		public virtual float dotProduct(AsVector3D a)
 		{
-			return (((x * a.x) + (y * a.y)) + (z * a.z));
+			return x * a.x + y * a.y + z * a.z;
 		}
 		public virtual bool equals(AsVector3D toCompare, bool allFour)
 		{
-			return ((((x == toCompare.x) && (y == toCompare.y)) && (z == toCompare.z)) && (!(allFour) || (w == toCompare.w)));
+			return x == toCompare.x && y == toCompare.y && z == toCompare.z && (!allFour || w == toCompare.w);
 		}
 		public virtual bool equals(AsVector3D toCompare)
 		{
@@ -104,21 +104,21 @@ namespace bc.flash.geom
 		}
 		public virtual void incrementBy(AsVector3D a)
 		{
-			x = (x + a.x);
-			y = (y + a.y);
-			z = (z + a.z);
+			x = x + a.x;
+			y = y + a.y;
+			z = z + a.z;
 		}
 		public virtual float getLength()
 		{
-			return AsMath.sqrt((((x * x) + (y * y)) + (z * z)));
+			return AsMath.sqrt(x * x + y * y + z * z);
 		}
 		public virtual float getLengthSquared()
 		{
-			return (((x * x) + (y * y)) + (z * z));
+			return x * x + y * y + z * z;
 		}
 		public virtual bool nearEquals(AsVector3D toCompare, float tolerance, bool allFour)
 		{
-			return ((((AsMath.abs((x - toCompare.x)) <= tolerance) && (AsMath.abs((y - toCompare.y)) <= tolerance)) && (AsMath.abs((z - toCompare.z)) <= tolerance)) && (!(allFour) || (AsMath.abs((w - toCompare.w)) <= tolerance)));
+			return AsMath.abs(x - toCompare.x) <= tolerance && AsMath.abs(y - toCompare.y) <= tolerance && AsMath.abs(z - toCompare.z) <= tolerance && (!allFour || AsMath.abs(w - toCompare.w) <= tolerance);
 		}
 		public virtual bool nearEquals(AsVector3D toCompare, float tolerance)
 		{
@@ -137,27 +137,27 @@ namespace bc.flash.geom
 			{
 				throw new AsIllegalOperationError("Unable to normalize vector with zero lenght");
 			}
-			float lenInv = (1.0f / getLength());
-			x = (x * lenInv);
-			y = (y * lenInv);
-			z = (z * lenInv);
+			float lenInv = 1.0f / getLength();
+			x = x * lenInv;
+			y = y * lenInv;
+			z = z * lenInv;
 			return getLength();
 		}
 		public virtual void project()
 		{
-			if(((w != 0) && (w != 1)))
+			if(w != 0 && w != 1)
 			{
-				float invW = (1.0f / w);
-				x = (x * invW);
-				y = (y * invW);
-				z = (z * invW);
+				float invW = 1.0f / w;
+				x = x * invW;
+				y = y * invW;
+				z = z * invW;
 			}
 		}
 		public virtual void scaleBy(float s)
 		{
-			x = (x * s);
-			y = (y * s);
-			z = (z * s);
+			x = x * s;
+			y = y * s;
+			z = z * s;
 		}
 		public virtual void setTo(float xa, float ya, float za)
 		{
@@ -167,11 +167,11 @@ namespace bc.flash.geom
 		}
 		public virtual AsVector3D subtract(AsVector3D a)
 		{
-			return new AsVector3D((x - a.x), (y - a.y), (z - a.z));
+			return new AsVector3D(x - a.x, y - a.y, z - a.z);
 		}
 		public virtual String toString()
 		{
-			return (((((("[" + x) + ", ") + y) + ", ") + z) + "]");
+			return "[" + x + ", " + y + ", " + z + "]";
 		}
 		private static bool epsilonEquals(float a, float b)
 		{

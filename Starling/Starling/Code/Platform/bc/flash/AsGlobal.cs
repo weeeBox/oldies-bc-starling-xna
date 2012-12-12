@@ -97,6 +97,11 @@ namespace bc.flash
             Debug.WriteLine(val);
         }
 
+        public static void trace(String format, params Object[] values)
+        {
+            throw new NotImplementedException();
+        }
+
         public static String getQualifiedClassName(AsObject obj)
         {
             return obj.GetType().Name;
@@ -117,6 +122,26 @@ namespace bc.flash
         public static void assert(bool condition, String message)
         {
             Debug.Assert(condition, message);
+        }
+
+        public static int getNextPowerOfTwo(int value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static void setTimeout(Object param1, Object param2 )
+        {
+            throw new NotImplementedException();
+        }
+
+        public static String formatString(String format, params Object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static bool isNaN(float number)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -14,12 +14,12 @@ namespace bc.flash.events
 		}
 		public virtual void addEventListener(String type, AsEventListenerCallback listener, bool useCapture, int priority, bool useWeakReference)
 		{
-			if((mEventListeners == null))
+			if(mEventListeners == null)
 			{
 				mEventListeners = new AsDictionary();
 			}
 			AsVector<AsEventListenerCallback> listeners = (AsVector<AsEventListenerCallback>)(mEventListeners[type]);
-			if((listeners == null))
+			if(listeners == null)
 			{
 				listeners = new AsVector<AsEventListenerCallback>();
 				mEventListeners[type] = listeners;
@@ -51,13 +51,13 @@ namespace bc.flash.events
 					{
 						foreach (AsEventListenerCallback eventListener in __eventListeners_)
 						{
-							if((eventListener != listener))
+							if(eventListener != listener)
 							{
 								remainListeners.push(eventListener);
 							}
 						}
 					}
-					if((remainListeners.getLength() > 0))
+					if(remainListeners.getLength() > 0)
 					{
 						mEventListeners[type] = remainListeners;
 					}
@@ -74,7 +74,7 @@ namespace bc.flash.events
 		}
 		public virtual void removeEventListeners(String type)
 		{
-			if(((type != null) && (mEventListeners != null)))
+			if(type != null && mEventListeners != null)
 			{
 				mEventListeners.remove(type);
 			}
@@ -90,22 +90,22 @@ namespace bc.flash.events
 		public virtual void dispatchEvent(AsEvent _event)
 		{
 			AsVector<AsEventListenerCallback> listeners = (AsVector<AsEventListenerCallback>)(((mEventListeners != null) ? (mEventListeners[_event.getType()]) : (null)));
-			if(((listeners == null) && !(_event.getBubbles())))
+			if(listeners == null && !_event.getBubbles())
 			{
 				return;
 			}
 			AsEventDispatcher previousTarget = _event.getTarget();
-			if(((previousTarget == null) || (_event.getCurrentTarget() != null)))
+			if(previousTarget == null || _event.getCurrentTarget() != null)
 			{
 				_event.setTarget(this);
 			}
 			bool stopImmediatePropagation = false;
-			uint numListeners = (uint)((((listeners == null)) ? (0) : (listeners.getLength())));
-			if((numListeners != 0))
+			uint numListeners = (uint)(((listeners == null) ? (0) : (listeners.getLength())));
+			if(numListeners != 0)
 			{
 				_event.setCurrentTarget(this);
 				int i = 0;
-				for (; (i < numListeners); ++i)
+				for (; i < numListeners; ++i)
 				{
 					AsEventListenerCallback listener = listeners[i];
 					listener(_event);
@@ -116,10 +116,10 @@ namespace bc.flash.events
 					}
 				}
 			}
-			if((((!(stopImmediatePropagation) && _event.getBubbles()) && !(_event.getStopsPropagation())) && this is AsDisplayObject))
+			if(!stopImmediatePropagation && _event.getBubbles() && !_event.getStopsPropagation() && this is AsDisplayObject)
 			{
 				AsDisplayObject targetDisplayObject = ((this is AsDisplayObject) ? ((AsDisplayObject)(this)) : null);
-				if((targetDisplayObject.getParent() != null))
+				if(targetDisplayObject.getParent() != null)
 				{
 					_event.setCurrentTarget(null);
 					targetDisplayObject.getParent().dispatchEvent(_event);
@@ -132,7 +132,7 @@ namespace bc.flash.events
 		}
 		public virtual bool hasEventListener(String type)
 		{
-			return ((mEventListeners != null) && (mEventListeners[type] != null));
+			return mEventListeners != null && mEventListeners[type] != null;
 		}
 	}
 }

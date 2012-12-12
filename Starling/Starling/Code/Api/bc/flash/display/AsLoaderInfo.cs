@@ -58,7 +58,7 @@ namespace bc.flash.display
 		{
 			throw new AsNotImplementedError();
 		}
-		public virtual AsObject getParameters()
+		public virtual Object getParameters()
 		{
 			throw new AsNotImplementedError();
 		}

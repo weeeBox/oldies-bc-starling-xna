@@ -24,7 +24,7 @@ namespace bc.flash.system
 		{
 			throw new AsNotImplementedError();
 		}
-		public static AsObject getIme()
+		public static Object getIme()
 		{
 			throw new AsNotImplementedError();
 		}
