@@ -19,11 +19,11 @@ namespace starling.textures
 		private bool mMipMapping;
 		private bool mPremultipliedAlpha;
 		private bool mOptimizedForRenderTexture;
-		private AsObject mData;
+		private Object mData;
 		private float mScale;
 		public AsConcreteTexture(AsTextureBase _base, String format, int width, int height, bool mipMapping, bool premultipliedAlpha, bool optimizedForRenderTexture, float scale)
 		{
-			mScale = (((scale <= 0)) ? (1.0f) : (scale));
+			mScale = scale <= 0 ? 1.0f : scale;
 			mBase = _base;
 			mFormat = format;
 			mWidth = width;
@@ -49,23 +49,23 @@ namespace starling.textures
 			restoreOnLostContext(null);
 			base.dispose();
 		}
-		public virtual void restoreOnLostContext(AsObject data)
+		public virtual void restoreOnLostContext(Object data)
 		{
-			if(((mData == null) && (data != null)))
+			if(mData == null && data != null)
 			{
 				AsStarling.getCurrent().addEventListener(AsEvent.CONTEXT3D_CREATE, onContextCreated);
 			}
-			if((data == null))
+			if(data == null)
 			{
 				AsStarling.getCurrent().removeEventListener(AsEvent.CONTEXT3D_CREATE, onContextCreated);
 			}
-			mData = (AsObject)(data);
+			mData = data;
 		}
 		private void onContextCreated(AsEvent _event)
 		{
 			AsContext3D context = AsStarling.getContext();
-			AsBitmapData bitmapData = ((mData is AsBitmapData) ? ((AsBitmapData)(mData)) : null);
-			AsAtfData atfData = ((mData is AsAtfData) ? ((AsAtfData)(mData)) : null);
+			AsBitmapData bitmapData = mData as AsBitmapData;
+			AsAtfData atfData = mData as AsAtfData;
 			bc.flash.display3D.textures.AsTexture nativeTexture = null;
 			if(bitmapData != null)
 			{
@@ -96,11 +96,11 @@ namespace starling.textures
 		}
 		public override float getWidth()
 		{
-			return (mWidth / mScale);
+			return mWidth / mScale;
 		}
 		public override float getHeight()
 		{
-			return (mHeight / mScale);
+			return mHeight / mScale;
 		}
 		public override float getScale()
 		{

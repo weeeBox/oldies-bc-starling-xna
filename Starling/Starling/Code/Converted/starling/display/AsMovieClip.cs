@@ -23,16 +23,9 @@ namespace starling.display
 		private bool mLoop;
 		private bool mPlaying;
 		public AsMovieClip(AsVector<AsTexture> textures, float fps)
+		 : base(textures[0])
 		{
-			if((textures.getLength() > 0))
-			{
-				__$super$__(textures[0]);
-				init(textures, fps);
-			}
-			else
-			{
-				throw new AsArgumentError("Empty texture array");
-			}
+			init(textures, fps);
 		}
 		public AsMovieClip(AsVector<AsTexture> textures)
 		 : this(textures, 12)
@@ -40,26 +33,26 @@ namespace starling.display
 		}
 		private void init(AsVector<AsTexture> textures, float fps)
 		{
-			if((fps <= 0))
+			if(fps <= 0)
 			{
-				throw new AsArgumentError(("Invalid fps: " + fps));
+				throw new AsArgumentError("Invalid fps: " + fps);
 			}
 			int numFrames = (int)(textures.getLength());
-			mDefaultFrameDuration = (1.0f / fps);
+			mDefaultFrameDuration = 1.0f / fps;
 			mLoop = true;
 			mPlaying = true;
 			mCurrentTime = 0.0f;
 			mCurrentFrame = 0;
-			mTotalTime = (mDefaultFrameDuration * numFrames);
+			mTotalTime = mDefaultFrameDuration * numFrames;
 			mTextures = textures.concat();
 			mSounds = new AsVector<AsSound>(numFrames);
 			mDurations = new AsVector<float>(numFrames);
 			mStartTimes = new AsVector<float>(numFrames);
 			int i = 0;
-			for (; (i < numFrames); ++i)
+			for (; i < numFrames; ++i)
 			{
 				mDurations[i] = mDefaultFrameDuration;
-				mStartTimes[i] = (i * mDefaultFrameDuration);
+				mStartTimes[i] = i * mDefaultFrameDuration;
 			}
 		}
 		public virtual void addFrame(AsTexture texture, AsSound sound, float duration)
@@ -76,21 +69,21 @@ namespace starling.display
 		}
 		public virtual void addFrameAt(int frameID, AsTexture texture, AsSound sound, float duration)
 		{
-			if(((frameID < 0) || (frameID > getNumFrames())))
+			if(frameID < 0 || frameID > getNumFrames())
 			{
 				throw new AsArgumentError("Invalid frame id");
 			}
-			if((duration < 0))
+			if(duration < 0)
 			{
 				duration = mDefaultFrameDuration;
 			}
 			mTextures.splice(frameID, (uint)(0), texture);
 			mSounds.splice(frameID, (uint)(0), sound);
 			mDurations.splice(frameID, (uint)(0), duration);
-			mTotalTime = (mTotalTime + duration);
-			if(((frameID > 0) && (frameID == getNumFrames())))
+			mTotalTime = mTotalTime + duration;
+			if(frameID > 0 && frameID == getNumFrames())
 			{
-				mStartTimes[frameID] = (mStartTimes[(frameID - 1)] + mDurations[(frameID - 1)]);
+				mStartTimes[frameID] = mStartTimes[frameID - 1] + mDurations[frameID - 1];
 			}
 			else
 			{
@@ -107,15 +100,15 @@ namespace starling.display
 		}
 		public virtual void removeFrameAt(int frameID)
 		{
-			if(((frameID < 0) || (frameID >= getNumFrames())))
+			if(frameID < 0 || frameID >= getNumFrames())
 			{
 				throw new AsArgumentError("Invalid frame id");
 			}
-			if((getNumFrames() == 1))
+			if(getNumFrames() == 1)
 			{
 				throw new AsIllegalOperationError("Movie clip must not be empty");
 			}
-			mTotalTime = (mTotalTime - getFrameDuration(frameID));
+			mTotalTime = mTotalTime - getFrameDuration(frameID);
 			mTextures.splice(frameID, (uint)(1));
 			mSounds.splice(frameID, (uint)(1));
 			mDurations.splice(frameID, (uint)(1));
@@ -123,7 +116,7 @@ namespace starling.display
 		}
 		public virtual AsTexture getFrameTexture(int frameID)
 		{
-			if(((frameID < 0) || (frameID >= getNumFrames())))
+			if(frameID < 0 || frameID >= getNumFrames())
 			{
 				throw new AsArgumentError("Invalid frame id");
 			}
@@ -131,7 +124,7 @@ namespace starling.display
 		}
 		public virtual void setFrameTexture(int frameID, AsTexture texture)
 		{
-			if(((frameID < 0) || (frameID >= getNumFrames())))
+			if(frameID < 0 || frameID >= getNumFrames())
 			{
 				throw new AsArgumentError("Invalid frame id");
 			}
@@ -139,7 +132,7 @@ namespace starling.display
 		}
 		public virtual AsSound getFrameSound(int frameID)
 		{
-			if(((frameID < 0) || (frameID >= getNumFrames())))
+			if(frameID < 0 || frameID >= getNumFrames())
 			{
 				throw new AsArgumentError("Invalid frame id");
 			}
@@ -147,7 +140,7 @@ namespace starling.display
 		}
 		public virtual void setFrameSound(int frameID, AsSound sound)
 		{
-			if(((frameID < 0) || (frameID >= getNumFrames())))
+			if(frameID < 0 || frameID >= getNumFrames())
 			{
 				throw new AsArgumentError("Invalid frame id");
 			}
@@ -155,7 +148,7 @@ namespace starling.display
 		}
 		public virtual float getFrameDuration(int frameID)
 		{
-			if(((frameID < 0) || (frameID >= getNumFrames())))
+			if(frameID < 0 || frameID >= getNumFrames())
 			{
 				throw new AsArgumentError("Invalid frame id");
 			}
@@ -163,12 +156,12 @@ namespace starling.display
 		}
 		public virtual void setFrameDuration(int frameID, float duration)
 		{
-			if(((frameID < 0) || (frameID >= getNumFrames())))
+			if(frameID < 0 || frameID >= getNumFrames())
 			{
 				throw new AsArgumentError("Invalid frame id");
 			}
-			mTotalTime = (mTotalTime - getFrameDuration(frameID));
-			mTotalTime = (mTotalTime + duration);
+			mTotalTime = mTotalTime - getFrameDuration(frameID);
+			mTotalTime = mTotalTime + duration;
 			mDurations[frameID] = duration;
 			updateStartTimes();
 		}
@@ -191,33 +184,33 @@ namespace starling.display
 			mStartTimes.setLength(0);
 			mStartTimes[0] = 0;
 			int i = 1;
-			for (; (i < numFrames); ++i)
+			for (; i < numFrames; ++i)
 			{
-				mStartTimes[i] = (mStartTimes[(i - 1)] + mDurations[(i - 1)]);
+				mStartTimes[i] = mStartTimes[i - 1] + mDurations[i - 1];
 			}
 		}
 		public virtual void advanceTime(float passedTime)
 		{
 			int finalFrame = 0;
 			int previousFrame = mCurrentFrame;
-			if((mLoop && (mCurrentTime == mTotalTime)))
+			if(mLoop && mCurrentTime == mTotalTime)
 			{
 				mCurrentTime = 0.0f;
 				mCurrentFrame = 0;
 			}
-			if(((!(mPlaying) || (passedTime == 0.0f)) || (mCurrentTime == mTotalTime)))
+			if(!mPlaying || passedTime == 0.0f || mCurrentTime == mTotalTime)
 			{
 				return;
 			}
-			mCurrentTime = (mCurrentTime + passedTime);
-			finalFrame = (int)((mTextures.getLength() - 1));
-			while((mCurrentTime >= (mStartTimes[mCurrentFrame] + mDurations[mCurrentFrame])))
+			mCurrentTime = mCurrentTime + passedTime;
+			finalFrame = (int)(mTextures.getLength() - 1);
+			while(mCurrentTime >= mStartTimes[mCurrentFrame] + mDurations[mCurrentFrame])
 			{
-				if((mCurrentFrame == finalFrame))
+				if(mCurrentFrame == finalFrame)
 				{
 					if(hasEventListener(AsEvent.COMPLETE))
 					{
-						float restTime = (mCurrentTime - mTotalTime);
+						float restTime = mCurrentTime - mTotalTime;
 						mCurrentTime = mTotalTime;
 						dispatchEventWith(AsEvent.COMPLETE);
 						advanceTime(restTime);
@@ -225,7 +218,7 @@ namespace starling.display
 					}
 					if(mLoop)
 					{
-						mCurrentTime = (mCurrentTime - mTotalTime);
+						mCurrentTime = mCurrentTime - mTotalTime;
 						mCurrentFrame = 0;
 					}
 					else
@@ -244,14 +237,14 @@ namespace starling.display
 					}
 				}
 			}
-			if((mCurrentFrame != previousFrame))
+			if(mCurrentFrame != previousFrame)
 			{
 				setTexture(mTextures[mCurrentFrame]);
 			}
 		}
 		public virtual bool getIsComplete()
 		{
-			return (!(mLoop) && (mCurrentTime >= mTotalTime));
+			return !mLoop && mCurrentTime >= mTotalTime;
 		}
 		public virtual float getTotalTime()
 		{
@@ -278,9 +271,9 @@ namespace starling.display
 			mCurrentFrame = _value;
 			mCurrentTime = 0.0f;
 			int i = 0;
-			for (; (i < _value); ++i)
+			for (; i < _value; ++i)
 			{
-				mCurrentTime = (mCurrentTime + getFrameDuration(i));
+				mCurrentTime = mCurrentTime + getFrameDuration(i);
 			}
 			setTexture(mTextures[mCurrentFrame]);
 			if(mSounds[mCurrentFrame] != null)
@@ -290,29 +283,29 @@ namespace starling.display
 		}
 		public virtual float getFps()
 		{
-			return (1.0f / mDefaultFrameDuration);
+			return 1.0f / mDefaultFrameDuration;
 		}
 		public virtual void setFps(float _value)
 		{
-			if((_value <= 0))
+			if(_value <= 0)
 			{
-				throw new AsArgumentError(("Invalid fps: " + _value));
+				throw new AsArgumentError("Invalid fps: " + _value);
 			}
-			float newFrameDuration = (1.0f / _value);
-			float acceleration = (newFrameDuration / mDefaultFrameDuration);
-			mCurrentTime = (mCurrentTime * acceleration);
+			float newFrameDuration = 1.0f / _value;
+			float acceleration = newFrameDuration / mDefaultFrameDuration;
+			mCurrentTime = mCurrentTime * acceleration;
 			mDefaultFrameDuration = newFrameDuration;
 			int i = 0;
-			for (; (i < getNumFrames()); ++i)
+			for (; i < getNumFrames(); ++i)
 			{
-				setFrameDuration(i, (getFrameDuration(i) * acceleration));
+				setFrameDuration(i, getFrameDuration(i) * acceleration);
 			}
 		}
 		public virtual bool getIsPlaying()
 		{
 			if(mPlaying)
 			{
-				return (mLoop || (mCurrentTime < mTotalTime));
+				return mLoop || mCurrentTime < mTotalTime;
 			}
 			else
 			{

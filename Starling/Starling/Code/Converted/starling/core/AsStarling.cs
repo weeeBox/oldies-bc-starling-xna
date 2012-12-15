@@ -31,6 +31,7 @@ namespace starling.core
 		private AsStage3D mStage3D;
 		private AsStage mStage;
 		private AsClass mRootClass;
+		private AsDisplayObject mRoot;
 		private AsJuggler mJuggler;
 		private bool mStarted;
 		private AsRenderSupport mSupport;
@@ -39,31 +40,33 @@ namespace starling.core
 		private bool mSimulateMultitouch;
 		private bool mEnableErrorChecking;
 		private float mLastFrameTimestamp;
-		private AsRectangle mViewPort;
 		private bool mLeftMouseDown;
 		private AsStatsDisplay mStatsDisplay;
 		private bool mShareContext;
+		private AsRectangle mViewPort;
+		private AsRectangle mViewPortClipped;
 		private bc.flash.display.AsStage mNativeStage;
 		private bc.flash.display.AsSprite mNativeOverlay;
 		private AsContext3D mContext;
 		private AsDictionary mPrograms;
+		private AsDictionary mCustomData;
 		private static AsStarling sCurrent;
 		private static bool sHandleLostContext;
 		public AsStarling(AsClass rootClass, bc.flash.display.AsStage stage, AsRectangle viewPort, AsStage3D stage3D, String renderMode, String profile)
 		{
-			if((stage == null))
+			if(stage == null)
 			{
 				throw new AsArgumentError("Stage must not be null");
 			}
-			if((rootClass == null))
+			if(rootClass == null)
 			{
 				throw new AsArgumentError("Root class must not be null");
 			}
-			if((viewPort == null))
+			if(viewPort == null)
 			{
 				viewPort = new AsRectangle(0, 0, stage.getStageWidth(), stage.getStageHeight());
 			}
-			if((stage3D == null))
+			if(stage3D == null)
 			{
 				stage3D = stage.getStage3Ds()[0];
 			}
@@ -80,8 +83,9 @@ namespace starling.core
 			mAntiAliasing = 0;
 			mSimulateMultitouch = false;
 			mEnableErrorChecking = false;
-			mLastFrameTimestamp = (AsGlobal.getTimer() / 1000.0f);
+			mLastFrameTimestamp = AsGlobal.getTimer() / 1000.0f;
 			mPrograms = new AsDictionary();
+			mCustomData = new AsDictionary();
 			mSupport = new AsRenderSupport();
 			AsArray __touchEventTypes_ = getTouchEventTypes();
 			if (__touchEventTypes_ != null)
@@ -95,10 +99,10 @@ namespace starling.core
 			stage.addEventListener(AsKeyboardEvent.KEY_DOWN, onKey, false, 0, true);
 			stage.addEventListener(AsKeyboardEvent.KEY_UP, onKey, false, 0, true);
 			stage.addEventListener(AsEvent.RESIZE, onResize, false, 0, true);
-			if(((mStage3D.getContext3D() != null) && (mStage3D.getContext3D().getDriverInfo() != "Disposed")))
+			if(mStage3D.getContext3D() != null && mStage3D.getContext3D().getDriverInfo() != "Disposed")
 			{
 				mShareContext = true;
-				setTimeout(initialize, 1);
+				AsGlobal.setTimeout(initialize, 1);
 			}
 			else
 			{
@@ -107,14 +111,11 @@ namespace starling.core
 				mStage3D.addEventListener(AsErrorEvent.ERROR, onStage3DError, false, 1, true);
 				try
 				{
-					NOT.IMPLEMENTED();
-					{
-						mStage3D.requestContext3D(renderMode);
-					}
+					mStage3D.requestContext3D(renderMode);
 				}
 				catch (AsError e)
 				{
-					showFatalError(("Context3D error: " + e.message));
+					showFatalError("Context3D error: " + e.message);
 				}
 			}
 		}
@@ -141,6 +142,7 @@ namespace starling.core
 			mNativeStage.removeEventListener(AsKeyboardEvent.KEY_DOWN, onKey, false);
 			mNativeStage.removeEventListener(AsKeyboardEvent.KEY_UP, onKey, false);
 			mNativeStage.removeEventListener(AsEvent.RESIZE, onResize, false);
+			mNativeStage.removeChild(mNativeOverlay);
 			mStage3D.removeEventListener(AsEvent.CONTEXT3D_CREATE, onContextCreated, false);
 			mStage3D.removeEventListener(AsErrorEvent.ERROR, onStage3DError, false);
 			AsArray __touchEventTypes_ = getTouchEventTypes();
@@ -159,23 +161,23 @@ namespace starling.core
 					program.dispose();
 				}
 			}
-			if(((mContext != null) && !(mShareContext)))
+			if(mStage != null)
 			{
-				mContext.dispose();
-			}
-			if(mTouchProcessor != null)
-			{
-				mTouchProcessor.dispose();
+				mStage.dispose();
 			}
 			if(mSupport != null)
 			{
 				mSupport.dispose();
 			}
-			if(mStage != null)
+			if(mTouchProcessor != null)
 			{
-				mStage.dispose();
+				mTouchProcessor.dispose();
 			}
-			if((sCurrent == this))
+			if(mContext != null && !mShareContext)
+			{
+				mContext.dispose();
+			}
+			if(sCurrent == this)
 			{
 				sCurrent = null;
 			}
@@ -186,7 +188,7 @@ namespace starling.core
 			initializeGraphicsAPI();
 			initializeRoot();
 			mTouchProcessor.setSimulateMultitouch(mSimulateMultitouch);
-			mLastFrameTimestamp = (AsGlobal.getTimer() / 1000.0f);
+			mLastFrameTimestamp = AsGlobal.getTimer() / 1000.0f;
 		}
 		private void initializeGraphicsAPI()
 		{
@@ -196,20 +198,15 @@ namespace starling.core
 			updateViewPort();
 			AsGlobal.trace("[Starling] Initialization complete.");
 			AsGlobal.trace("[Starling] Display Driver:", mContext.getDriverInfo());
-			dispatchEventWith(AsEvent.CONTEXT3D_CREATE, false, mContext);
+			dispatchEventWith(starling.events.Event.CONTEXT3D_CREATE, false, mContext);
 		}
 		private void initializeRoot()
 		{
-			if((mStage.getNumChildren() > 0))
-			{
-				return;
-			}
-			NOT.IMPLEMENTED();
 		}
 		public virtual void nextFrame()
 		{
-			float now = (AsGlobal.getTimer() / 1000.0f);
-			float passedTime = (now - mLastFrameTimestamp);
+			float now = AsGlobal.getTimer() / 1000.0f;
+			float passedTime = now - mLastFrameTimestamp;
 			mLastFrameTimestamp = now;
 			advanceTime(passedTime);
 			render();
@@ -217,54 +214,60 @@ namespace starling.core
 		public virtual void advanceTime(float passedTime)
 		{
 			makeCurrent();
+			mTouchProcessor.advanceTime(passedTime);
 			mStage.advanceTime(passedTime);
 			mJuggler.advanceTime(passedTime);
-			mTouchProcessor.advanceTime(passedTime);
 		}
 		public virtual void render()
 		{
 			makeCurrent();
 			updateNativeOverlay();
 			mSupport.nextFrame();
-			if(((mContext == null) || (mContext.getDriverInfo() == "Disposed")))
+			if(mContext == null || mContext.getDriverInfo() == "Disposed")
 			{
 				return;
 			}
-			if(!(mShareContext))
+			if(!mShareContext)
 			{
 				AsRenderSupport.clear(mStage.getColor(), 1.0f);
 			}
-			mSupport.setOrthographicProjection(mStage.getStageWidth(), mStage.getStageHeight());
+			float scaleX = mViewPort.width / mStage.getStageWidth();
+			float scaleY = mViewPort.height / mStage.getStageHeight();
+			mContext.setDepthTest(false, AsContext3DCompareMode.ALWAYS);
+			mContext.setCulling(AsContext3DTriangleFace.NONE);
+			mSupport.setRenderTarget(null);
+			mSupport.setOrthographicProjection(mViewPort.x < 0 ? -mViewPort.x / scaleX : 0.0f, mViewPort.y < 0 ? -mViewPort.y / scaleY : 0.0f, mViewPortClipped.width / scaleX, mViewPortClipped.height / scaleY);
 			mStage.render(mSupport, 1.0f);
 			mSupport.finishQuadBatch();
 			if(mStatsDisplay != null)
 			{
 				mStatsDisplay.setDrawCount(mSupport.getDrawCount());
 			}
-			if(!(mShareContext))
+			if(!mShareContext)
 			{
 				mContext.present();
 			}
 		}
 		private void updateViewPort()
 		{
+			mViewPortClipped = mViewPort.intersection(new AsRectangle(0, 0, mNativeStage.getStageWidth(), mNativeStage.getStageHeight()));
 			if(mShareContext)
 			{
 				return;
 			}
-			if(((mContext != null) && (mContext.getDriverInfo() != "Disposed")))
+			if(mContext != null && mContext.getDriverInfo() != "Disposed")
 			{
-				mContext.configureBackBuffer((int)(mViewPort.width), (int)(mViewPort.height), mAntiAliasing, false);
+				mContext.configureBackBuffer((int)(mViewPortClipped.width), (int)(mViewPortClipped.height), mAntiAliasing, false);
 			}
-			mStage3D.setX(mViewPort.x);
-			mStage3D.setY(mViewPort.y);
+			mStage3D.setX(mViewPortClipped.x);
+			mStage3D.setY(mViewPortClipped.y);
 		}
 		private void updateNativeOverlay()
 		{
 			mNativeOverlay.setX(mViewPort.x);
 			mNativeOverlay.setY(mViewPort.y);
-			mNativeOverlay.setScaleX((mViewPort.width / mStage.getStageWidth()));
-			mNativeOverlay.setScaleY((mViewPort.height / mStage.getStageHeight()));
+			mNativeOverlay.setScaleX(mViewPort.width / mStage.getStageWidth());
+			mNativeOverlay.setScaleY(mViewPort.height / mStage.getStageHeight());
 		}
 		private void showFatalError(String message)
 		{
@@ -273,11 +276,11 @@ namespace starling.core
 			textFormat.setAlign(AsTextFormatAlign.CENTER);
 			textField.setDefaultTextFormat(textFormat);
 			textField.setWordWrap(true);
-			textField.setWidth((mStage.getStageWidth() * 0.75f));
+			textField.setWidth(mStage.getStageWidth() * 0.75f);
 			textField.setAutoSize(AsTextFieldAutoSize.CENTER);
 			textField.setText(message);
-			textField.setX(((mStage.getStageWidth() - textField.getWidth()) / 2));
-			textField.setY(((mStage.getStageHeight() - textField.getHeight()) / 2));
+			textField.setX((mStage.getStageWidth() - textField.getWidth()) / 2);
+			textField.setY((mStage.getStageHeight() - textField.getHeight()) / 2);
 			textField.setBackground(true);
 			textField.setBackgroundColor(0x440000);
 			getNativeOverlay().addChild(textField);
@@ -289,7 +292,7 @@ namespace starling.core
 		public virtual void start()
 		{
 			mStarted = true;
-			mLastFrameTimestamp = (AsGlobal.getTimer() / 1000.0f);
+			mLastFrameTimestamp = AsGlobal.getTimer() / 1000.0f;
 		}
 		public virtual void stop()
 		{
@@ -297,21 +300,23 @@ namespace starling.core
 		}
 		private void onStage3DError(AsErrorEvent _event)
 		{
-			if((_event.getErrorID() == 3702))
+			if(_event.getErrorID() == 3702)
 			{
 				showFatalError("This application is not correctly embedded (wrong wmode value)");
 			}
 			else
 			{
-				showFatalError(("Stage3D error: " + _event.getOwnProperty("text")));
+				showFatalError("Stage3D error: " + _event.getOwnProperty("text"));
 			}
 		}
 		private void onContextCreated(AsEvent _event)
 		{
-			if((!(AsStarling.getHandleLostContext()) && (mContext != null)))
+			if(!AsStarling.getHandleLostContext() && mContext != null)
 			{
-				showFatalError("Fatal error: The application lost the device context!");
 				stop();
+				_event.stopImmediatePropagation();
+				showFatalError("Fatal error: The application lost the device context!");
+				AsGlobal.trace("[Starling] The device context was lost. " + "Enable 'Starling.handleLostContext' to avoid this error.");
 			}
 			else
 			{
@@ -320,28 +325,28 @@ namespace starling.core
 		}
 		private void onEnterFrame(AsEvent _event)
 		{
-			if((mStarted && !(mShareContext)))
+			if(mStarted && !mShareContext)
 			{
 				nextFrame();
 			}
 		}
 		private void onKey(AsKeyboardEvent _event)
 		{
-			if(!(mStarted))
+			if(!mStarted)
 			{
 				return;
 			}
 			makeCurrent();
-			mStage.dispatchEvent(new bc.flash.events.AsKeyboardEvent(_event.getType(), _event.getCharCode(), _event.getKeyCode(), _event.getKeyLocation(), _event.getCtrlKey(), _event.getAltKey(), _event.getShiftKey()));
+			mStage.dispatchEvent(new starling.events.AsKeyboardEvent(_event.getType(), _event.getCharCode(), _event.getKeyCode(), _event.getKeyLocation(), _event.getCtrlKey(), _event.getAltKey(), _event.getShiftKey()));
 		}
 		private void onResize(bc.flash.events.AsEvent _event)
 		{
-			bc.flash.display.AsStage stage = ((_event.getTarget() is AsStage) ? ((AsStage)(_event.getTarget())) : null);
+			bc.flash.display.AsStage stage = _event.getTarget() as Asbc.flash.display.Stage;
 			mStage.dispatchEvent(new AsResizeEvent(AsEvent.RESIZE, stage.getStageWidth(), stage.getStageHeight()));
 		}
 		private void onTouch(AsEvent _event)
 		{
-			if(!(mStarted))
+			if(!mStarted)
 			{
 				return;
 			}
@@ -349,19 +354,22 @@ namespace starling.core
 			float globalY = 0;
 			int touchID = 0;
 			String phase = null;
+			float pressure = 1.0f;
+			float width = 1.0f;
+			float height = 1.0f;
 			if(_event is AsMouseEvent)
 			{
-				AsMouseEvent mouseEvent = ((_event is AsMouseEvent) ? ((AsMouseEvent)(_event)) : null);
+				AsMouseEvent mouseEvent = _event as AsMouseEvent;
 				globalX = mouseEvent.getStageX();
 				globalY = mouseEvent.getStageY();
 				touchID = 0;
-				if((_event.getType() == AsMouseEvent.MOUSE_DOWN))
+				if(_event.getType() == AsMouseEvent.MOUSE_DOWN)
 				{
 					mLeftMouseDown = true;
 				}
 				else
 				{
-					if((_event.getType() == AsMouseEvent.MOUSE_UP))
+					if(_event.getType() == AsMouseEvent.MOUSE_UP)
 					{
 						mLeftMouseDown = false;
 					}
@@ -369,10 +377,13 @@ namespace starling.core
 			}
 			else
 			{
-				AsTouchEvent touchEvent = ((_event is AsTouchEvent) ? ((AsTouchEvent)(_event)) : null);
+				AsTouchEvent touchEvent = _event as AsTouchEvent;
 				globalX = touchEvent.getStageX();
 				globalY = touchEvent.getStageY();
 				touchID = touchEvent.getTouchPointID();
+				pressure = touchEvent.getPressure();
+				width = touchEvent.getSizeX();
+				height = touchEvent.getSizeY();
 			}
 			switch(_event.getType())
 			{
@@ -392,16 +403,16 @@ namespace starling.core
 				phase = AsTouchPhase.ENDED;
 				break;
 				case AsMouseEvent.MOUSE_MOVE:
-				phase = ((mLeftMouseDown) ? (AsTouchPhase.MOVED) : (AsTouchPhase.HOVER));
+				phase = mLeftMouseDown ? AsTouchPhase.MOVED : AsTouchPhase.HOVER;
 				break;
 			}
-			globalX = ((mStage.getStageWidth() * (globalX - mViewPort.x)) / mViewPort.width);
-			globalY = ((mStage.getStageHeight() * (globalY - mViewPort.y)) / mViewPort.height);
-			mTouchProcessor.enqueue(touchID, phase, globalX, globalY);
+			globalX = mStage.getStageWidth() * (globalX - mViewPort.x) / mViewPort.width;
+			globalY = mStage.getStageHeight() * (globalY - mViewPort.y) / mViewPort.height;
+			mTouchProcessor.enqueue(touchID, phase, globalX, globalY, pressure, width, height);
 		}
 		private AsArray getTouchEventTypes()
 		{
-			return (((AsMouse.getSupportsCursor() || !(getMultitouchEnabled()))) ? (new AsArray(AsMouseEvent.MOUSE_DOWN, AsMouseEvent.MOUSE_MOVE, AsMouseEvent.MOUSE_UP)) : (new AsArray(AsTouchEvent.TOUCH_BEGIN, AsTouchEvent.TOUCH_MOVE, AsTouchEvent.TOUCH_END)));
+			return AsMouse.getSupportsCursor() || !getMultitouchEnabled() ? new AsArray(AsMouseEvent.MOUSE_DOWN, AsMouseEvent.MOUSE_MOVE, AsMouseEvent.MOUSE_UP) : new AsArray(AsTouchEvent.TOUCH_BEGIN, AsTouchEvent.TOUCH_MOVE, AsTouchEvent.TOUCH_END);
 		}
 		public virtual void registerProgram(String name, AsByteArray vertexProgram, AsByteArray fragmentProgram)
 		{
@@ -424,7 +435,7 @@ namespace starling.core
 		}
 		public virtual AsProgram3D getProgram(String name)
 		{
-			return ((mPrograms[name] is AsProgram3D) ? ((AsProgram3D)(mPrograms[name])) : null);
+			return mPrograms[name] as AsProgram3D;
 		}
 		public virtual bool hasProgram(String name)
 		{
@@ -486,7 +497,7 @@ namespace starling.core
 		}
 		public virtual float getContentScaleFactor()
 		{
-			return (mViewPort.width / mStage.getStageWidth());
+			return mViewPort.width / mStage.getStageWidth();
 		}
 		public virtual AsSprite getNativeOverlay()
 		{
@@ -494,34 +505,44 @@ namespace starling.core
 		}
 		public virtual bool getShowStats()
 		{
-			return (mStatsDisplay != null);
+			return mStatsDisplay != null && mStatsDisplay.getParent() != null;
 		}
 		public virtual void setShowStats(bool _value)
 		{
-			if(((mStatsDisplay != null) && !(_value)))
+			if(_value == getShowStats())
 			{
-				mStatsDisplay.removeFromParent(true);
-				mStatsDisplay = null;
+				return;
 			}
-			else
+			if(_value)
 			{
-				if(((mStatsDisplay == null) && _value))
+				if(mStatsDisplay != null)
+				{
+					mStage.addChild(mStatsDisplay);
+				}
+				else
 				{
 					showStatsAt();
 				}
 			}
+			else
+			{
+				mStatsDisplay.removeFromParent();
+			}
+		}
+		public virtual void showStatsAt(String hAlign, String vAlign, float scale)
+		{
 		}
 		public virtual void showStatsAt(String hAlign, String vAlign)
 		{
-			NOT.IMPLEMENTED();
+			showStatsAt(hAlign, vAlign, 1);
 		}
 		public virtual void showStatsAt(String hAlign)
 		{
-			showStatsAt(hAlign, "top");
+			showStatsAt(hAlign, "top", 1);
 		}
 		public virtual void showStatsAt()
 		{
-			showStatsAt("left", "top");
+			showStatsAt("left", "top", 1);
 		}
 		public virtual AsStage getStage()
 		{
@@ -537,7 +558,11 @@ namespace starling.core
 		}
 		public virtual AsDisplayObject getRoot()
 		{
-			return mStage.getChildAt(0);
+			return mRoot;
+		}
+		public virtual AsDictionary getCustomData()
+		{
+			return mCustomData;
 		}
 		public virtual bool getShareContext()
 		{
@@ -553,19 +578,19 @@ namespace starling.core
 		}
 		public static AsContext3D getContext()
 		{
-			return ((sCurrent != null) ? (sCurrent.getContext()) : (null));
+			return sCurrent != null ? sCurrent.getContext() : null;
 		}
 		public static AsJuggler getJuggler()
 		{
-			return ((sCurrent != null) ? (sCurrent.getJuggler()) : (null));
+			return sCurrent != null ? sCurrent.getJuggler() : null;
 		}
 		public static float getContentScaleFactor()
 		{
-			return ((sCurrent != null) ? (sCurrent.getContentScaleFactor()) : (1.0f));
+			return sCurrent != null ? sCurrent.getContentScaleFactor() : 1.0f;
 		}
 		public static bool getMultitouchEnabled()
 		{
-			return (AsMultitouch.getInputMode() == AsMultitouchInputMode.TOUCH_POINT);
+			return AsMultitouch.getInputMode() == AsMultitouchInputMode.TOUCH_POINT;
 		}
 		public static void setMultitouchEnabled(bool _value)
 		{
@@ -575,7 +600,7 @@ namespace starling.core
 			}
 			else
 			{
-				AsMultitouch.setInputMode(((_value) ? (AsMultitouchInputMode.TOUCH_POINT) : (AsMultitouchInputMode.NONE)));
+				AsMultitouch.setInputMode(_value ? AsMultitouchInputMode.TOUCH_POINT : AsMultitouchInputMode.NONE);
 			}
 		}
 		public static bool getHandleLostContext()

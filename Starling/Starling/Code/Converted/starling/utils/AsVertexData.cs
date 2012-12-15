@@ -28,14 +28,14 @@ namespace starling.utils
 		}
 		public virtual AsVertexData clone(int vertexID, int numVertices)
 		{
-			if(((numVertices < 0) || ((vertexID + numVertices) > mNumVertices)))
+			if(numVertices < 0 || vertexID + numVertices > mNumVertices)
 			{
-				numVertices = (mNumVertices - vertexID);
+				numVertices = mNumVertices - vertexID;
 			}
 			AsVertexData clone = new AsVertexData(0, mPremultipliedAlpha);
 			clone.mNumVertices = numVertices;
-			clone.mRawData = mRawData.slice((vertexID * ELEMENTS_PER_VERTEX), (numVertices * ELEMENTS_PER_VERTEX));
-			clone.mRawData._fixed = true;
+			clone.mRawData = mRawData.slice(vertexID * ELEMENTS_PER_VERTEX, numVertices * ELEMENTS_PER_VERTEX);
+			clone.mRawData.setOwnProperty("_fixed", true);
 			return clone;
 		}
 		public virtual AsVertexData clone(int vertexID)
@@ -48,16 +48,16 @@ namespace starling.utils
 		}
 		public virtual void copyTo(AsVertexData targetData, int targetVertexID, int vertexID, int numVertices)
 		{
-			if(((numVertices < 0) || ((vertexID + numVertices) > mNumVertices)))
+			if(numVertices < 0 || vertexID + numVertices > mNumVertices)
 			{
-				numVertices = (mNumVertices - vertexID);
+				numVertices = mNumVertices - vertexID;
 			}
 			AsVector<float> targetRawData = targetData.mRawData;
-			int targetIndex = (targetVertexID * ELEMENTS_PER_VERTEX);
-			int sourceIndex = (vertexID * ELEMENTS_PER_VERTEX);
-			int dataLength = (numVertices * ELEMENTS_PER_VERTEX);
+			int targetIndex = targetVertexID * ELEMENTS_PER_VERTEX;
+			int sourceIndex = vertexID * ELEMENTS_PER_VERTEX;
+			int dataLength = numVertices * ELEMENTS_PER_VERTEX;
 			int i = sourceIndex;
-			for (; (i < dataLength); ++i)
+			for (; i < dataLength; ++i)
 			{
 				targetRawData[targetIndex++] = mRawData[i];
 			}
@@ -76,59 +76,60 @@ namespace starling.utils
 		}
 		public virtual void append(AsVertexData data)
 		{
-			mRawData._fixed = false;
+			mRawData.setOwnProperty("_fixed", false);
+			int targetIndex = (int)(mRawData.getLength());
 			AsVector<float> rawData = data.mRawData;
 			int rawDataLength = (int)(rawData.getLength());
 			int i = 0;
-			for (; (i < rawDataLength); ++i)
+			for (; i < rawDataLength; ++i)
 			{
-				mRawData.push(rawData[i]);
+				mRawData[targetIndex++] = rawData[i];
 			}
-			mNumVertices = (mNumVertices + data.getNumVertices());
-			mRawData._fixed = true;
+			mNumVertices = mNumVertices + data.getNumVertices();
+			mRawData.setOwnProperty("_fixed", true);
 		}
 		public virtual void setPosition(int vertexID, float x, float y)
 		{
-			int offset = (getOffset(vertexID) + POSITION_OFFSET);
+			int offset = getOffset(vertexID) + POSITION_OFFSET;
 			mRawData[offset] = x;
-			mRawData[((int)((offset + 1)))] = y;
+			mRawData[(offset + 1)] = y;
 		}
 		public virtual void getPosition(int vertexID, AsPoint position)
 		{
-			int offset = (getOffset(vertexID) + POSITION_OFFSET);
+			int offset = getOffset(vertexID) + POSITION_OFFSET;
 			position.x = mRawData[offset];
-			position.y = mRawData[((int)((offset + 1)))];
+			position.y = mRawData[(offset + 1)];
 		}
 		public virtual void setColor(int vertexID, uint color)
 		{
-			int offset = (getOffset(vertexID) + COLOR_OFFSET);
-			float multiplier = ((mPremultipliedAlpha) ? (mRawData[((int)((offset + 3)))]) : (1.0f));
-			mRawData[offset] = ((((color >> 16) & 0xff) / 255.0f) * multiplier);
-			mRawData[((int)((offset + 1)))] = ((((color >> 8) & 0xff) / 255.0f) * multiplier);
-			mRawData[((int)((offset + 2)))] = (((color & 0xff) / 255.0f) * multiplier);
+			int offset = getOffset(vertexID) + COLOR_OFFSET;
+			float multiplier = mPremultipliedAlpha ? mRawData[(offset + 3)] : 1.0f;
+			mRawData[offset] = ((color >> 16) & 0xff) / 255.0f * multiplier;
+			mRawData[(offset + 1)] = ((color >> 8) & 0xff) / 255.0f * multiplier;
+			mRawData[(offset + 2)] = (color & 0xff) / 255.0f * multiplier;
 		}
 		public virtual uint getColor(int vertexID)
 		{
-			int offset = (getOffset(vertexID) + COLOR_OFFSET);
-			float divisor = ((mPremultipliedAlpha) ? (mRawData[(offset + 3)]) : (1.0f));
-			if((divisor == 0))
+			int offset = getOffset(vertexID) + COLOR_OFFSET;
+			float divisor = mPremultipliedAlpha ? mRawData[offset + 3] : 1.0f;
+			if(divisor == 0)
 			{
 				return (uint)(0);
 			}
 			else
 			{
-				float red = (mRawData[offset] / divisor);
-				float green = (mRawData[((int)((offset + 1)))] / divisor);
-				float blue = (mRawData[((int)((offset + 2)))] / divisor);
-				return (uint)((((((int)((red * 255))) << 16) | (((int)((green * 255))) << 8)) | ((int)((blue * 255)))));
+				float red = mRawData[offset] / divisor;
+				float green = mRawData[(offset + 1)] / divisor;
+				float blue = mRawData[(offset + 2)] / divisor;
+				return (uint)((((int)(red * 255)) << 16) | (((int)(green * 255)) << 8) | ((int)(blue * 255)));
 			}
 		}
 		public virtual void setAlpha(int vertexID, float alpha)
 		{
-			int offset = ((getOffset(vertexID) + COLOR_OFFSET) + 3);
+			int offset = getOffset(vertexID) + COLOR_OFFSET + 3;
 			if(mPremultipliedAlpha)
 			{
-				if((alpha < 0.001f))
+				if(alpha < 0.001f)
 				{
 					alpha = 0.001f;
 				}
@@ -143,38 +144,38 @@ namespace starling.utils
 		}
 		public virtual float getAlpha(int vertexID)
 		{
-			int offset = ((getOffset(vertexID) + COLOR_OFFSET) + 3);
+			int offset = getOffset(vertexID) + COLOR_OFFSET + 3;
 			return mRawData[offset];
 		}
 		public virtual void setTexCoords(int vertexID, float u, float v)
 		{
-			int offset = (getOffset(vertexID) + TEXCOORD_OFFSET);
+			int offset = getOffset(vertexID) + TEXCOORD_OFFSET;
 			mRawData[offset] = u;
-			mRawData[((int)((offset + 1)))] = v;
+			mRawData[(offset + 1)] = v;
 		}
 		public virtual void getTexCoords(int vertexID, AsPoint texCoords)
 		{
-			int offset = (getOffset(vertexID) + TEXCOORD_OFFSET);
+			int offset = getOffset(vertexID) + TEXCOORD_OFFSET;
 			texCoords.x = mRawData[offset];
-			texCoords.y = mRawData[((int)((offset + 1)))];
+			texCoords.y = mRawData[(offset + 1)];
 		}
 		public virtual void translateVertex(int vertexID, float deltaX, float deltaY)
 		{
-			int offset = (getOffset(vertexID) + POSITION_OFFSET);
-			mRawData[offset] = (mRawData[offset] + deltaX);
-			mRawData[((int)((offset + 1)))] = (mRawData[((int)((offset + 1)))] + deltaY);
+			int offset = getOffset(vertexID) + POSITION_OFFSET;
+			mRawData[offset] = mRawData[offset] + deltaX;
+			mRawData[(offset + 1)] = mRawData[(offset + 1)] + deltaY;
 		}
 		public virtual void transformVertex(int vertexID, AsMatrix matrix, int numVertices)
 		{
-			int offset = (getOffset(vertexID) + POSITION_OFFSET);
+			int offset = getOffset(vertexID) + POSITION_OFFSET;
 			int i = 0;
-			for (; (i < numVertices); ++i)
+			for (; i < numVertices; ++i)
 			{
 				float x = mRawData[offset];
-				float y = mRawData[((int)((offset + 1)))];
-				mRawData[offset] = (((matrix.a * x) + (matrix.c * y)) + matrix.tx);
-				mRawData[((int)((offset + 1)))] = (((matrix.d * y) + (matrix.b * x)) + matrix.ty);
-				offset = (offset + ELEMENTS_PER_VERTEX);
+				float y = mRawData[(offset + 1)];
+				mRawData[offset] = matrix.a * x + matrix.c * y + matrix.tx;
+				mRawData[(offset + 1)] = matrix.d * y + matrix.b * x + matrix.ty;
+				offset = offset + ELEMENTS_PER_VERTEX;
 			}
 		}
 		public virtual void transformVertex(int vertexID, AsMatrix matrix)
@@ -184,7 +185,7 @@ namespace starling.utils
 		public virtual void setUniformColor(uint color)
 		{
 			int i = 0;
-			for (; (i < mNumVertices); ++i)
+			for (; i < mNumVertices; ++i)
 			{
 				setColor(i, color);
 			}
@@ -192,35 +193,35 @@ namespace starling.utils
 		public virtual void setUniformAlpha(float alpha)
 		{
 			int i = 0;
-			for (; (i < mNumVertices); ++i)
+			for (; i < mNumVertices; ++i)
 			{
 				setAlpha(i, alpha);
 			}
 		}
 		public virtual void scaleAlpha(int vertexID, float alpha, int numVertices)
 		{
-			if((alpha == 1.0f))
+			if(alpha == 1.0f)
 			{
 				return;
 			}
-			if(((numVertices < 0) || ((vertexID + numVertices) > mNumVertices)))
+			if(numVertices < 0 || vertexID + numVertices > mNumVertices)
 			{
-				numVertices = (mNumVertices - vertexID);
+				numVertices = mNumVertices - vertexID;
 			}
 			int i = 0;
 			if(mPremultipliedAlpha)
 			{
-				for (i = 0; (i < numVertices); ++i)
+				for (i = 0; i < numVertices; ++i)
 				{
-					setAlpha((vertexID + i), (getAlpha((vertexID + i)) * alpha));
+					setAlpha(vertexID + i, getAlpha(vertexID + i) * alpha);
 				}
 			}
 			else
 			{
-				int offset = ((getOffset(vertexID) + COLOR_OFFSET) + 3);
-				for (i = 0; (i < numVertices); ++i)
+				int offset = getOffset(vertexID) + COLOR_OFFSET + 3;
+				for (i = 0; i < numVertices; ++i)
 				{
-					mRawData[((int)((offset + (i * ELEMENTS_PER_VERTEX))))] = (mRawData[((int)((offset + (i * ELEMENTS_PER_VERTEX))))] * alpha);
+					mRawData[(offset + i * ELEMENTS_PER_VERTEX)] = mRawData[(offset + i * ELEMENTS_PER_VERTEX)] * alpha;
 				}
 			}
 		}
@@ -230,54 +231,54 @@ namespace starling.utils
 		}
 		private int getOffset(int vertexID)
 		{
-			return (vertexID * ELEMENTS_PER_VERTEX);
+			return vertexID * ELEMENTS_PER_VERTEX;
 		}
 		public virtual AsRectangle getBounds(AsMatrix transformationMatrix, int vertexID, int numVertices, AsRectangle resultRect)
 		{
-			if((resultRect == null))
+			if(resultRect == null)
 			{
 				resultRect = new AsRectangle();
 			}
-			if(((numVertices < 0) || ((vertexID + numVertices) > mNumVertices)))
+			if(numVertices < 0 || vertexID + numVertices > mNumVertices)
 			{
-				numVertices = (mNumVertices - vertexID);
+				numVertices = mNumVertices - vertexID;
 			}
 			float minX = AsNumber.MAX_VALUE;
 			float maxX = -AsNumber.MAX_VALUE;
 			float minY = AsNumber.MAX_VALUE;
 			float maxY = -AsNumber.MAX_VALUE;
-			int offset = (getOffset(vertexID) + POSITION_OFFSET);
+			int offset = getOffset(vertexID) + POSITION_OFFSET;
 			float x = 0;
 			float y = 0;
 			int i = 0;
-			if((transformationMatrix == null))
+			if(transformationMatrix == null)
 			{
-				for (i = vertexID; (i < numVertices); ++i)
+				for (i = vertexID; i < numVertices; ++i)
 				{
 					x = mRawData[offset];
-					y = mRawData[((int)((offset + 1)))];
-					offset = (offset + ELEMENTS_PER_VERTEX);
-					minX = (((minX < x)) ? (minX) : (x));
-					maxX = (((maxX > x)) ? (maxX) : (x));
-					minY = (((minY < y)) ? (minY) : (y));
-					maxY = (((maxY > y)) ? (maxY) : (y));
+					y = mRawData[(offset + 1)];
+					offset = offset + ELEMENTS_PER_VERTEX;
+					minX = minX < x ? minX : x;
+					maxX = maxX > x ? maxX : x;
+					minY = minY < y ? minY : y;
+					maxY = maxY > y ? maxY : y;
 				}
 			}
 			else
 			{
-				for (i = vertexID; (i < numVertices); ++i)
+				for (i = vertexID; i < numVertices; ++i)
 				{
 					x = mRawData[offset];
-					y = mRawData[((int)((offset + 1)))];
-					offset = (offset + ELEMENTS_PER_VERTEX);
+					y = mRawData[(offset + 1)];
+					offset = offset + ELEMENTS_PER_VERTEX;
 					AsMatrixUtil.transformCoords(transformationMatrix, x, y, sHelperPoint);
-					minX = (((minX < sHelperPoint.x)) ? (minX) : (sHelperPoint.x));
-					maxX = (((maxX > sHelperPoint.x)) ? (maxX) : (sHelperPoint.x));
-					minY = (((minY < sHelperPoint.y)) ? (minY) : (sHelperPoint.y));
-					maxY = (((maxY > sHelperPoint.y)) ? (maxY) : (sHelperPoint.y));
+					minX = minX < sHelperPoint.x ? minX : sHelperPoint.x;
+					maxX = maxX > sHelperPoint.x ? maxX : sHelperPoint.x;
+					minY = minY < sHelperPoint.y ? minY : sHelperPoint.y;
+					maxY = maxY > sHelperPoint.y ? maxY : sHelperPoint.y;
 				}
 			}
-			resultRect.setTo(minX, minY, (maxX - minX), (maxY - minY));
+			resultRect.setTo(minX, minY, maxX - minX, maxY - minY);
 			return resultRect;
 		}
 		public virtual AsRectangle getBounds(AsMatrix transformationMatrix, int vertexID, int numVertices)
@@ -300,40 +301,40 @@ namespace starling.utils
 		{
 			int offset = COLOR_OFFSET;
 			int i = 0;
-			for (; (i < mNumVertices); ++i)
+			for (; i < mNumVertices; ++i)
 			{
 				int j = 0;
-				for (; (j < 4); ++j)
+				for (; j < 4; ++j)
 				{
-					if((mRawData[((int)((offset + j)))] != 1.0f))
+					if(mRawData[(offset + j)] != 1.0f)
 					{
 						return true;
 					}
 				}
-				offset = (offset + ELEMENTS_PER_VERTEX);
+				offset = offset + ELEMENTS_PER_VERTEX;
 			}
 			return false;
 		}
 		public virtual void setPremultipliedAlpha(bool _value, bool updateData)
 		{
-			if((_value == mPremultipliedAlpha))
+			if(_value == mPremultipliedAlpha)
 			{
 				return;
 			}
 			if(updateData)
 			{
-				int dataLength = (mNumVertices * ELEMENTS_PER_VERTEX);
+				int dataLength = mNumVertices * ELEMENTS_PER_VERTEX;
 				int i = COLOR_OFFSET;
-				for (; (i < dataLength); i = (i + ELEMENTS_PER_VERTEX))
+				for (; i < dataLength; i = i + ELEMENTS_PER_VERTEX)
 				{
-					float alpha = mRawData[(i + 3)];
-					float divisor = ((mPremultipliedAlpha) ? (alpha) : (1.0f));
-					float multiplier = ((_value) ? (alpha) : (1.0f));
-					if((divisor != 0))
+					float alpha = mRawData[i + 3];
+					float divisor = mPremultipliedAlpha ? alpha : 1.0f;
+					float multiplier = _value ? alpha : 1.0f;
+					if(divisor != 0)
 					{
-						mRawData[i] = ((mRawData[i] / divisor) * multiplier);
-						mRawData[((int)((i + 1)))] = ((mRawData[((int)((i + 1)))] / divisor) * multiplier);
-						mRawData[((int)((i + 2)))] = ((mRawData[((int)((i + 2)))] / divisor) * multiplier);
+						mRawData[i] = mRawData[i] / divisor * multiplier;
+						mRawData[(i + 1)] = mRawData[(i + 1)] / divisor * multiplier;
+						mRawData[(i + 2)] = mRawData[(i + 2)] / divisor * multiplier;
 					}
 				}
 			}
@@ -353,19 +354,19 @@ namespace starling.utils
 		}
 		public virtual void setNumVertices(int _value)
 		{
-			mRawData._fixed = false;
+			mRawData.setOwnProperty("_fixed", false);
 			int i = 0;
-			int delta = (_value - mNumVertices);
-			for (i = 0; (i < delta); ++i)
+			int delta = _value - mNumVertices;
+			for (i = 0; i < delta; ++i)
 			{
 				mRawData.push(0, 0, 0, 0, 0, 1, 0, 0);
 			}
-			for (i = 0; (i < -(delta * ELEMENTS_PER_VERTEX)); ++i)
+			for (i = 0; i < -(delta * ELEMENTS_PER_VERTEX); ++i)
 			{
 				mRawData.pop();
 			}
 			mNumVertices = _value;
-			mRawData._fixed = true;
+			mRawData.setOwnProperty("_fixed", true);
 		}
 		public virtual AsVector<float> getRawData()
 		{

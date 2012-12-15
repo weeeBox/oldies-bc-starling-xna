@@ -19,6 +19,7 @@ namespace starling.text
 {
 	public class AsTextField : AsDisplayObjectContainer
 	{
+		private static String BITMAP_FONT_DATA_NAME = "starling.TextField.BitmapFonts";
 		private float mFontSize;
 		private uint mColor;
 		private String mText;
@@ -38,11 +39,10 @@ namespace starling.text
 		private AsDisplayObjectContainer mBorder;
 		private AsImage mImage;
 		private AsQuadBatch mQuadBatch;
-		private static bc.flash.text.AsTextField sNativeTextField = new bc.flash.text.AsTextField();
-		private static AsDictionary sBitmapFonts = new AsDictionary();
+		private static bc.flash.text.AsTextField sNativeTextField = new flash.text.AsTextField();
 		public AsTextField(int width, int height, String text, String fontName, float fontSize, uint color, bool bold)
 		{
-			mText = ((text != null) ? (text) : (""));
+			mText = text != null ? text : "";
 			mFontSize = fontSize;
 			mColor = color;
 			mHAlign = AsHAlign.CENTER;
@@ -120,9 +120,9 @@ namespace starling.text
 				mQuadBatch = null;
 			}
 			float scale = AsStarling.getContentScaleFactor();
-			float width = (mHitArea.getWidth() * scale);
-			float height = (mHitArea.getHeight() * scale);
-			AsTextFormat textFormat = new AsTextFormat(mFontName, (mFontSize * scale), mColor, mBold, mItalic, mUnderline, null, null, mHAlign);
+			float width = mHitArea.getWidth() * scale;
+			float height = mHitArea.getHeight() * scale;
+			AsTextFormat textFormat = new AsTextFormat(mFontName, mFontSize * scale, mColor, mBold, mItalic, mUnderline, null, null, mHAlign);
 			textFormat.setKerning(mKerning);
 			sNativeTextField.setDefaultTextFormat(textFormat);
 			sNativeTextField.setWidth(width);
@@ -133,8 +133,8 @@ namespace starling.text
 			sNativeTextField.setWordWrap(true);
 			sNativeTextField.setText(mText);
 			sNativeTextField.setEmbedFonts(true);
-			sNativeTextField.filters = mNativeFilters;
-			if(((sNativeTextField.getTextWidth() == 0.0f) || (sNativeTextField.getTextHeight() == 0.0f)))
+			sNativeTextField.setOwnProperty("filters", mNativeFilters);
+			if(sNativeTextField.getTextWidth() == 0.0f || sNativeTextField.getTextHeight() == 0.0f)
 			{
 				sNativeTextField.setEmbedFonts(false);
 			}
@@ -145,53 +145,53 @@ namespace starling.text
 			float textWidth = sNativeTextField.getTextWidth();
 			float textHeight = sNativeTextField.getTextHeight();
 			float xOffset = 0.0f;
-			if((mHAlign == AsHAlign.LEFT))
+			if(mHAlign == AsHAlign.LEFT)
 			{
 				xOffset = 2;
 			}
 			else
 			{
-				if((mHAlign == AsHAlign.CENTER))
+				if(mHAlign == AsHAlign.CENTER)
 				{
-					xOffset = ((width - textWidth) / 2.0f);
+					xOffset = (width - textWidth) / 2.0f;
 				}
 				else
 				{
-					if((mHAlign == AsHAlign.RIGHT))
+					if(mHAlign == AsHAlign.RIGHT)
 					{
-						xOffset = ((width - textWidth) - 2);
+						xOffset = width - textWidth - 2;
 					}
 				}
 			}
 			float yOffset = 0.0f;
-			if((mVAlign == AsVAlign.TOP))
+			if(mVAlign == AsVAlign.TOP)
 			{
 				yOffset = 2;
 			}
 			else
 			{
-				if((mVAlign == AsVAlign.CENTER))
+				if(mVAlign == AsVAlign.CENTER)
 				{
-					yOffset = ((height - textHeight) / 2.0f);
+					yOffset = (height - textHeight) / 2.0f;
 				}
 				else
 				{
-					if((mVAlign == AsVAlign.BOTTOM))
+					if(mVAlign == AsVAlign.BOTTOM)
 					{
-						yOffset = ((height - textHeight) - 2);
+						yOffset = height - textHeight - 2;
 					}
 				}
 			}
 			AsBitmapData bitmapData = new AsBitmapData(width, height, true, 0x0);
-			bitmapData.draw(sNativeTextField, new AsMatrix(1, 0, 0, 1, 0, (((int)(yOffset)) - 2)));
+			bitmapData.draw(sNativeTextField, new AsMatrix(1, 0, 0, 1, 0, ((int)(yOffset)) - 2));
 			sNativeTextField.setText("");
-			if((mTextBounds == null))
+			if(mTextBounds == null)
 			{
 				mTextBounds = new AsRectangle();
 			}
-			mTextBounds.setTo((xOffset / scale), (yOffset / scale), (textWidth / scale), (textHeight / scale));
+			mTextBounds.setTo(xOffset / scale, yOffset / scale, textWidth / scale, textHeight / scale);
 			AsTexture texture = AsTexture.fromBitmapData(bitmapData, false, false, scale);
-			if((mImage == null))
+			if(mImage == null)
 			{
 				mImage = new AsImage(texture);
 				mImage.setTouchable(false);
@@ -207,11 +207,11 @@ namespace starling.text
 		private void autoScaleNativeTextField(bc.flash.text.AsTextField textField)
 		{
 			float size = ((float)(textField.getDefaultTextFormat().getSize()));
-			int maxHeight = (int)((textField.getHeight() - 4));
-			int maxWidth = (int)((textField.getWidth() - 4));
-			while(((textField.getTextWidth() > maxWidth) || (textField.getTextHeight() > maxHeight)))
+			int maxHeight = (int)(textField.getHeight() - 4);
+			int maxWidth = (int)(textField.getWidth() - 4);
+			while(textField.getTextWidth() > maxWidth || textField.getTextHeight() > maxHeight)
 			{
-				if((size <= 4))
+				if(size <= 4)
 				{
 					break;
 				}
@@ -227,7 +227,7 @@ namespace starling.text
 				mImage.removeFromParent(true);
 				mImage = null;
 			}
-			if((mQuadBatch == null))
+			if(mQuadBatch == null)
 			{
 				mQuadBatch = new AsQuadBatch();
 				mQuadBatch.setTouchable(false);
@@ -237,26 +237,26 @@ namespace starling.text
 			{
 				mQuadBatch.reset();
 			}
-			AsBitmapFont bitmapFont = (AsBitmapFont)(sBitmapFonts[mFontName]);
-			if((bitmapFont == null))
+			AsBitmapFont bitmapFont = (AsBitmapFont)(getBitmapFonts()[mFontName]);
+			if(bitmapFont == null)
 			{
-				throw new AsError(("Bitmap font not registered: " + mFontName));
+				throw new AsError("Bitmap font not registered: " + mFontName);
 			}
 			bitmapFont.fillQuadBatch(mQuadBatch, mHitArea.getWidth(), mHitArea.getHeight(), mText, mFontSize, mColor, mHAlign, mVAlign, mAutoScale, mKerning);
 			mTextBounds = null;
 		}
 		private void updateBorder()
 		{
-			if((mBorder == null))
+			if(mBorder == null)
 			{
 				return;
 			}
 			float width = mHitArea.getWidth();
 			float height = mHitArea.getHeight();
-			AsQuad topLine = ((mBorder.getChildAt(0) is AsQuad) ? ((AsQuad)(mBorder.getChildAt(0))) : null);
-			AsQuad rightLine = ((mBorder.getChildAt(1) is AsQuad) ? ((AsQuad)(mBorder.getChildAt(1))) : null);
-			AsQuad bottomLine = ((mBorder.getChildAt(2) is AsQuad) ? ((AsQuad)(mBorder.getChildAt(2))) : null);
-			AsQuad leftLine = ((mBorder.getChildAt(3) is AsQuad) ? ((AsQuad)(mBorder.getChildAt(3))) : null);
+			AsQuad topLine = mBorder.getChildAt(0) as AsQuad;
+			AsQuad rightLine = mBorder.getChildAt(1) as AsQuad;
+			AsQuad bottomLine = mBorder.getChildAt(2) as AsQuad;
+			AsQuad leftLine = mBorder.getChildAt(3) as AsQuad;
 			topLine.setWidth(width);
 			topLine.setHeight(1);
 			bottomLine.setWidth(width);
@@ -265,8 +265,8 @@ namespace starling.text
 			leftLine.setHeight(height);
 			rightLine.setWidth(1);
 			rightLine.setHeight(height);
-			rightLine.setX((width - 1));
-			bottomLine.setY((height - 1));
+			rightLine.setX(width - 1);
+			bottomLine.setY(height - 1);
 			topLine.setColor(rightLine.setColor(bottomLine.setColor(leftLine.setColor(mColor))));
 		}
 		public virtual AsRectangle getTextBounds()
@@ -275,7 +275,7 @@ namespace starling.text
 			{
 				redrawContents();
 			}
-			if((mTextBounds == null))
+			if(mTextBounds == null)
 			{
 				mTextBounds = mQuadBatch.getBounds(mQuadBatch);
 			}
@@ -307,11 +307,11 @@ namespace starling.text
 		}
 		public virtual void setText(String _value)
 		{
-			if((_value == null))
+			if(_value == null)
 			{
 				_value = "";
 			}
-			if((mText != _value))
+			if(mText != _value)
 			{
 				mText = _value;
 				mRequiresRedraw = true;
@@ -323,9 +323,15 @@ namespace starling.text
 		}
 		public virtual void setFontName(String _value)
 		{
-			if((mFontName != _value))
+			if(mFontName != _value)
 			{
-				NOT.IMPLEMENTED();
+				if(_value == AsBitmapFont.MINI && getBitmapFonts()[_value] == undefined)
+				{
+					registerBitmapFont(new AsBitmapFont());
+				}
+				mFontName = _value;
+				mRequiresRedraw = true;
+				mIsRenderedText = getBitmapFonts()[_value] == undefined;
 			}
 		}
 		public virtual float getFontSize()
@@ -334,7 +340,7 @@ namespace starling.text
 		}
 		public virtual void setFontSize(float _value)
 		{
-			if((mFontSize != _value))
+			if(mFontSize != _value)
 			{
 				mFontSize = _value;
 				mRequiresRedraw = true;
@@ -346,7 +352,7 @@ namespace starling.text
 		}
 		public virtual void setColor(uint _value)
 		{
-			if((mColor != _value))
+			if(mColor != _value)
 			{
 				mColor = _value;
 				updateBorder();
@@ -359,11 +365,11 @@ namespace starling.text
 		}
 		public virtual void setHAlign(String _value)
 		{
-			if(!(AsHAlign.isValid(_value)))
+			if(!AsHAlign.isValid(_value))
 			{
-				throw new AsArgumentError(("Invalid horizontal align: " + _value));
+				throw new AsArgumentError("Invalid horizontal align: " + _value);
 			}
-			if((mHAlign != _value))
+			if(mHAlign != _value)
 			{
 				mHAlign = _value;
 				mRequiresRedraw = true;
@@ -375,11 +381,11 @@ namespace starling.text
 		}
 		public virtual void setVAlign(String _value)
 		{
-			if(!(AsVAlign.isValid(_value)))
+			if(!AsVAlign.isValid(_value))
 			{
-				throw new AsArgumentError(("Invalid vertical align: " + _value));
+				throw new AsArgumentError("Invalid vertical align: " + _value);
 			}
-			if((mVAlign != _value))
+			if(mVAlign != _value)
 			{
 				mVAlign = _value;
 				mRequiresRedraw = true;
@@ -387,16 +393,16 @@ namespace starling.text
 		}
 		public virtual bool getBorder()
 		{
-			return (mBorder != null);
+			return mBorder != null;
 		}
 		public virtual void setBorder(bool _value)
 		{
-			if((_value && (mBorder == null)))
+			if(_value && mBorder == null)
 			{
 				mBorder = new AsSprite();
 				addChild(mBorder);
 				int i = 0;
-				for (; (i < 4); ++i)
+				for (; i < 4; ++i)
 				{
 					mBorder.addChild(new AsQuad(1.0f, 1.0f));
 				}
@@ -404,7 +410,7 @@ namespace starling.text
 			}
 			else
 			{
-				if((!(_value) && (mBorder != null)))
+				if(!_value && mBorder != null)
 				{
 					mBorder.removeFromParent(true);
 					mBorder = null;
@@ -417,7 +423,7 @@ namespace starling.text
 		}
 		public virtual void setBold(bool _value)
 		{
-			if((mBold != _value))
+			if(mBold != _value)
 			{
 				mBold = _value;
 				mRequiresRedraw = true;
@@ -429,7 +435,7 @@ namespace starling.text
 		}
 		public virtual void setItalic(bool _value)
 		{
-			if((mItalic != _value))
+			if(mItalic != _value)
 			{
 				mItalic = _value;
 				mRequiresRedraw = true;
@@ -441,7 +447,7 @@ namespace starling.text
 		}
 		public virtual void setUnderline(bool _value)
 		{
-			if((mUnderline != _value))
+			if(mUnderline != _value)
 			{
 				mUnderline = _value;
 				mRequiresRedraw = true;
@@ -453,7 +459,7 @@ namespace starling.text
 		}
 		public virtual void setKerning(bool _value)
 		{
-			if((mKerning != _value))
+			if(mKerning != _value)
 			{
 				mKerning = _value;
 				mRequiresRedraw = true;
@@ -465,7 +471,7 @@ namespace starling.text
 		}
 		public virtual void setAutoScale(bool _value)
 		{
-			if((mAutoScale != _value))
+			if(mAutoScale != _value)
 			{
 				mAutoScale = _value;
 				mRequiresRedraw = true;
@@ -477,7 +483,7 @@ namespace starling.text
 		}
 		public virtual void setNativeFilters(AsArray _value)
 		{
-			if(!(mIsRenderedText))
+			if(!mIsRenderedText)
 			{
 				throw new AsError("The TextField.nativeFilters property cannot be used on Bitmap fonts.");
 			}
@@ -486,11 +492,11 @@ namespace starling.text
 		}
 		public static String registerBitmapFont(AsBitmapFont bitmapFont, String name)
 		{
-			if((name == null))
+			if(name == null)
 			{
 				name = bitmapFont.getName();
 			}
-			sBitmapFonts[name] = bitmapFont;
+			getBitmapFonts()[name] = bitmapFont;
 			return name;
 		}
 		public static String registerBitmapFont(AsBitmapFont bitmapFont)
@@ -499,8 +505,11 @@ namespace starling.text
 		}
 		public static void unregisterBitmapFont(String name, bool dispose)
 		{
-			NOT.IMPLEMENTED();
-			sBitmapFonts.remove(name);
+			if(dispose && getBitmapFonts()[name] != undefined)
+			{
+				((AsBitmapFont)(getBitmapFonts()[name])).dispose();
+			}
+			getBitmapFonts().remove(name);
 		}
 		public static void unregisterBitmapFont(String name)
 		{
@@ -508,7 +517,17 @@ namespace starling.text
 		}
 		public static AsBitmapFont getBitmapFont(String name)
 		{
-			return (AsBitmapFont)(sBitmapFonts[name]);
+			return (AsBitmapFont)(getBitmapFonts()[name]);
+		}
+		private static AsDictionary getBitmapFonts()
+		{
+			AsDictionary fonts = AsStarling.getCurrent().getCustomData()[BITMAP_FONT_DATA_NAME] as AsDictionary;
+			if(fonts == null)
+			{
+				fonts = new AsDictionary();
+				AsStarling.getCurrent().getCustomData()[BITMAP_FONT_DATA_NAME] = fonts;
+			}
+			return fonts;
 		}
 	}
 }

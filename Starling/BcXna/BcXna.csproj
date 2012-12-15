@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{7382FC1D-C4C6-4DD6-A567-FA02DEBCA56A}</ProjectGuid>
+    <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BcXna</RootNamespace>
+    <AssemblyName>BcXna</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
+    <XnaPlatform>Windows</XnaPlatform>
+    <XnaProfile>HiDef</XnaProfile>
+    <XnaCrossPlatformGroupID>57a79b36-c54b-47c8-b1ab-790461b0af05</XnaCrossPlatformGroupID>
+    <XnaOutputType>Library</XnaOutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>false</XnaCompressContent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\x86\Release</OutputPath>
+    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>true</XnaCompressContent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.GamerServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Xact, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Video, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Avatar, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Storage, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="mscorlib">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Net">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Code\Api\bc\flash\core\AsRenderSupport.cs" />
+    <Compile Include="Code\Api\bc\flash\display3D\AsContext3D.cs" />
+    <Compile Include="Code\Api\bc\flash\display3D\AsContext3DBlendFactor.cs" />
+    <Compile Include="Code\Api\bc\flash\display3D\AsContext3DCompareMode.cs" />
+    <Compile Include="Code\Api\bc\flash\display3D\AsContext3DProgramType.cs" />
+    <Compile Include="Code\Api\bc\flash\display3D\AsContext3DTextureFormat.cs" />
+    <Compile Include="Code\Api\bc\flash\display3D\AsContext3DTriangleFace.cs" />
+    <Compile Include="Code\Api\bc\flash\display3D\AsContext3DVertexBufferFormat.cs" />
+    <Compile Include="Code\Api\bc\flash\display3D\AsIndexBuffer3D.cs" />
+    <Compile Include="Code\Api\bc\flash\display3D\AsProgram3D.cs" />
+    <Compile Include="Code\Api\bc\flash\display3D\AsVertexBuffer3D.cs" />
+    <Compile Include="Code\Api\bc\flash\display3D\textures\AsCubeTexture.cs" />
+    <Compile Include="Code\Api\bc\flash\display3D\textures\AsTexture.cs" />
+    <Compile Include="Code\Api\bc\flash\display3D\textures\AsTextureBase.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsBitmap.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsBitmapData.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsBlendMode.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsDisplayObject.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsDisplayObjectContainer.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsGraphics.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsIBitmapDrawable.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsInteractiveObject.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsLoader.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsLoaderInfo.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsMovieClip.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsPixelSnapping.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsSprite.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsStage.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsStage3D.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsStageAlign.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsStageDisplayState.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsStageQuality.cs" />
+    <Compile Include="Code\Api\bc\flash\display\AsStageScaleMode.cs" />
+    <Compile Include="Code\Api\bc\flash\events\AsEnterFrameEvent.cs" />
+    <Compile Include="Code\Api\bc\flash\events\AsErrorEvent.cs" />
+    <Compile Include="Code\Api\bc\flash\events\AsEvent.cs" />
+    <Compile Include="Code\Api\bc\flash\events\AsEventDispatcher.cs" />
+    <Compile Include="Code\Api\bc\flash\events\AsFunctions.cs" />
+    <Compile Include="Code\Api\bc\flash\events\AsGamePadEvent.cs" />
+    <Compile Include="Code\Api\bc\flash\events\AsIOErrorEvent.cs" />
+    <Compile Include="Code\Api\bc\flash\events\AsKeyboardEvent.cs" />
+    <Compile Include="Code\Api\bc\flash\events\AsMouseEvent.cs" />
+    <Compile Include="Code\Api\bc\flash\events\AsTouch.cs" />
+    <Compile Include="Code\Api\bc\flash\events\AsTouchData.cs" />
+    <Compile Include="Code\Api\bc\flash\events\AsTouchEvent.cs" />
+    <Compile Include="Code\Api\bc\flash\events\AsTouchPhase.cs" />
+    <Compile Include="Code\Api\bc\flash\events\AsTouchProcessor.cs" />
+    <Compile Include="Code\Api\bc\flash\geom\AsColorTransform.cs" />
+    <Compile Include="Code\Api\bc\flash\geom\AsMatrix.cs" />
+    <Compile Include="Code\Api\bc\flash\geom\AsMatrix3D.cs" />
+    <Compile Include="Code\Api\bc\flash\geom\AsPoint.cs" />
+    <Compile Include="Code\Api\bc\flash\geom\AsRectangle.cs" />
+    <Compile Include="Code\Api\bc\flash\geom\AsTransform.cs" />
+    <Compile Include="Code\Api\bc\flash\geom\AsVector3D.cs" />
+    <Compile Include="Code\Api\bc\flash\input\AsGamePad.cs" />
+    <Compile Include="Code\Api\bc\flash\input\AsThumbStick.cs" />
+    <Compile Include="Code\Api\bc\flash\media\AsSound.cs" />
+    <Compile Include="Code\Api\bc\flash\media\AsSoundChannel.cs" />
+    <Compile Include="Code\Api\bc\flash\media\AsSoundLoaderContext.cs" />
+    <Compile Include="Code\Api\bc\flash\media\AsSoundTransform.cs" />
+    <Compile Include="Code\Api\bc\flash\net\AsURLLoader.cs" />
+    <Compile Include="Code\Api\bc\flash\net\AsURLRequest.cs" />
+    <Compile Include="Code\Api\bc\flash\text\AsAntiAliasType.cs" />
+    <Compile Include="Code\Api\bc\flash\text\AsTextField.cs" />
+    <Compile Include="Code\Api\bc\flash\text\AsTextFieldAutoSize.cs" />
+    <Compile Include="Code\Api\bc\flash\text\AsTextFormat.cs" />
+    <Compile Include="Code\Api\bc\flash\text\AsTextFormatAlign.cs" />
+    <Compile Include="Code\Api\bc\flash\text\AsTextLineMetrics.cs" />
+    <Compile Include="Code\Api\bc\flash\ui\AsKeyboard.cs" />
+    <Compile Include="Code\Api\bc\flash\ui\AsMouse.cs" />
+    <Compile Include="Code\Api\bc\flash\ui\AsMouseCursor.cs" />
+    <Compile Include="Code\Api\bc\flash\ui\AsMultitouch.cs" />
+    <Compile Include="Code\Api\bc\flash\ui\AsMultitouchInputMode.cs" />
+    <Compile Include="Code\Api\bc\flash\utils\AsEndian.cs" />
+    <Compile Include="Code\Native\bc\flash\media\AsMusicChannel.cs" />
+    <Compile Include="Code\Native\bc\flash\media\AsSoundEffectChannel.cs" />
+    <Compile Include="Code\Native\bc\flash\native\BcEffect.cs" />
+    <Compile Include="Code\Native\bc\flash\native\BcRenderSupport.cs" />
+    <Compile Include="Code\Native\bc\flash\native\input\GamePadListener.cs" />
+    <Compile Include="Code\Native\bc\flash\native\input\InputHelper.cs" />
+    <Compile Include="Code\Native\bc\flash\native\input\KeyAction.cs" />
+    <Compile Include="Code\Native\bc\flash\native\input\KeyboardListener.cs" />
+    <Compile Include="Code\Native\bc\flash\native\input\KeyCode.cs" />
+    <Compile Include="Code\Native\bc\flash\native\input\NativeInput.cs" />
+    <Compile Include="Code\Native\bc\flash\native\input\TouchListener.cs" />
+    <Compile Include="Code\Native\bc\flash\native\NativeApplication.cs" />
+    <Compile Include="Code\Native\bc\flash\NOT.cs" />
+    <Compile Include="Code\Native\bc\flash\resources\BcBinaryData.cs" />
+    <Compile Include="Code\Native\bc\flash\resources\BcManagedResource.cs" />
+    <Compile Include="Code\Native\bc\flash\resources\BcMusic.cs" />
+    <Compile Include="Code\Native\bc\flash\resources\BcResFactory.cs" />
+    <Compile Include="Code\Native\bc\flash\resources\BcSound.cs" />
+    <Compile Include="Code\Native\bc\flash\resources\BcSoundEffect.cs" />
+    <Compile Include="Code\Native\bc\flash\resources\BcTexture2D.cs" />
+    <Compile Include="Code\Native\bc\flash\resources\BinaryContentReader.cs" />
+    <Compile Include="Code\Platform\bc\flash\AsArgumentError.cs" />
+    <Compile Include="Code\Platform\bc\flash\AsArray.cs" />
+    <Compile Include="Code\Platform\bc\flash\AsDebug.cs" />
+    <Compile Include="Code\Platform\bc\flash\AsDictionary.cs" />
+    <Compile Include="Code\Platform\bc\flash\AsError.cs" />
+    <Compile Include="Code\Platform\bc\flash\AsGlobal.cs" />
+    <Compile Include="Code\Platform\bc\flash\AsMath.cs" />
+    <Compile Include="Code\Platform\bc\flash\AsNumber.cs" />
+    <Compile Include="Code\Platform\bc\flash\AsObject.cs" />
+    <Compile Include="Code\Platform\bc\flash\AsRangeError.cs" />
+    <Compile Include="Code\Platform\bc\flash\AsString.cs" />
+    <Compile Include="Code\Platform\bc\flash\AsVector.cs" />
+    <Compile Include="Code\Platform\bc\flash\errors\AsAbstractClassError.cs" />
+    <Compile Include="Code\Platform\bc\flash\errors\AsAbstractMethodError.cs" />
+    <Compile Include="Code\Platform\bc\flash\errors\AsIllegalOperationError.cs" />
+    <Compile Include="Code\Platform\bc\flash\errors\AsNotImplementedError.cs" />
+    <Compile Include="Code\Platform\bc\flash\error\AsAbstractClassError.cs" />
+    <Compile Include="Code\Platform\bc\flash\error\AsAbstractMethodError.cs" />
+    <Compile Include="Code\Platform\bc\flash\error\AsArgumentError.cs" />
+    <Compile Include="Code\Platform\bc\flash\error\AsError.cs" />
+    <Compile Include="Code\Platform\bc\flash\error\AsIllegalOperationError.cs" />
+    <Compile Include="Code\Platform\bc\flash\error\AsNotImplementedError.cs" />
+    <Compile Include="Code\Platform\bc\flash\error\AsRangeError.cs" />
+    <Compile Include="Code\Platform\bc\flash\system\AsCapabilities.cs" />
+    <Compile Include="Code\Platform\bc\flash\system\AsLoaderContext.cs" />
+    <Compile Include="Code\Platform\bc\flash\system\AsSystem.cs" />
+    <Compile Include="Code\Platform\bc\flash\utils\AsByteArray.cs" />
+    <Compile Include="Code\Platform\bc\flash\utils\AsMathHelper.cs" />
+    <Compile Include="Code\Platform\bc\flash\xml\AsXML.cs" />
+    <Compile Include="Code\Platform\bc\flash\xml\AsXMLAttribute.cs" />
+    <Compile Include="Code\Platform\bc\flash\xml\AsXMLElement.cs" />
+    <Compile Include="Code\Platform\bc\flash\xml\AsXMLList.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
+  <!--
+      To modify your build process, add your task inside one of the targets below and uncomment it. 
+      Other similar extension points exist, see Microsoft.Common.targets.
+      <Target Name="BeforeBuild">
+      </Target>
+      <Target Name="AfterBuild">
+      </Target>
+    -->
+</Project>

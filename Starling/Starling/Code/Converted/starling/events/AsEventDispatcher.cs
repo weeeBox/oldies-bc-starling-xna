@@ -15,18 +15,18 @@ namespace starling.events
 		}
 		public virtual void addEventListener(String type, AsEventListenerCallback listener)
 		{
-			if((mEventListeners == null))
+			if(mEventListeners == null)
 			{
 				mEventListeners = new AsDictionary();
 			}
-			AsVector<AsEventListenerCallback> listeners = (AsVector<AsEventListenerCallback>)(mEventListeners[type]);
-			if((listeners == null))
+			AsVector<AsEventListenerCallback> listeners = mEventListeners[type] as AsVector<AsEventListenerCallback>;
+			if(listeners == null)
 			{
 				mEventListeners[type] = new AsVector<AsEventListenerCallback>();
 			}
 			else
 			{
-				if((listeners.indexOf(listener) == -1))
+				if(listeners.indexOf(listener) == -1)
 				{
 					listeners.push(listener);
 				}
@@ -36,15 +36,15 @@ namespace starling.events
 		{
 			if(mEventListeners != null)
 			{
-				AsVector<AsEventListenerCallback> listeners = (AsVector<AsEventListenerCallback>)(mEventListeners[type]);
+				AsVector<AsEventListenerCallback> listeners = mEventListeners[type] as AsVector<AsEventListenerCallback>;
 				if(listeners != null)
 				{
 					int numListeners = (int)(listeners.getLength());
 					AsVector<AsEventListenerCallback> remainingListeners = new AsVector<AsEventListenerCallback>();
 					int i = 0;
-					for (; (i < numListeners); ++i)
+					for (; i < numListeners; ++i)
 					{
-						if((listeners[i] != listener))
+						if(listeners[i] != listener)
 						{
 							remainingListeners.push(listeners[i]);
 						}
@@ -55,7 +55,7 @@ namespace starling.events
 		}
 		public virtual void removeEventListeners(String type)
 		{
-			if(((type != null) && (mEventListeners != null)))
+			if(type != null && mEventListeners != null)
 			{
 				mEventListeners.remove(type);
 			}
@@ -71,33 +71,41 @@ namespace starling.events
 		public virtual void dispatchEvent(AsEvent _event)
 		{
 			bool bubbles = _event.getBubbles();
-			if((!(bubbles) && ((mEventListeners == null) || mEventListeners.containsKey(_event.getType()))))
+			if(!bubbles && (mEventListeners == null || !(mEventListeners.containsKey(_event.getType()))))
 			{
 				return;
 			}
 			AsEventDispatcher previousTarget = _event.getTarget();
 			_event.setTarget(this);
-			if((bubbles && this is AsDisplayObject))
+			if(bubbles && this is AsDisplayObject)
 			{
-				bubble(_event);
+				bubbleEvent(_event);
 			}
 			else
 			{
-				invoke(_event);
+				invokeEvent(_event);
 			}
 			if(previousTarget != null)
 			{
 				_event.setTarget(previousTarget);
 			}
 		}
-		private bool invoke(AsEvent _event)
+		public virtual bool invokeEvent(AsEvent _event)
 		{
-			AsVector<AsEventListenerCallback> listeners = (AsVector<AsEventListenerCallback>)(((mEventListeners != null) ? (mEventListeners[_event.getType()]) : (null)));
-			int numListeners = (((listeners == null)) ? (0) : (listeners.getLength()));
-			if((numListeners) != 0)
+			AsVector<AsEventListenerCallback> listeners = mEventListeners != null ? mEventListeners[_event.getType()] as AsVector<AsEventListenerCallback> : null;
+			int numListeners = listeners == null ? 0 : listeners.getLength();
+			if(numListeners != 0)
 			{
 				_event.setCurrentTarget(this);
-				NOT.IMPLEMENTED();
+				int i = 0;
+				for (; i < numListeners; ++i)
+				{
+					AsEventListenerCallback listener = listeners[i] as AsEventListenerCallback;
+					if(_event.getStopsImmediatePropagation())
+					{
+						return true;
+					}
+				}
 				return _event.getStopsPropagation();
 			}
 			else
@@ -105,12 +113,12 @@ namespace starling.events
 				return false;
 			}
 		}
-		private void bubble(AsEvent _event)
+		public virtual void bubbleEvent(AsEvent _event)
 		{
 			AsVector<AsEventDispatcher> chain = null;
-			AsDisplayObject element = ((this is AsDisplayObject) ? ((AsDisplayObject)(this)) : null);
+			AsDisplayObject element = this as AsDisplayObject;
 			int length = 1;
-			if((sBubbleChains.getLength() > 0))
+			if(sBubbleChains.getLength() > 0)
 			{
 				chain = (AsVector<AsEventDispatcher>)(sBubbleChains.pop());
 				chain[0] = element;
@@ -119,14 +127,14 @@ namespace starling.events
 			{
 				chain = new AsVector<AsEventDispatcher>();
 			}
-			while(element = element.getParent() != null)
+			while((element = element.getParent()) != null)
 			{
 				chain[length++] = element;
 			}
 			int i = 0;
-			for (; (i < length); ++i)
+			for (; i < length; ++i)
 			{
-				bool stopPropagation = chain[i].invoke(_event);
+				bool stopPropagation = chain[i].invokeEvent(_event);
 				if(stopPropagation)
 				{
 					break;
@@ -135,11 +143,11 @@ namespace starling.events
 			chain.setLength(0);
 			sBubbleChains.push(chain);
 		}
-		public virtual void dispatchEventWith(String type, bool bubbles, AsObject data)
+		public virtual void dispatchEventWith(String type, bool bubbles, Object data)
 		{
-			if((bubbles || hasEventListener(type)))
+			if(bubbles || hasEventListener(type))
 			{
-				AsEvent _event = AsEvent.fromPool(type, bubbles, (AsObject)(data));
+				AsEvent _event = AsEvent.fromPool(type, bubbles, data);
 				dispatchEvent(_event);
 				AsEvent.toPool(_event);
 			}
@@ -154,8 +162,8 @@ namespace starling.events
 		}
 		public virtual bool hasEventListener(String type)
 		{
-			AsVector<AsEventListenerCallback> listeners = (AsVector<AsEventListenerCallback>)(((mEventListeners != null) ? (mEventListeners[type]) : (null)));
-			return ((listeners != null) ? ((listeners.getLength() != 0)) : (false));
+			AsVector<AsEventListenerCallback> listeners = mEventListeners != null ? mEventListeners[type] as AsVector<AsEventListenerCallback> : null;
+			return listeners != null ? listeners.getLength() != 0 : false;
 		}
 	}
 }

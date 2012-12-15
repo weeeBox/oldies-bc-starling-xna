@@ -19,6 +19,12 @@ namespace starling.events
 		public static String CONTEXT3D_CREATE = "context3DCreate";
 		public static String ROOT_CREATED = "rootCreated";
 		public static String REMOVE_FROM_JUGGLER = "removeFromJuggler";
+		public static String CHANGE = "change";
+		public static String CANCEL = "cancel";
+		public static String SCROLL = "scroll";
+		public static String OPEN = "open";
+		public static String CLOSE = "close";
+		public static String SELECT = "select";
 		private static AsVector<AsEvent> sEventPool = new AsVector<AsEvent>();
 		private AsEventDispatcher mTarget;
 		private AsEventDispatcher mCurrentTarget;
@@ -26,12 +32,12 @@ namespace starling.events
 		private bool mBubbles;
 		private bool mStopsPropagation;
 		private bool mStopsImmediatePropagation;
-		private AsObject mData;
-		public AsEvent(String type, bool bubbles, AsObject data)
+		private Object mData;
+		public AsEvent(String type, bool bubbles, Object data)
 		{
 			mType = type;
 			mBubbles = bubbles;
-			mData = (AsObject)(data);
+			mData = data;
 		}
 		public AsEvent(String type, bool bubbles)
 		 : this(type, bubbles, null)
@@ -51,8 +57,7 @@ namespace starling.events
 		}
 		public virtual String toString()
 		{
-			NOT.IMPLEMENTED();
-			return null;
+			return AsGlobal.formatString("[{0} type=\"{1}\" bubbles={2}]", (As_AS_REST)(AsString.split(AsGlobal.getQualifiedClassName(this), "::").pop()), mType, mBubbles);
 		}
 		public virtual bool getBubbles()
 		{
@@ -70,9 +75,9 @@ namespace starling.events
 		{
 			return mType;
 		}
-		public virtual AsObject getData()
+		public virtual Object getData()
 		{
-			return (AsObject)(mData);
+			return mData;
 		}
 		public virtual void setTarget(AsEventDispatcher _value)
 		{
@@ -82,6 +87,10 @@ namespace starling.events
 		{
 			mCurrentTarget = _value;
 		}
+		public virtual void setData(Object _value)
+		{
+			mData = _value;
+		}
 		public virtual bool getStopsPropagation()
 		{
 			return mStopsPropagation;
@@ -90,11 +99,11 @@ namespace starling.events
 		{
 			return mStopsImmediatePropagation;
 		}
-		public static AsEvent fromPool(String type, bool bubbles, AsObject data)
+		public static AsEvent fromPool(String type, bool bubbles, Object data)
 		{
-			if((sEventPool.getLength()) != 0)
+			if(sEventPool.getLength() != 0)
 			{
-				return sEventPool.pop().reset(type, bubbles, (AsObject)(data));
+				return sEventPool.pop().reset(type, bubbles, data);
 			}
 			else
 			{
@@ -114,11 +123,11 @@ namespace starling.events
 			_event.mData = _event.mTarget = _event.mCurrentTarget = null;
 			sEventPool.push(_event);
 		}
-		public virtual AsEvent reset(String type, bool bubbles, AsObject data)
+		public virtual AsEvent reset(String type, bool bubbles, Object data)
 		{
 			mType = type;
 			mBubbles = bubbles;
-			mData = (AsObject)(data);
+			mData = data;
 			mTarget = mCurrentTarget = null;
 			mStopsPropagation = mStopsImmediatePropagation = false;
 			return this;

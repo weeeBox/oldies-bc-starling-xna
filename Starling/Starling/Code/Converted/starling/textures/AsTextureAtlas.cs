@@ -39,16 +39,16 @@ namespace starling.textures
 				foreach (AsXML subTexture in __subTextures_)
 				{
 					String name = subTexture.attribute("name");
-					float x = (AsGlobal.parseFloat(subTexture.attribute("x")) / scale);
-					float y = (AsGlobal.parseFloat(subTexture.attribute("y")) / scale);
-					float width = (AsGlobal.parseFloat(subTexture.attribute("width")) / scale);
-					float height = (AsGlobal.parseFloat(subTexture.attribute("height")) / scale);
-					float frameX = (AsGlobal.parseFloat(subTexture.attribute("frameX")) / scale);
-					float frameY = (AsGlobal.parseFloat(subTexture.attribute("frameY")) / scale);
-					float frameWidth = (AsGlobal.parseFloat(subTexture.attribute("frameWidth")) / scale);
-					float frameHeight = (AsGlobal.parseFloat(subTexture.attribute("frameHeight")) / scale);
+					float x = AsGlobal.parseFloat(subTexture.attribute("x")) / scale;
+					float y = AsGlobal.parseFloat(subTexture.attribute("y")) / scale;
+					float width = AsGlobal.parseFloat(subTexture.attribute("width")) / scale;
+					float height = AsGlobal.parseFloat(subTexture.attribute("height")) / scale;
+					float frameX = AsGlobal.parseFloat(subTexture.attribute("frameX")) / scale;
+					float frameY = AsGlobal.parseFloat(subTexture.attribute("frameY")) / scale;
+					float frameWidth = AsGlobal.parseFloat(subTexture.attribute("frameWidth")) / scale;
+					float frameHeight = AsGlobal.parseFloat(subTexture.attribute("frameHeight")) / scale;
 					AsRectangle region = new AsRectangle(x, y, width, height);
-					AsRectangle frame = ((((frameWidth > 0) && (frameHeight > 0))) ? (new AsRectangle(frameX, frameY, frameWidth, frameHeight)) : (null));
+					AsRectangle frame = frameWidth > 0 && frameHeight > 0 ? new AsRectangle(frameX, frameY, frameWidth, frameHeight) : null;
 					addRegion(name, region, frame);
 				}
 			}
@@ -56,7 +56,7 @@ namespace starling.textures
 		public virtual AsTexture getTexture(String name)
 		{
 			AsRectangle region = (AsRectangle)(mTextureRegions[name]);
-			if((region == null))
+			if(region == null)
 			{
 				return null;
 			}
@@ -74,7 +74,7 @@ namespace starling.textures
 			{
 				foreach (String name in __names_)
 				{
-					if((String.indexOf(name, prefix) == 0))
+					if(AsString.indexOf(name, prefix) == 0)
 					{
 						names.push(name);
 					}

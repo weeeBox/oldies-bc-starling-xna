@@ -11,7 +11,6 @@ using starling.core;
 using starling.errors;
 using starling.textures;
 using starling.utils;
-using AsTexture = bc.flash.display3D.textures.AsTexture;
  
 namespace starling.textures
 {
@@ -19,9 +18,10 @@ namespace starling.textures
 	{
 		private AsRectangle mFrame;
 		private bool mRepeat;
+		private static AsPoint sOrigin = new AsPoint();
 		public AsTexture()
 		{
-			if((AsCapabilities.getIsDebugger() && (AsGlobal.getQualifiedClassName(this) == "starling.textures::Texture")))
+			if(AsCapabilities.getIsDebugger() && AsGlobal.getQualifiedClassName(this) == "starling.textures::Texture")
 			{
 				throw new AsAbstractClassError();
 			}
@@ -54,15 +54,15 @@ namespace starling.textures
 			int legalHeight = AsGlobal.getNextPowerOfTwo(origHeight);
 			AsContext3D context = AsStarling.getContext();
 			AsBitmapData potData = null;
-			if((context == null))
+			if(context == null)
 			{
 				throw new AsMissingContextError();
 			}
 			bc.flash.display3D.textures.AsTexture nativeTexture = context.createTexture(legalWidth, legalHeight, AsContext3DTextureFormat.BGRA, optimizeForRenderTexture);
-			if(((legalWidth > origWidth) || (legalHeight > origHeight)))
+			if(legalWidth > origWidth || legalHeight > origHeight)
 			{
 				potData = new AsBitmapData(legalWidth, legalHeight, true, 0);
-				potData.copyPixels(data, data.getRect(), new AsPoint(0, 0));
+				potData.copyPixels(data, data.getRect(), sOrigin);
 				data = potData;
 			}
 			uploadBitmapData(nativeTexture, data, generateMipMaps);
@@ -78,13 +78,13 @@ namespace starling.textures
 					potData.dispose();
 				}
 			}
-			if(((origWidth == legalWidth) && (origHeight == legalHeight)))
+			if(origWidth == legalWidth && origHeight == legalHeight)
 			{
 				return concreteTexture;
 			}
 			else
 			{
-				return new AsSubTexture(concreteTexture, new AsRectangle(0, 0, (origWidth / scale), (origHeight / scale)), true);
+				return new AsSubTexture(concreteTexture, new AsRectangle(0, 0, origWidth / scale, origHeight / scale), true);
 			}
 		}
 		public static AsTexture fromBitmapData(AsBitmapData data, bool generateMipMaps, bool optimizeForRenderTexture)
@@ -102,14 +102,14 @@ namespace starling.textures
 		public static AsTexture fromAtfData(AsByteArray data, float scale)
 		{
 			AsContext3D context = AsStarling.getContext();
-			if((context == null))
+			if(context == null)
 			{
 				throw new AsMissingContextError();
 			}
 			AsAtfData atfData = new AsAtfData(data);
 			bc.flash.display3D.textures.AsTexture nativeTexture = context.createTexture(atfData.getWidth(), atfData.getHeight(), atfData.getFormat(), false);
 			uploadAtfData(nativeTexture, data);
-			AsConcreteTexture concreteTexture = new AsConcreteTexture(nativeTexture, atfData.getFormat(), atfData.getWidth(), atfData.getHeight(), (atfData.getNumTextures() > 1), false, false, scale);
+			AsConcreteTexture concreteTexture = new AsConcreteTexture(nativeTexture, atfData.getFormat(), atfData.getWidth(), atfData.getHeight(), atfData.getNumTextures() > 1, false, false, scale);
 			if(AsStarling.getHandleLostContext())
 			{
 				concreteTexture.restoreOnLostContext(atfData);
@@ -119,6 +119,79 @@ namespace starling.textures
 		public static AsTexture fromAtfData(AsByteArray data)
 		{
 			return fromAtfData(data, 1);
+		}
+		public static AsTexture fromColor(int width, int height, uint color, bool optimizeForRenderTexture, float scale)
+		{
+			if(scale <= 0)
+			{
+				scale = AsStarling.getContentScaleFactor();
+			}
+			AsBitmapData bitmapData = new AsBitmapData(width * scale, height * scale, true, color);
+			AsTexture texture = fromBitmapData(bitmapData, false, optimizeForRenderTexture, scale);
+			if(!AsStarling.getHandleLostContext())
+			{
+				bitmapData.dispose();
+			}
+			return texture;
+		}
+		public static AsTexture fromColor(int width, int height, uint color, bool optimizeForRenderTexture)
+		{
+			return fromColor(width, height, color, optimizeForRenderTexture, -1);
+		}
+		public static AsTexture fromColor(int width, int height, uint color)
+		{
+			return fromColor(width, height, color, false, -1);
+		}
+		public static AsTexture fromColor(int width, int height)
+		{
+			return fromColor(width, height, (uint)(0xffffffff), false, -1);
+		}
+		public static AsTexture empty(int width, int height, bool premultipliedAlpha, bool optimizeForRenderTexture, float scale)
+		{
+			if(scale <= 0)
+			{
+				scale = AsStarling.getContentScaleFactor();
+			}
+			int origWidth = (int)(width * scale);
+			int origHeight = (int)(height * scale);
+			int legalWidth = AsGlobal.getNextPowerOfTwo(origWidth);
+			int legalHeight = AsGlobal.getNextPowerOfTwo(origHeight);
+			String format = AsContext3DTextureFormat.BGRA;
+			AsContext3D context = AsStarling.getContext();
+			if(context == null)
+			{
+				throw new AsMissingContextError();
+			}
+			bc.flash.display3D.textures.AsTexture nativeTexture = context.createTexture(legalWidth, legalHeight, AsContext3DTextureFormat.BGRA, optimizeForRenderTexture);
+			AsConcreteTexture concreteTexture = new AsConcreteTexture(nativeTexture, format, legalWidth, legalHeight, false, premultipliedAlpha, optimizeForRenderTexture, scale);
+			if(origWidth == legalWidth && origHeight == legalHeight)
+			{
+				return concreteTexture;
+			}
+			else
+			{
+				return new AsSubTexture(concreteTexture, new AsRectangle(0, 0, width, height), true);
+			}
+		}
+		public static AsTexture empty(int width, int height, bool premultipliedAlpha, bool optimizeForRenderTexture)
+		{
+			return empty(width, height, premultipliedAlpha, optimizeForRenderTexture, -1);
+		}
+		public static AsTexture empty(int width, int height, bool premultipliedAlpha)
+		{
+			return empty(width, height, premultipliedAlpha, true, -1);
+		}
+		public static AsTexture empty(int width, int height)
+		{
+			return empty(width, height, false, true, -1);
+		}
+		public static AsTexture empty(int width)
+		{
+			return empty(width, 64, false, true, -1);
+		}
+		public static AsTexture empty()
+		{
+			return empty(64, 64, false, true, -1);
 		}
 		public static AsTexture fromTexture(AsTexture texture, AsRectangle region, AsRectangle frame)
 		{
@@ -134,68 +207,34 @@ namespace starling.textures
 		{
 			return fromTexture(texture, null, null);
 		}
-		public static AsTexture empty(int width, int height, uint color, bool optimizeForRenderTexture, float scale)
-		{
-			if((scale <= 0))
-			{
-				scale = AsStarling.getContentScaleFactor();
-			}
-			AsBitmapData bitmapData = new AsBitmapData((width * scale), (height * scale), true, color);
-			AsTexture texture = fromBitmapData(bitmapData, false, optimizeForRenderTexture, scale);
-			if(!(AsStarling.getHandleLostContext()))
-			{
-				bitmapData.dispose();
-			}
-			return texture;
-		}
-		public static AsTexture empty(int width, int height, uint color, bool optimizeForRenderTexture)
-		{
-			return empty(width, height, color, optimizeForRenderTexture, -1);
-		}
-		public static AsTexture empty(int width, int height, uint color)
-		{
-			return empty(width, height, color, false, -1);
-		}
-		public static AsTexture empty(int width, int height)
-		{
-			return empty(width, height, (uint)(0xffffffff), false, -1);
-		}
-		public static AsTexture empty(int width)
-		{
-			return empty(width, 64, (uint)(0xffffffff), false, -1);
-		}
-		public static AsTexture empty()
-		{
-			return empty(64, 64, (uint)(0xffffffff), false, -1);
-		}
 		public virtual void adjustVertexData(AsVertexData vertexData, int vertexID, int count)
 		{
 			if(mFrame != null)
 			{
-				if((count != 4))
+				if(count != 4)
 				{
 					throw new AsArgumentError("Textures with a frame can only be used on quads");
 				}
-				float deltaRight = ((mFrame.width + mFrame.x) - getWidth());
-				float deltaBottom = ((mFrame.height + mFrame.y) - getHeight());
+				float deltaRight = mFrame.width + mFrame.x - getWidth();
+				float deltaBottom = mFrame.height + mFrame.y - getHeight();
 				vertexData.translateVertex(vertexID, -mFrame.x, -mFrame.y);
-				vertexData.translateVertex((vertexID + 1), -deltaRight, -mFrame.y);
-				vertexData.translateVertex((vertexID + 2), -mFrame.x, -deltaBottom);
-				vertexData.translateVertex((vertexID + 3), -deltaRight, -deltaBottom);
+				vertexData.translateVertex(vertexID + 1, -deltaRight, -mFrame.y);
+				vertexData.translateVertex(vertexID + 2, -mFrame.x, -deltaBottom);
+				vertexData.translateVertex(vertexID + 3, -deltaRight, -deltaBottom);
 			}
 		}
 		public static void uploadBitmapData(bc.flash.display3D.textures.AsTexture nativeTexture, AsBitmapData data, bool generateMipmaps)
 		{
 			nativeTexture.uploadFromBitmapData(data);
-			if(((generateMipmaps && (data.getWidth() > 1)) && (data.getHeight() > 1)))
+			if(generateMipmaps && data.getWidth() > 1 && data.getHeight() > 1)
 			{
-				int currentWidth = (data.getWidth() >> 1);
-				int currentHeight = (data.getHeight() >> 1);
+				int currentWidth = data.getWidth() >> 1;
+				int currentHeight = data.getHeight() >> 1;
 				int level = 1;
 				AsBitmapData canvas = new AsBitmapData(currentWidth, currentHeight, true, 0);
 				AsMatrix transform = new AsMatrix(.5f, 0, 0, .5f);
 				AsRectangle bounds = new AsRectangle();
-				while(((currentWidth >= 1) || (currentHeight >= 1)))
+				while(currentWidth >= 1 || currentHeight >= 1)
 				{
 					bounds.width = currentWidth;
 					bounds.height = currentHeight;
@@ -203,8 +242,8 @@ namespace starling.textures
 					canvas.draw(data, transform, null, null, null, true);
 					nativeTexture.uploadFromBitmapData(canvas, (uint)(level++));
 					transform.scale(0.5f, 0.5f);
-					currentWidth = (currentWidth >> 1);
-					currentHeight = (currentHeight >> 1);
+					currentWidth = currentWidth >> 1;
+					currentHeight = currentHeight >> 1;
 				}
 				canvas.dispose();
 			}
@@ -219,7 +258,7 @@ namespace starling.textures
 		}
 		public virtual AsRectangle getFrame()
 		{
-			return ((mFrame != null) ? (mFrame.clone()) : (new AsRectangle(0, 0, getWidth(), getHeight())));
+			return mFrame != null ? mFrame.clone() : new AsRectangle(0, 0, getWidth(), getHeight());
 		}
 		public virtual bool getRepeat()
 		{

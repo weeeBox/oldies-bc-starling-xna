@@ -31,19 +31,19 @@ namespace starling.core
 		}
 		private void updateText(float fps, float memory, int drawCount)
 		{
-			mTextField.setText(((((("FPS: " + AsNumber.toFixed(fps, (((fps < 100)) ? (1) : (0)))) + "\nMEM: ") + AsNumber.toFixed(memory, (((memory < 100)) ? (1) : (0)))) + "\nDRW: ") + drawCount));
+			mTextField.setText("FPS: " + float.toFixed(fps, fps < 100 ? 1 : 0) + "\nMEM: " + float.toFixed(memory, memory < 100 ? 1 : 0) + "\nDRW: " + drawCount);
 		}
 		private float getMemory()
 		{
-			return (AsSystem.getTotalMemory() * 0.000000954f);
+			return AsSystem.getTotalMemory() * 0.000000954f;
 		}
 		private void onEnterFrame(AsEnterFrameEvent _event)
 		{
-			mTotalTime = (mTotalTime + _event.getPassedTime());
+			mTotalTime = mTotalTime + _event.getPassedTime();
 			mFrameCount++;
-			if((mTotalTime > 1.0f))
+			if(mTotalTime > 1.0f)
 			{
-				updateText((mFrameCount / mTotalTime), getMemory(), (mDrawCount - 2));
+				updateText(mFrameCount / mTotalTime, getMemory(), mDrawCount - 2);
 				mFrameCount = (int)(mTotalTime = 0);
 			}
 		}

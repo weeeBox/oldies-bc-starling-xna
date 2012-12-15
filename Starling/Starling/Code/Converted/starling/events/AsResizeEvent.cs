@@ -19,11 +19,11 @@ namespace starling.events
 		}
 		public virtual int getWidth()
 		{
-			return (int)(((getData() is AsPoint) ? ((AsPoint)(getData())) : null).x);
+			return (int)(getData() as AsPoint.x);
 		}
 		public virtual int getHeight()
 		{
-			return (int)(((getData() is AsPoint) ? ((AsPoint)(getData())) : null).y);
+			return (int)(getData() as AsPoint.y);
 		}
 	}
 }

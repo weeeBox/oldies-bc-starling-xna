@@ -16,7 +16,7 @@ namespace starling.textures
 		}
 		public static bool isValid(String smoothing)
 		{
-			return (((smoothing == NONE) || (smoothing == BILINEAR)) || (smoothing == TRILINEAR));
+			return smoothing == NONE || smoothing == BILINEAR || smoothing == TRILINEAR;
 		}
 	}
 }

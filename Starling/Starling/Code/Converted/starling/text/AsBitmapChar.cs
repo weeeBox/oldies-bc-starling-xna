@@ -25,7 +25,7 @@ namespace starling.text
 		}
 		public virtual void addKerning(int charID, float amount)
 		{
-			if((mKernings == null))
+			if(mKernings == null)
 			{
 				mKernings = new AsDictionary();
 			}
@@ -33,8 +33,14 @@ namespace starling.text
 		}
 		public virtual float getKerning(int charID)
 		{
-			NOT.IMPLEMENTED();
-			return (float)(mKernings[charID]);
+			if(mKernings == null || mKernings[charID] == undefined)
+			{
+				return 0.0f;
+			}
+			else
+			{
+				return (float)(mKernings[charID]);
+			}
 		}
 		public virtual AsImage createImage()
 		{

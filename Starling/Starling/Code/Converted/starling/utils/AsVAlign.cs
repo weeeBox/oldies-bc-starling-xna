@@ -16,7 +16,7 @@ namespace starling.utils
 		}
 		public static bool isValid(String vAlign)
 		{
-			return (((vAlign == TOP) || (vAlign == CENTER)) || (vAlign == BOTTOM));
+			return vAlign == TOP || vAlign == CENTER || vAlign == BOTTOM;
 		}
 	}
 }

@@ -7,14 +7,14 @@ namespace bc.flash
 {
 	public class AsDictionary : AsObject
 	{
-        private Dictionary<String, Object> dictionary;
+        private Dictionary<Object, Object> dictionary;
 
         public AsDictionary()
         {
-            dictionary = new Dictionary<String, Object>();
+            dictionary = new Dictionary<Object, Object>();
         }
 
-        public Object this[String key]
+        public Object this[Object key]
         {
             get
             {
@@ -29,12 +29,12 @@ namespace bc.flash
             }
         }
 
-        public bool containsKey(String key)
+        public bool containsKey(Object key)
         {
             return dictionary.ContainsKey(key);
         }
 
-        public void remove(String key)
+        public void remove(Object key)
         {
             if (dictionary.ContainsKey(key))
             {

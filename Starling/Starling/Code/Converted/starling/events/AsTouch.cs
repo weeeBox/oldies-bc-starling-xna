@@ -19,6 +19,10 @@ namespace starling.events
 		private String mPhase;
 		private AsDisplayObject mTarget;
 		private float mTimestamp;
+		private float mPressure;
+		private float mWidth;
+		private float mHeight;
+		private AsVector<AsEventDispatcher> mBubbleChain;
 		private static AsMatrix sHelperMatrix = new AsMatrix();
 		public AsTouch(int id, float globalX, float globalY, String phase, AsDisplayObject target)
 		{
@@ -28,10 +32,12 @@ namespace starling.events
 			mTapCount = 0;
 			mPhase = phase;
 			mTarget = target;
+			mPressure = mWidth = mHeight = 1.0f;
+			mBubbleChain = new AsVector<AsEventDispatcher>();
 		}
 		public virtual AsPoint getLocation(AsDisplayObject space, AsPoint resultPoint)
 		{
-			if((resultPoint == null))
+			if(resultPoint == null)
 			{
 				resultPoint = new AsPoint();
 			}
@@ -44,7 +50,7 @@ namespace starling.events
 		}
 		public virtual AsPoint getPreviousLocation(AsDisplayObject space, AsPoint resultPoint)
 		{
-			if((resultPoint == null))
+			if(resultPoint == null)
 			{
 				resultPoint = new AsPoint();
 			}
@@ -57,7 +63,7 @@ namespace starling.events
 		}
 		public virtual AsPoint getMovement(AsDisplayObject space, AsPoint resultPoint)
 		{
-			if((resultPoint == null))
+			if(resultPoint == null)
 			{
 				resultPoint = new AsPoint();
 			}
@@ -65,7 +71,7 @@ namespace starling.events
 			float x = resultPoint.x;
 			float y = resultPoint.y;
 			getPreviousLocation(space, resultPoint);
-			resultPoint.setTo((x - resultPoint.x), (y - resultPoint.y));
+			resultPoint.setTo(x - resultPoint.x, y - resultPoint.y);
 			return resultPoint;
 		}
 		public virtual AsPoint getMovement(AsDisplayObject space)
@@ -74,8 +80,7 @@ namespace starling.events
 		}
 		public virtual String toString()
 		{
-			NOT.IMPLEMENTED();
-			return null;
+			return AsGlobal.formatString("Touch {0}: globalX={1}, globalY={2}, phase={3}", mID, mGlobalX, mGlobalY, mPhase);
 		}
 		public virtual AsTouch clone()
 		{
@@ -85,6 +90,24 @@ namespace starling.events
 			clone.mTapCount = mTapCount;
 			clone.mTimestamp = mTimestamp;
 			return clone;
+		}
+		private void updateBubbleChain()
+		{
+			if(mTarget != null)
+			{
+				int length = 1;
+				AsDisplayObject element = mTarget;
+				mBubbleChain.setLength(0);
+				mBubbleChain[0] = element;
+				while((element = element.getParent()) != null)
+				{
+					mBubbleChain[length++] = element;
+				}
+			}
+			else
+			{
+				mBubbleChain.setLength(0);
+			}
 		}
 		public virtual int getId()
 		{
@@ -122,12 +145,41 @@ namespace starling.events
 		{
 			return mTimestamp;
 		}
+		public virtual float getPressure()
+		{
+			return mPressure;
+		}
+		public virtual float getWidth()
+		{
+			return mWidth;
+		}
+		public virtual float getHeight()
+		{
+			return mHeight;
+		}
+		public virtual void dispatchEvent(AsTouchEvent _event)
+		{
+			if(mTarget != null)
+			{
+				_event.dispatch(mBubbleChain);
+			}
+		}
+		public virtual void setTarget(AsDisplayObject _value)
+		{
+			mTarget = _value;
+			updateBubbleChain();
+		}
 		public virtual void setPosition(float globalX, float globalY)
 		{
 			mPreviousGlobalX = mGlobalX;
 			mPreviousGlobalY = mGlobalY;
 			mGlobalX = globalX;
 			mGlobalY = globalY;
+		}
+		public virtual void setSize(float width, float height)
+		{
+			mWidth = width;
+			mHeight = height;
 		}
 		public virtual void setPhase(String _value)
 		{
@@ -137,13 +189,13 @@ namespace starling.events
 		{
 			mTapCount = _value;
 		}
-		public virtual void setTarget(AsDisplayObject _value)
-		{
-			mTarget = _value;
-		}
 		public virtual void setTimestamp(float _value)
 		{
 			mTimestamp = _value;
+		}
+		public virtual void setPressure(float _value)
+		{
+			mPressure = _value;
 		}
 	}
 }

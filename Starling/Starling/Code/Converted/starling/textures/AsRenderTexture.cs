@@ -8,33 +8,30 @@ using starling.core;
 using starling.display;
 using starling.errors;
 using starling.textures;
-using starling.utils;
 using AsTexture = starling.textures.AsTexture;
  
 namespace starling.textures
 {
-	public class AsRenderTexture : AsTexture
+	public class AsRenderTexture : AsSubTexture
 	{
+		private const bool PMA = true;
 		private AsTexture mActiveTexture;
 		private AsTexture mBufferTexture;
 		private AsImage mHelperImage;
 		private bool mDrawing;
-		private int mNativeWidth;
-		private int mNativeHeight;
+		private bool mBufferReady;
 		private AsRenderSupport mSupport;
+		private static AsRectangle sScissorRect = new AsRectangle();
 		public AsRenderTexture(int width, int height, bool persistent, float scale)
+		 : base(mActiveTexture = AsTexture.empty(width, height, PMA, true, scale = scale <= 0 ? AsStarling.getContentScaleFactor() : scale), new AsRectangle(0, 0, width, height), true)
 		{
-			if((scale <= 0))
-			{
-				scale = AsStarling.getContentScaleFactor();
-			}
+			int nativeWidth = AsGlobal.getNextPowerOfTwo((int)(width * scale));
+			int nativeHeight = AsGlobal.getNextPowerOfTwo((int)(height * scale));
 			mSupport = new AsRenderSupport();
-			mNativeWidth = AsGlobal.getNextPowerOfTwo((int)((width * scale)));
-			mNativeHeight = AsGlobal.getNextPowerOfTwo((int)((height * scale)));
-			mActiveTexture = AsTexture.empty(width, height, (uint)(0x0), true, scale);
+			mSupport.setOrthographicProjection(0, 0, nativeWidth / scale, nativeHeight / scale);
 			if(persistent)
 			{
-				mBufferTexture = AsTexture.empty(width, height, (uint)(0x0), true, scale);
+				mBufferTexture = AsTexture.empty(width, height, PMA, true, scale);
 				mHelperImage = new AsImage(mBufferTexture);
 				mHelperImage.setSmoothing(AsTextureSmoothing.NONE);
 			}
@@ -49,7 +46,6 @@ namespace starling.textures
 		}
 		public override void dispose()
 		{
-			mActiveTexture.dispose();
 			if(getIsPersistent())
 			{
 				mBufferTexture.dispose();
@@ -57,23 +53,31 @@ namespace starling.textures
 			}
 			base.dispose();
 		}
-		public virtual void draw(AsDisplayObject _object, int antiAliasing)
+		public virtual void draw(AsDisplayObject _object, AsMatrix matrix, float alpha, int antiAliasing)
 		{
-			NOT.IMPLEMENTED();
+		}
+		public virtual void draw(AsDisplayObject _object, AsMatrix matrix, float alpha)
+		{
+			draw(_object, matrix, alpha, 0);
+		}
+		public virtual void draw(AsDisplayObject _object, AsMatrix matrix)
+		{
+			draw(_object, matrix, 1.0f, 0);
 		}
 		public virtual void draw(AsDisplayObject _object)
 		{
-			draw(_object, 0);
+			draw(_object, null, 1.0f, 0);
 		}
 		public virtual void drawBundled(AsDrawingBlockCallback drawingBlock, int antiAliasing)
 		{
 			float scale = mActiveTexture.getScale();
 			AsContext3D context = AsStarling.getContext();
-			if((context == null))
+			if(context == null)
 			{
 				throw new AsMissingContextError();
 			}
-			context.setScissorRectangle(new AsRectangle(0, 0, (mActiveTexture.getWidth() * scale), (mActiveTexture.getHeight() * scale)));
+			sScissorRect.setTo(0, 0, mActiveTexture.getWidth() * scale, mActiveTexture.getHeight() * scale);
+			context.setScissorRectangle(sScissorRect);
 			if(getIsPersistent())
 			{
 				AsTexture tmpTexture = mActiveTexture;
@@ -81,31 +85,31 @@ namespace starling.textures
 				mBufferTexture = tmpTexture;
 				mHelperImage.setTexture(mBufferTexture);
 			}
-			context.setRenderToTexture(mActiveTexture.get_base(), false, antiAliasing);
-			AsRenderSupport.clear();
-			mSupport.setOrthographicProjection((mNativeWidth / scale), (mNativeHeight / scale));
-			mSupport.applyBlendMode(true);
-			if(getIsPersistent())
+			mSupport.setRenderTarget(mActiveTexture);
+			mSupport.clear();
+			if(getIsPersistent() && mBufferReady)
 			{
 				mHelperImage.render(mSupport, 1.0f);
+			}
+			else
+			{
+				mBufferReady = true;
 			}
 			try
 			{
 				mDrawing = true;
-				if((drawingBlock != null))
+				if(drawingBlock != null)
 				{
 					drawingBlock();
 				}
 			}
-			catch ()
+			finally
 			{
-			}
-			finally{
 				mDrawing = false;
 				mSupport.finishQuadBatch();
 				mSupport.nextFrame();
+				mSupport.setRenderTarget(null);
 				context.setScissorRectangle(null);
-				context.setRenderToBackBuffer();
 			}
 		}
 		public virtual void drawBundled(AsDrawingBlockCallback drawingBlock)
@@ -115,42 +119,17 @@ namespace starling.textures
 		public virtual void clear()
 		{
 			AsContext3D context = AsStarling.getContext();
-			if((context == null))
+			if(context == null)
 			{
 				throw new AsMissingContextError();
 			}
-			context.setRenderToTexture(mActiveTexture.get_base());
-			AsRenderSupport.clear();
-			if(getIsPersistent())
-			{
-				context.setRenderToTexture(mActiveTexture.get_base());
-				AsRenderSupport.clear();
-			}
-			context.setRenderToBackBuffer();
-		}
-		public override void adjustVertexData(AsVertexData vertexData, int vertexID, int count)
-		{
-			mActiveTexture.adjustVertexData(vertexData, vertexID, count);
+			mSupport.setRenderTarget(mActiveTexture);
+			mSupport.clear();
+			mSupport.setRenderTarget(null);
 		}
 		public virtual bool getIsPersistent()
 		{
-			return (mBufferTexture != null);
-		}
-		public override float getWidth()
-		{
-			return mActiveTexture.getWidth();
-		}
-		public override float getHeight()
-		{
-			return mActiveTexture.getHeight();
-		}
-		public override float getScale()
-		{
-			return mActiveTexture.getScale();
-		}
-		public override bool getPremultipliedAlpha()
-		{
-			return mActiveTexture.getPremultipliedAlpha();
+			return mBufferTexture != null;
 		}
 		public override AsTextureBase get_base()
 		{

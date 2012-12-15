@@ -25,27 +25,27 @@ namespace starling.utils
 		public const uint PURPLE = 0x800080;
 		public static int getAlpha(uint color)
 		{
-			return (int)(((color >> 24) & 0xff));
+			return (int)((color >> 24) & 0xff);
 		}
 		public static int getRed(uint color)
 		{
-			return (int)(((color >> 16) & 0xff));
+			return (int)((color >> 16) & 0xff);
 		}
 		public static int getGreen(uint color)
 		{
-			return (int)(((color >> 8) & 0xff));
+			return (int)((color >> 8) & 0xff);
 		}
 		public static int getBlue(uint color)
 		{
-			return (int)((color & 0xff));
+			return (int)(color & 0xff);
 		}
 		public static uint rgb(int red, int green, int blue)
 		{
-			return (uint)((((red << 16) | (green << 8)) | blue));
+			return (uint)((red << 16) | (green << 8) | blue);
 		}
 		public static uint argb(int alpha, int red, int green, int blue)
 		{
-			return (uint)(((((alpha << 24) | (red << 16)) | (green << 8)) | blue));
+			return (uint)((alpha << 24) | (red << 16) | (green << 8) | blue);
 		}
 		public AsColor()
 		{

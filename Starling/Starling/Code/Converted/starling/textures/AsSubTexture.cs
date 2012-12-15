@@ -20,13 +20,13 @@ namespace starling.textures
 		{
 			mParent = parentTexture;
 			mOwnsParent = ownsParent;
-			if((region == null))
+			if(region == null)
 			{
 				setClipping(new AsRectangle(0, 0, 1, 1));
 			}
 			else
 			{
-				setClipping(new AsRectangle((region.x / parentTexture.getWidth()), (region.y / parentTexture.getHeight()), (region.width / parentTexture.getWidth()), (region.height / parentTexture.getHeight())));
+				setClipping(new AsRectangle(region.x / parentTexture.getWidth(), region.y / parentTexture.getHeight(), region.width / parentTexture.getWidth(), region.height / parentTexture.getHeight()));
 			}
 		}
 		public AsSubTexture(AsTexture parentTexture, AsRectangle region)
@@ -45,15 +45,15 @@ namespace starling.textures
 		{
 			mClipping = _value;
 			mRootClipping = _value.clone();
-			AsSubTexture parentTexture = ((mParent is AsSubTexture) ? ((AsSubTexture)(mParent)) : null);
+			AsSubTexture parentTexture = mParent as AsSubTexture;
 			while(parentTexture != null)
 			{
 				AsRectangle parentClipping = parentTexture.mClipping;
-				mRootClipping.x = (parentClipping.x + (mRootClipping.x * parentClipping.width));
-				mRootClipping.y = (parentClipping.y + (mRootClipping.y * parentClipping.height));
-				mRootClipping.width = (mRootClipping.width * parentClipping.width);
-				mRootClipping.height = (mRootClipping.height * parentClipping.height);
-				parentTexture = ((parentTexture.mParent is AsSubTexture) ? ((AsSubTexture)(parentTexture.mParent)) : null);
+				mRootClipping.x = parentClipping.x + mRootClipping.x * parentClipping.width;
+				mRootClipping.y = parentClipping.y + mRootClipping.y * parentClipping.height;
+				mRootClipping.width = mRootClipping.width * parentClipping.width;
+				mRootClipping.height = mRootClipping.height * parentClipping.height;
+				parentTexture = parentTexture.mParent as AsSubTexture;
 			}
 		}
 		public override void adjustVertexData(AsVertexData vertexData, int vertexID, int count)
@@ -63,12 +63,12 @@ namespace starling.textures
 			float clipY = mRootClipping.y;
 			float clipWidth = mRootClipping.width;
 			float clipHeight = mRootClipping.height;
-			int endIndex = (vertexID + count);
+			int endIndex = vertexID + count;
 			int i = vertexID;
-			for (; (i < endIndex); ++i)
+			for (; i < endIndex; ++i)
 			{
 				vertexData.getTexCoords(i, sTexCoords);
-				vertexData.setTexCoords(i, (clipX + (sTexCoords.x * clipWidth)), (clipY + (sTexCoords.y * clipHeight)));
+				vertexData.setTexCoords(i, clipX + sTexCoords.x * clipWidth, clipY + sTexCoords.y * clipHeight);
 			}
 		}
 		public virtual AsTexture getParent()
@@ -93,11 +93,11 @@ namespace starling.textures
 		}
 		public override float getWidth()
 		{
-			return (mParent.getWidth() * mClipping.width);
+			return mParent.getWidth() * mClipping.width;
 		}
 		public override float getHeight()
 		{
-			return (mParent.getHeight() * mClipping.height);
+			return mParent.getHeight() * mClipping.height;
 		}
 		public override bool getMipMapping()
 		{

@@ -15,9 +15,8 @@ namespace starling.textures
 		private AsByteArray mData;
 		public AsAtfData(AsByteArray data)
 		{
-			String signature = null;
-			NOT.IMPLEMENTED();
-			if((signature != "ATF"))
+			String signature = AsString.fromCharCode((As_AS_REST)(data.getOwnProperty(0)), data.getOwnProperty(1), data.getOwnProperty(2));
+			if(signature != "ATF")
 			{
 				throw new AsArgumentError("Invalid ATF data");
 			}

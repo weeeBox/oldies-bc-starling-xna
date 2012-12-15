@@ -7,6 +7,7 @@ using starling.core;
 using starling.display;
 using starling.errors;
 using starling.events;
+using starling.filters;
 using starling.utils;
  
 namespace starling.display
@@ -19,7 +20,7 @@ namespace starling.display
 		private static AsVector<AsDisplayObject> sBroadcastListeners = new AsVector<AsDisplayObject>();
 		public AsDisplayObjectContainer()
 		{
-			if((AsCapabilities.getIsDebugger() && (AsGlobal.getQualifiedClassName(this) == "starling.display::DisplayObjectContainer")))
+			if(AsCapabilities.getIsDebugger() && AsGlobal.getQualifiedClassName(this) == "starling.display::DisplayObjectContainer")
 			{
 				throw new AsAbstractClassError();
 			}
@@ -27,9 +28,8 @@ namespace starling.display
 		}
 		public override void dispose()
 		{
-			int numChildren = (int)(mChildren.getLength());
-			int i = 0;
-			for (; (i < numChildren); ++i)
+			int i = (int)(mChildren.getLength() - 1);
+			for (; i >= 0; --i)
 			{
 				mChildren[i].dispose();
 			}
@@ -43,10 +43,10 @@ namespace starling.display
 		public virtual AsDisplayObject addChildAt(AsDisplayObject child, int index)
 		{
 			int numChildren = (int)(mChildren.getLength());
-			if(((index >= 0) && (index <= numChildren)))
+			if(index >= 0 && index <= numChildren)
 			{
 				child.removeFromParent();
-				if((index == numChildren))
+				if(index == numChildren)
 				{
 					mChildren.push(child);
 				}
@@ -58,7 +58,7 @@ namespace starling.display
 				child.dispatchEventWith(AsEvent.ADDED, true);
 				if(getStage() != null)
 				{
-					AsDisplayObjectContainer container = ((child is AsDisplayObjectContainer) ? ((AsDisplayObjectContainer)(child)) : null);
+					AsDisplayObjectContainer container = child as AsDisplayObjectContainer;
 					if(container != null)
 					{
 						container.broadcastEventWith(AsEvent.ADDED_TO_STAGE);
@@ -78,7 +78,7 @@ namespace starling.display
 		public virtual AsDisplayObject removeChild(AsDisplayObject child, bool dispose)
 		{
 			int childIndex = getChildIndex(child);
-			if((childIndex != -1))
+			if(childIndex != -1)
 			{
 				removeChildAt(childIndex, dispose);
 			}
@@ -90,13 +90,13 @@ namespace starling.display
 		}
 		public virtual AsDisplayObject removeChildAt(int index, bool dispose)
 		{
-			if(((index >= 0) && (index < getNumChildren())))
+			if(index >= 0 && index < getNumChildren())
 			{
 				AsDisplayObject child = mChildren[index];
 				child.dispatchEventWith(AsEvent.REMOVED, true);
 				if(getStage() != null)
 				{
-					AsDisplayObjectContainer container = ((child is AsDisplayObjectContainer) ? ((AsDisplayObjectContainer)(child)) : null);
+					AsDisplayObjectContainer container = child as AsDisplayObjectContainer;
 					if(container != null)
 					{
 						container.broadcastEventWith(AsEvent.REMOVED_FROM_STAGE);
@@ -108,7 +108,7 @@ namespace starling.display
 				}
 				child.setParent(null);
 				index = mChildren.indexOf(child);
-				if((index >= 0))
+				if(index >= 0)
 				{
 					mChildren.splice(index, (uint)(1));
 				}
@@ -129,12 +129,12 @@ namespace starling.display
 		}
 		public virtual void removeChildren(int beginIndex, int endIndex, bool dispose)
 		{
-			if(((endIndex < 0) || (endIndex >= getNumChildren())))
+			if(endIndex < 0 || endIndex >= getNumChildren())
 			{
-				endIndex = (getNumChildren() - 1);
+				endIndex = getNumChildren() - 1;
 			}
 			int i = beginIndex;
-			for (; (i <= endIndex); ++i)
+			for (; i <= endIndex; ++i)
 			{
 				removeChildAt(beginIndex, dispose);
 			}
@@ -153,7 +153,7 @@ namespace starling.display
 		}
 		public virtual AsDisplayObject getChildAt(int index)
 		{
-			if(((index >= 0) && (index < getNumChildren())))
+			if(index >= 0 && index < getNumChildren())
 			{
 				return mChildren[index];
 			}
@@ -166,9 +166,9 @@ namespace starling.display
 		{
 			int numChildren = (int)(mChildren.getLength());
 			int i = 0;
-			for (; (i < numChildren); ++i)
+			for (; i < numChildren; ++i)
 			{
-				if((mChildren[i].getName() == name))
+				if(mChildren[i].getName() == name)
 				{
 					return mChildren[i];
 				}
@@ -182,7 +182,7 @@ namespace starling.display
 		public virtual void setChildIndex(AsDisplayObject child, int index)
 		{
 			int oldIndex = getChildIndex(child);
-			if((oldIndex == -1))
+			if(oldIndex == -1)
 			{
 				throw new AsArgumentError("Not a child of this container");
 			}
@@ -193,7 +193,7 @@ namespace starling.display
 		{
 			int index1 = getChildIndex(child1);
 			int index2 = getChildIndex(child2);
-			if(((index1 == -1) || (index2 == -1)))
+			if(index1 == -1 || index2 == -1)
 			{
 				throw new AsArgumentError("Not a child of this container");
 			}
@@ -214,7 +214,7 @@ namespace starling.display
 		{
 			while(child != null)
 			{
-				if((child == this))
+				if(child == this)
 				{
 					return true;
 				}
@@ -227,12 +227,12 @@ namespace starling.display
 		}
 		public override AsRectangle getBounds(AsDisplayObject targetSpace, AsRectangle resultRect)
 		{
-			if((resultRect == null))
+			if(resultRect == null)
 			{
 				resultRect = new AsRectangle();
 			}
 			int numChildren = (int)(mChildren.getLength());
-			if((numChildren == 0))
+			if(numChildren == 0)
 			{
 				getTransformationMatrix(targetSpace, sHelperMatrix);
 				AsMatrixUtil.transformCoords(sHelperMatrix, 0.0f, 0.0f, sHelperPoint);
@@ -241,7 +241,7 @@ namespace starling.display
 			}
 			else
 			{
-				if((numChildren == 1))
+				if(numChildren == 1)
 				{
 					return mChildren[0].getBounds(targetSpace, resultRect);
 				}
@@ -252,15 +252,15 @@ namespace starling.display
 					float minY = AsNumber.MAX_VALUE;
 					float maxY = -AsNumber.MAX_VALUE;
 					int i = 0;
-					for (; (i < numChildren); ++i)
+					for (; i < numChildren; ++i)
 					{
 						mChildren[i].getBounds(targetSpace, resultRect);
-						minX = (((minX < resultRect.x)) ? (minX) : (resultRect.x));
-						maxX = (((maxX > resultRect.getRight())) ? (maxX) : (resultRect.getRight()));
-						minY = (((minY < resultRect.y)) ? (minY) : (resultRect.y));
-						maxY = (((maxY > resultRect.getBottom())) ? (maxY) : (resultRect.getBottom()));
+						minX = minX < resultRect.x ? minX : resultRect.x;
+						maxX = maxX > resultRect.getRight() ? maxX : resultRect.getRight();
+						minY = minY < resultRect.y ? minY : resultRect.y;
+						maxY = maxY > resultRect.getBottom() ? maxY : resultRect.getBottom();
 					}
-					resultRect.setTo(minX, minY, (maxX - minX), (maxY - minY));
+					resultRect.setTo(minX, minY, maxX - minX, maxY - minY);
 					return resultRect;
 				}
 			}
@@ -271,15 +271,15 @@ namespace starling.display
 		}
 		public override AsDisplayObject hitTest(AsPoint localPoint, bool forTouch)
 		{
-			if((forTouch && (!(getVisible()) || !(getTouchable()))))
+			if(forTouch && (!getVisible() || !getTouchable()))
 			{
 				return null;
 			}
 			float localX = localPoint.x;
 			float localY = localPoint.y;
 			int numChildren = (int)(mChildren.getLength());
-			int i = (numChildren - 1);
-			for (; (i >= 0); --i)
+			int i = numChildren - 1;
+			for (; i >= 0; --i)
 			{
 				AsDisplayObject child = mChildren[i];
 				getTransformationMatrix(child, sHelperMatrix);
@@ -298,29 +298,29 @@ namespace starling.display
 		}
 		public override void render(AsRenderSupport support, float parentAlpha)
 		{
-			float alpha = (parentAlpha * this.getAlpha());
+			float alpha = parentAlpha * this.getAlpha();
 			int numChildren = (int)(mChildren.getLength());
+			String blendMode = support.getBlendMode();
 			int i = 0;
-			for (; (i < numChildren); ++i)
+			for (; i < numChildren; ++i)
 			{
 				AsDisplayObject child = mChildren[i];
 				if(child.getHasVisibleArea())
 				{
-					String blendMode = child.getBlendMode();
-					bool blendModeChange = (blendMode != AsBlendMode.AUTO);
-					if(blendModeChange)
-					{
-						support.pushBlendMode();
-						support.setBlendMode(blendMode);
-					}
+					AsFragmentFilter filter = child.getFilter();
 					support.pushMatrix();
 					support.transformMatrix(child);
-					child.render(support, alpha);
-					support.popMatrix();
-					if(blendModeChange)
+					support.setBlendMode(child.getBlendMode());
+					if(filter != null)
 					{
-						support.popBlendMode();
+						filter.render(child, support, alpha);
 					}
+					else
+					{
+						child.render(support, alpha);
+					}
+					support.setBlendMode(blendMode);
+					support.popMatrix();
 				}
 			}
 		}
@@ -334,15 +334,15 @@ namespace starling.display
 			getChildEventListeners(this, _event.getType(), sBroadcastListeners);
 			int toIndex = (int)(sBroadcastListeners.getLength());
 			int i = fromIndex;
-			for (; (i < toIndex); ++i)
+			for (; i < toIndex; ++i)
 			{
 				sBroadcastListeners[i].dispatchEvent(_event);
 			}
 			sBroadcastListeners.setLength(fromIndex);
 		}
-		public virtual void broadcastEventWith(String type, AsObject data)
+		public virtual void broadcastEventWith(String type, Object data)
 		{
-			AsEvent _event = AsEvent.fromPool(type, false, (AsObject)(data));
+			AsEvent _event = AsEvent.fromPool(type, false, data);
 			broadcastEvent(_event);
 			AsEvent.toPool(_event);
 		}
@@ -352,7 +352,7 @@ namespace starling.display
 		}
 		private void getChildEventListeners(AsDisplayObject _object, String eventType, AsVector<AsDisplayObject> listeners)
 		{
-			AsDisplayObjectContainer container = ((_object is AsDisplayObjectContainer) ? ((AsDisplayObjectContainer)(_object)) : null);
+			AsDisplayObjectContainer container = _object as AsDisplayObjectContainer;
 			if(_object.hasEventListener(eventType))
 			{
 				listeners.push(_object);
@@ -362,7 +362,7 @@ namespace starling.display
 				AsVector<AsDisplayObject> children = container.mChildren;
 				int numChildren = (int)(children.getLength());
 				int i = 0;
-				for (; (i < numChildren); ++i)
+				for (; i < numChildren; ++i)
 				{
 					getChildEventListeners(children[i], eventType, listeners);
 				}

@@ -9,19 +9,18 @@ namespace starling.core
 {
 	public class AsTouchMarker : AsSprite
 	{
-		private static AsClass TouchMarkerBmp;
 		private AsPoint mCenter;
 		private AsTexture mTexture;
 		public AsTouchMarker()
 		{
 			mCenter = new AsPoint();
-			NOT.IMPLEMENTED();
+			mTexture = createTexture();
 			int i = 0;
-			for (; (i < 2); ++i)
+			for (; i < 2; ++i)
 			{
 				AsImage marker = new AsImage(mTexture);
-				marker.setPivotX((mTexture.getWidth() / 2));
-				marker.setPivotY((mTexture.getHeight() / 2));
+				marker.setPivotX(mTexture.getWidth() / 2);
+				marker.setPivotY(mTexture.getHeight() / 2);
 				marker.setTouchable(false);
 				addChild(marker);
 			}
@@ -35,13 +34,13 @@ namespace starling.core
 		{
 			if(withCenter)
 			{
-				mCenter.x = (mCenter.x + (x - getRealMarker().getX()));
-				mCenter.y = (mCenter.y + (y - getRealMarker().getY()));
+				mCenter.x = mCenter.x + x - getRealMarker().getX();
+				mCenter.y = mCenter.y + y - getRealMarker().getY();
 			}
 			getRealMarker().setX(x);
 			getRealMarker().setY(y);
-			getMockMarker().setX(((2 * mCenter.x) - x));
-			getMockMarker().setY(((2 * mCenter.y) - y));
+			getMockMarker().setX(2 * mCenter.x - x);
+			getMockMarker().setY(2 * mCenter.y - y);
 		}
 		public virtual void moveMarker(float x, float y)
 		{
@@ -53,13 +52,17 @@ namespace starling.core
 			mCenter.y = y;
 			moveMarker(getRealX(), getRealY());
 		}
+		private AsTexture createTexture()
+		{
+			return null;
+		}
 		private AsImage getRealMarker()
 		{
-			return ((getChildAt(0) is AsImage) ? ((AsImage)(getChildAt(0))) : null);
+			return getChildAt(0) as AsImage;
 		}
 		private AsImage getMockMarker()
 		{
-			return ((getChildAt(1) is AsImage) ? ((AsImage)(getChildAt(1))) : null);
+			return getChildAt(1) as AsImage;
 		}
 		public virtual float getRealX()
 		{

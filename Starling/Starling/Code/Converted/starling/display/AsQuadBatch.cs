@@ -7,6 +7,7 @@ using starling.core;
 using starling.display;
 using starling.errors;
 using starling.events;
+using starling.filters;
 using starling.textures;
 using starling.utils;
  
@@ -50,7 +51,7 @@ namespace starling.display
 			}
 			base.dispose();
 		}
-		private void onContextCreated(AsObject _event)
+		private void onContextCreated(Object _event)
 		{
 			createBuffers();
 			registerPrograms();
@@ -58,8 +59,8 @@ namespace starling.display
 		public virtual AsQuadBatch clone()
 		{
 			AsQuadBatch clone = new AsQuadBatch();
-			clone.mVertexData = mVertexData.clone(0, (mNumQuads * 4));
-			clone.mIndexData = mIndexData.slice(0, (mNumQuads * 6));
+			clone.mVertexData = mVertexData.clone(0, mNumQuads * 4);
+			clone.mIndexData = mIndexData.slice(0, mNumQuads * 6);
 			clone.mNumQuads = mNumQuads;
 			clone.mTinted = mTinted;
 			clone.mTexture = mTexture;
@@ -72,28 +73,28 @@ namespace starling.display
 		private void expand(int newCapacity)
 		{
 			int oldCapacity = getCapacity();
-			if((newCapacity < 0))
+			if(newCapacity < 0)
 			{
-				newCapacity = (oldCapacity * 2);
+				newCapacity = oldCapacity * 2;
 			}
-			if((newCapacity == 0))
+			if(newCapacity == 0)
 			{
 				newCapacity = 16;
 			}
-			if((newCapacity <= oldCapacity))
+			if(newCapacity <= oldCapacity)
 			{
 				return;
 			}
-			mVertexData.setNumVertices((newCapacity * 4));
+			mVertexData.setNumVertices(newCapacity * 4);
 			int i = oldCapacity;
-			for (; (i < newCapacity); ++i)
+			for (; i < newCapacity; ++i)
 			{
-				mIndexData[((int)((i * 6)))] = (uint)((i * 4));
-				mIndexData[((int)(((i * 6) + 1)))] = (uint)(((i * 4) + 1));
-				mIndexData[((int)(((i * 6) + 2)))] = (uint)(((i * 4) + 2));
-				mIndexData[((int)(((i * 6) + 3)))] = (uint)(((i * 4) + 1));
-				mIndexData[((int)(((i * 6) + 4)))] = (uint)(((i * 4) + 3));
-				mIndexData[((int)(((i * 6) + 5)))] = (uint)(((i * 4) + 2));
+				mIndexData[(i * 6)] = (uint)(i * 4);
+				mIndexData[(i * 6 + 1)] = (uint)(i * 4 + 1);
+				mIndexData[(i * 6 + 2)] = (uint)(i * 4 + 2);
+				mIndexData[(i * 6 + 3)] = (uint)(i * 4 + 1);
+				mIndexData[(i * 6 + 4)] = (uint)(i * 4 + 3);
+				mIndexData[(i * 6 + 5)] = (uint)(i * 4 + 2);
 			}
 			createBuffers();
 			registerPrograms();
@@ -115,11 +116,11 @@ namespace starling.display
 			{
 				mIndexBuffer.dispose();
 			}
-			if((numVertices == 0))
+			if(numVertices == 0)
 			{
 				return;
 			}
-			if((context == null))
+			if(context == null)
 			{
 				throw new AsMissingContextError();
 			}
@@ -131,7 +132,7 @@ namespace starling.display
 		}
 		private void syncBuffers()
 		{
-			if((mVertexBuffer == null))
+			if(mVertexBuffer == null)
 			{
 				createBuffers();
 			}
@@ -143,7 +144,7 @@ namespace starling.display
 		}
 		public virtual void renderCustom(AsMatrix mvpMatrix, float parentAlpha, String blendMode)
 		{
-			if((mNumQuads == 0))
+			if(mNumQuads == 0)
 			{
 				return;
 			}
@@ -153,17 +154,17 @@ namespace starling.display
 			}
 			bool pma = mVertexData.getPremultipliedAlpha();
 			AsContext3D context = AsStarling.getContext();
-			bool tinted = (mTinted || (parentAlpha != 1.0f));
-			String programName = ((mTexture != null) ? (getImageProgramName(tinted, mTexture.getMipMapping(), mTexture.getRepeat(), mTexture.getFormat(), mSmoothing)) : (QUAD_PROGRAM_NAME));
-			sRenderAlpha[0] = sRenderAlpha[1] = sRenderAlpha[2] = ((pma) ? (parentAlpha) : (1.0f));
+			bool tinted = mTinted || (parentAlpha != 1.0f);
+			String programName = mTexture != null ? getImageProgramName(tinted, mTexture.getMipMapping(), mTexture.getRepeat(), mTexture.getFormat(), mSmoothing) : QUAD_PROGRAM_NAME;
+			sRenderAlpha[0] = sRenderAlpha[1] = sRenderAlpha[2] = pma ? parentAlpha : 1.0f;
 			sRenderAlpha[3] = parentAlpha;
 			AsMatrixUtil.convertTo3D(mvpMatrix, sRenderMatrix);
-			AsRenderSupport.setBlendFactors(pma, ((blendMode != null) ? (blendMode) : (this.getBlendMode())));
+			AsRenderSupport.setBlendFactors(pma, blendMode != null ? blendMode : this.getBlendMode());
 			context.setProgram(AsStarling.getCurrent().getProgram(programName));
 			context.setProgramConstantsFromVector(AsContext3DProgramType.VERTEX, 0, sRenderAlpha, 1);
 			context.setProgramConstantsFromMatrix(AsContext3DProgramType.VERTEX, 1, sRenderMatrix, true);
 			context.setVertexBufferAt(0, mVertexBuffer, AsVertexData.POSITION_OFFSET, AsContext3DVertexBufferFormat.FLOAT_2);
-			if(((mTexture == null) || tinted))
+			if(mTexture == null || tinted)
 			{
 				context.setVertexBufferAt(1, mVertexBuffer, AsVertexData.COLOR_OFFSET, AsContext3DVertexBufferFormat.FLOAT_4);
 			}
@@ -172,7 +173,7 @@ namespace starling.display
 				context.setTextureAt(0, mTexture.get_base());
 				context.setVertexBufferAt(2, mVertexBuffer, AsVertexData.TEXCOORD_OFFSET, AsContext3DVertexBufferFormat.FLOAT_2);
 			}
-			context.drawTriangles(mIndexBuffer, 0, (mNumQuads * 2));
+			context.drawTriangles(mIndexBuffer, 0, mNumQuads * 2);
 			if(mTexture != null)
 			{
 				context.setTextureAt(0, null);
@@ -214,28 +215,28 @@ namespace starling.display
 		}
 		public virtual void addQuad(AsQuad quad, float parentAlpha, AsTexture texture, String smoothing, AsMatrix modelViewMatrix, String blendMode)
 		{
-			if((modelViewMatrix == null))
+			if(modelViewMatrix == null)
 			{
 				modelViewMatrix = quad.getTransformationMatrix();
 			}
-			bool tinted = ((texture != null) ? ((quad.getTinted() || (parentAlpha != 1.0f))) : (false));
-			float alpha = (parentAlpha * quad.getAlpha());
-			int vertexID = (mNumQuads * 4);
-			if(((mNumQuads + 1) > (mVertexData.getNumVertices() / 4)))
+			bool tinted = texture != null ? quad.getTinted() || parentAlpha != 1.0f : false;
+			float alpha = parentAlpha * quad.getAlpha();
+			int vertexID = mNumQuads * 4;
+			if(mNumQuads + 1 > mVertexData.getNumVertices() / 4)
 			{
 				expand();
 			}
-			if((mNumQuads == 0))
+			if(mNumQuads == 0)
 			{
-				this.setBlendMode(((blendMode != null) ? (blendMode) : (quad.getBlendMode())));
+				this.setBlendMode(blendMode != null ? blendMode : quad.getBlendMode());
 				mTexture = texture;
 				mTinted = tinted;
 				mSmoothing = smoothing;
-				mVertexData.setPremultipliedAlpha(((texture != null) ? (texture.getPremultipliedAlpha()) : (true)), false);
+				mVertexData.setPremultipliedAlpha(texture != null ? texture.getPremultipliedAlpha() : true, false);
 			}
 			quad.copyVertexDataTo(mVertexData, vertexID);
 			mVertexData.transformVertex(vertexID, modelViewMatrix, 4);
-			if((alpha != 1.0f))
+			if(alpha != 1.0f)
 			{
 				mVertexData.scaleAlpha(vertexID, alpha, 4);
 			}
@@ -264,34 +265,34 @@ namespace starling.display
 		}
 		public virtual void addQuadBatch(AsQuadBatch quadBatch, float parentAlpha, AsMatrix modelViewMatrix, String blendMode)
 		{
-			if((modelViewMatrix == null))
+			if(modelViewMatrix == null)
 			{
 				modelViewMatrix = quadBatch.getTransformationMatrix();
 			}
-			bool tinted = (quadBatch.mTinted || (parentAlpha != 1.0f));
-			float alpha = (parentAlpha * quadBatch.getAlpha());
-			int vertexID = (mNumQuads * 4);
+			bool tinted = quadBatch.mTinted || parentAlpha != 1.0f;
+			float alpha = parentAlpha * quadBatch.getAlpha();
+			int vertexID = mNumQuads * 4;
 			int numQuads = quadBatch.getNumQuads();
-			if(((mNumQuads + numQuads) > getCapacity()))
+			if(mNumQuads + numQuads > getCapacity())
 			{
-				expand((mNumQuads + numQuads));
+				expand(mNumQuads + numQuads);
 			}
-			if((mNumQuads == 0))
+			if(mNumQuads == 0)
 			{
-				this.setBlendMode(((blendMode != null) ? (blendMode) : (quadBatch.getBlendMode())));
+				this.setBlendMode(blendMode != null ? blendMode : quadBatch.getBlendMode());
 				mTexture = quadBatch.mTexture;
 				mTinted = tinted;
 				mSmoothing = quadBatch.mSmoothing;
 				mVertexData.setPremultipliedAlpha(quadBatch.mVertexData.getPremultipliedAlpha(), false);
 			}
-			quadBatch.mVertexData.copyTo(mVertexData, vertexID, 0, (numQuads * 4));
-			mVertexData.transformVertex(vertexID, modelViewMatrix, (numQuads * 4));
-			if((alpha != 1.0f))
+			quadBatch.mVertexData.copyTo(mVertexData, vertexID, 0, numQuads * 4);
+			mVertexData.transformVertex(vertexID, modelViewMatrix, numQuads * 4);
+			if(alpha != 1.0f)
 			{
-				mVertexData.scaleAlpha(vertexID, alpha, (numQuads * 4));
+				mVertexData.scaleAlpha(vertexID, alpha, numQuads * 4);
 			}
 			mSyncRequired = true;
-			mNumQuads = (mNumQuads + numQuads);
+			mNumQuads = mNumQuads + numQuads;
 		}
 		public virtual void addQuadBatch(AsQuadBatch quadBatch, float parentAlpha, AsMatrix modelViewMatrix)
 		{
@@ -307,27 +308,27 @@ namespace starling.display
 		}
 		public virtual bool isStateChange(bool tinted, float parentAlpha, AsTexture texture, String smoothing, String blendMode, int numQuads)
 		{
-			if((mNumQuads == 0))
+			if(mNumQuads == 0)
 			{
 				return false;
 			}
 			else
 			{
-				if(((mNumQuads + numQuads) > 8192))
+				if(mNumQuads + numQuads > 8192)
 				{
 					return true;
 				}
 				else
 				{
-					if(((mTexture == null) && (texture == null)))
+					if(mTexture == null && texture == null)
 					{
 						return false;
 					}
 					else
 					{
-						if(((mTexture != null) && (texture != null)))
+						if(mTexture != null && texture != null)
 						{
-							return (((((mTexture.get_base() != texture.get_base()) || (mTexture.getRepeat() != texture.getRepeat())) || (mSmoothing != smoothing)) || (mTinted != (tinted || (parentAlpha != 1.0f)))) || (this.getBlendMode() != blendMode));
+							return mTexture.get_base() != texture.get_base() || mTexture.getRepeat() != texture.getRepeat() || mSmoothing != smoothing || mTinted != (tinted || parentAlpha != 1.0f) || this.getBlendMode() != blendMode;
 						}
 						else
 						{
@@ -343,12 +344,12 @@ namespace starling.display
 		}
 		public override AsRectangle getBounds(AsDisplayObject targetSpace, AsRectangle resultRect)
 		{
-			if((resultRect == null))
+			if(resultRect == null)
 			{
 				resultRect = new AsRectangle();
 			}
-			AsMatrix transformationMatrix = (((targetSpace == this)) ? (null) : (getTransformationMatrix(targetSpace, sHelperMatrix)));
-			return mVertexData.getBounds(transformationMatrix, 0, (mNumQuads * 4), resultRect);
+			AsMatrix transformationMatrix = targetSpace == this ? null : getTransformationMatrix(targetSpace, sHelperMatrix);
+			return mVertexData.getBounds(transformationMatrix, 0, mNumQuads * 4, resultRect);
 		}
 		public virtual AsRectangle getBounds(AsDisplayObject targetSpace)
 		{
@@ -358,28 +359,29 @@ namespace starling.display
 		{
 			support.finishQuadBatch();
 			support.raiseDrawCount();
-			renderCustom(support.getMvpMatrix(), (getAlpha() * parentAlpha), support.getBlendMode());
+			renderCustom(support.getMvpMatrix(), getAlpha() * parentAlpha, support.getBlendMode());
 		}
-		public static void compile(AsDisplayObjectContainer container, AsVector<AsQuadBatch> quadBatches)
+		public static void compile(AsDisplayObject _object, AsVector<AsQuadBatch> quadBatches)
 		{
-			compileObject(container, quadBatches, -1, new AsMatrix());
+			compileObject(_object, quadBatches, -1, new AsMatrix());
 		}
-		private static int compileObject(AsDisplayObject _object, AsVector<AsQuadBatch> quadBatches, int quadBatchID, AsMatrix transformationMatrix, float alpha, String blendMode)
+		private static int compileObject(AsDisplayObject _object, AsVector<AsQuadBatch> quadBatches, int quadBatchID, AsMatrix transformationMatrix, float alpha, String blendMode, bool ignoreCurrentFilter)
 		{
 			int i = 0;
 			AsQuadBatch quadBatch = null;
 			bool isRootObject = false;
 			float objectAlpha = _object.getAlpha();
-			AsDisplayObjectContainer container = ((_object is AsDisplayObjectContainer) ? ((AsDisplayObjectContainer)(_object)) : null);
-			AsQuad quad = ((_object is AsQuad) ? ((AsQuad)(_object)) : null);
-			AsQuadBatch batch = ((_object is AsQuadBatch) ? ((AsQuadBatch)(_object)) : null);
-			if((quadBatchID == -1))
+			AsDisplayObjectContainer container = _object as AsDisplayObjectContainer;
+			AsQuad quad = _object as AsQuad;
+			AsQuadBatch batch = _object as AsQuadBatch;
+			AsFragmentFilter filter = _object.getFilter();
+			if(quadBatchID == -1)
 			{
 				isRootObject = true;
 				quadBatchID = 0;
 				objectAlpha = 1.0f;
 				blendMode = _object.getBlendMode();
-				if((quadBatches.getLength() == 0))
+				if(quadBatches.getLength() == 0)
 				{
 					quadBatches.push(new AsQuadBatch());
 				}
@@ -388,84 +390,106 @@ namespace starling.display
 					quadBatches[0].reset();
 				}
 			}
-			if(container != null)
+			if(filter != null && !ignoreCurrentFilter)
 			{
-				int numChildren = container.getNumChildren();
-				AsMatrix childMatrix = new AsMatrix();
-				for (i = 0; (i < numChildren); ++i)
+				if(filter.getMode() == AsFragmentFilterMode.ABOVE)
 				{
-					AsDisplayObject child = container.getChildAt(i);
-					bool childVisible = ((((child.getAlpha() != 0.0f) && child.getVisible()) && (child.getScaleX() != 0.0f)) && (child.getScaleY() != 0.0f));
-					if(childVisible)
-					{
-						String childBlendMode = (((child.getBlendMode() == AsBlendMode.AUTO)) ? (blendMode) : (child.getBlendMode()));
-						childMatrix.copyFrom(transformationMatrix);
-						AsRenderSupport.transformMatrixForObject(childMatrix, child);
-						quadBatchID = compileObject(child, quadBatches, quadBatchID, childMatrix, (alpha * objectAlpha), childBlendMode);
-					}
+					quadBatchID = compileObject(_object, quadBatches, quadBatchID, transformationMatrix, alpha, blendMode, true);
+				}
+				quadBatchID = compileObject(filter.compile(_object), quadBatches, quadBatchID, transformationMatrix, alpha, blendMode);
+				if(filter.getMode() == AsFragmentFilterMode.BELOW)
+				{
+					quadBatchID = compileObject(_object, quadBatches, quadBatchID, transformationMatrix, alpha, blendMode, true);
 				}
 			}
 			else
 			{
-				if(((quad != null) || (batch != null)))
+				if(container != null)
 				{
-					AsTexture texture = null;
-					String smoothing = null;
-					bool tinted = false;
-					int numQuads = 0;
-					if(quad != null)
+					int numChildren = container.getNumChildren();
+					AsMatrix childMatrix = new AsMatrix();
+					for (i = 0; i < numChildren; ++i)
 					{
-						AsImage image = ((quad is AsImage) ? ((AsImage)(quad)) : null);
-						texture = ((image != null) ? (image.getTexture()) : (null));
-						smoothing = ((image != null) ? (image.getSmoothing()) : (null));
-						tinted = quad.getTinted();
-						numQuads = 1;
-					}
-					else
-					{
-						texture = batch.mTexture;
-						smoothing = batch.mSmoothing;
-						tinted = batch.mTinted;
-						numQuads = batch.mNumQuads;
-					}
-					quadBatch = quadBatches[quadBatchID];
-					if(quadBatch.isStateChange(tinted, (alpha * objectAlpha), texture, smoothing, blendMode, numQuads))
-					{
-						quadBatchID++;
-						if((quadBatches.getLength() <= quadBatchID))
+						AsDisplayObject child = container.getChildAt(i);
+						bool childVisible = child.getAlpha() != 0.0f && child.getVisible() && child.getScaleX() != 0.0f && child.getScaleY() != 0.0f;
+						if(childVisible)
 						{
-							quadBatches.push(new AsQuadBatch());
+							String childBlendMode = child.getBlendMode() == AsBlendMode.AUTO ? blendMode : child.getBlendMode();
+							childMatrix.copyFrom(transformationMatrix);
+							AsRenderSupport.transformMatrixForObject(childMatrix, child);
+							quadBatchID = compileObject(child, quadBatches, quadBatchID, childMatrix, alpha * objectAlpha, childBlendMode);
 						}
-						quadBatch = quadBatches[quadBatchID];
-						quadBatch.reset();
-					}
-					if(quad != null)
-					{
-						quadBatch.addQuad(quad, alpha, texture, smoothing, transformationMatrix, blendMode);
-					}
-					else
-					{
-						quadBatch.addQuadBatch(batch, alpha, transformationMatrix, blendMode);
 					}
 				}
 				else
 				{
-					throw new AsError(("Unsupported display object: " + AsGlobal.getQualifiedClassName(_object)));
+					if(quad != null || batch != null)
+					{
+						AsTexture texture = null;
+						String smoothing = null;
+						bool tinted = false;
+						int numQuads = 0;
+						if(quad != null)
+						{
+							AsImage image = quad as AsImage;
+							texture = image != null ? image.getTexture() : null;
+							smoothing = image != null ? image.getSmoothing() : null;
+							tinted = quad.getTinted();
+							numQuads = 1;
+						}
+						else
+						{
+							texture = batch.mTexture;
+							smoothing = batch.mSmoothing;
+							tinted = batch.mTinted;
+							numQuads = batch.mNumQuads;
+						}
+						quadBatch = quadBatches[quadBatchID];
+						if(quadBatch.isStateChange(tinted, alpha * objectAlpha, texture, smoothing, blendMode, numQuads))
+						{
+							quadBatchID++;
+							if(quadBatches.getLength() <= quadBatchID)
+							{
+								quadBatches.push(new AsQuadBatch());
+							}
+							quadBatch = quadBatches[quadBatchID];
+							quadBatch.reset();
+						}
+						if(quad != null)
+						{
+							quadBatch.addQuad(quad, alpha, texture, smoothing, transformationMatrix, blendMode);
+						}
+						else
+						{
+							quadBatch.addQuadBatch(batch, alpha, transformationMatrix, blendMode);
+						}
+					}
+					else
+					{
+						throw new AsError("Unsupported display object: " + AsGlobal.getQualifiedClassName(_object));
+					}
 				}
 			}
 			if(isRootObject)
 			{
-				NOT.IMPLEMENTED();
+				for (i = (int)(quadBatches.getLength() - 1); i > quadBatchID; --i)
+				{
+					quadBatches.pop().dispose();
+				}
 			}
 			return quadBatchID;
 		}
+		private static int compileObject(AsDisplayObject _object, AsVector<AsQuadBatch> quadBatches, int quadBatchID, AsMatrix transformationMatrix, float alpha, String blendMode)
+		{
+			return compileObject(_object, quadBatches, quadBatchID, transformationMatrix, alpha, blendMode, false);
+		}
 		private static int compileObject(AsDisplayObject _object, AsVector<AsQuadBatch> quadBatches, int quadBatchID, AsMatrix transformationMatrix, float alpha)
 		{
-			return compileObject(_object, quadBatches, quadBatchID, transformationMatrix, alpha, null);
+			return compileObject(_object, quadBatches, quadBatchID, transformationMatrix, alpha, null, false);
 		}
 		private static int compileObject(AsDisplayObject _object, AsVector<AsQuadBatch> quadBatches, int quadBatchID, AsMatrix transformationMatrix)
 		{
-			return compileObject(_object, quadBatches, quadBatchID, transformationMatrix, 1.0f, null);
+			return compileObject(_object, quadBatches, quadBatchID, transformationMatrix, 1.0f, null, false);
 		}
 		public virtual int getNumQuads()
 		{
@@ -485,15 +509,13 @@ namespace starling.display
 		}
 		private int getCapacity()
 		{
-			return (mVertexData.getNumVertices() / 4);
+			return mVertexData.getNumVertices() / 4;
 		}
 		private static void registerPrograms()
 		{
-			NOT.IMPLEMENTED();
 		}
 		private static String getImageProgramName(bool tinted, bool mipMap, bool repeat, String format, String smoothing)
 		{
-			NOT.IMPLEMENTED();
 			return null;
 		}
 		private static String getImageProgramName(bool tinted, bool mipMap, bool repeat, String format)

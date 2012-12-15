@@ -18,11 +18,10 @@ namespace starling.core
 		private AsVector<AsMatrix> mMatrixStack;
 		private int mMatrixStackSize;
 		private int mDrawCount;
+		private AsTexture mRenderTarget;
 		private String mBlendMode;
-		private AsVector<String> mBlendModeStack;
 		private AsVector<AsQuadBatch> mQuadBatches;
 		private int mCurrentQuadBatchID;
-		private static AsMatrix sHelperMatrix = new AsMatrix();
 		public AsRenderSupport()
 		{
 			mProjectionMatrix = new AsMatrix();
@@ -32,12 +31,12 @@ namespace starling.core
 			mMatrixStack = new AsVector<AsMatrix>();
 			mMatrixStackSize = 0;
 			mDrawCount = 0;
+			mRenderTarget = null;
 			mBlendMode = AsBlendMode.NORMAL;
-			mBlendModeStack = new AsVector<String>();
 			mCurrentQuadBatchID = 0;
 			mQuadBatches = new AsVector<AsQuadBatch>();
 			loadIdentity();
-			setOrthographicProjection(400, 300);
+			setOrthographicProjection(0, 0, 400, 300);
 		}
 		public virtual void dispose()
 		{
@@ -50,9 +49,9 @@ namespace starling.core
 				}
 			}
 		}
-		public virtual void setOrthographicProjection(float width, float height)
+		public virtual void setOrthographicProjection(float x, float y, float width, float height)
 		{
-			mProjectionMatrix.setTo((2.0f / width), 0, 0, (-2.0f / height), -1.0f, 1.0f);
+			mProjectionMatrix.setTo(2.0f / width, 0, 0, -2.0f / height, -(2 * x + width) / width, (2 * y + height) / height);
 		}
 		public virtual void loadIdentity()
 		{
@@ -70,13 +69,17 @@ namespace starling.core
 		{
 			AsMatrixUtil.prependScale(mModelViewMatrix, sx, sy);
 		}
+		public virtual void prependMatrix(AsMatrix matrix)
+		{
+			AsMatrixUtil.prependMatrix(mModelViewMatrix, matrix);
+		}
 		public virtual void transformMatrix(AsDisplayObject _object)
 		{
-			transformMatrixForObject(mModelViewMatrix, _object);
+			AsMatrixUtil.prependMatrix(mModelViewMatrix, _object.getTransformationMatrix());
 		}
 		public virtual void pushMatrix()
 		{
-			if((mMatrixStack.getLength() < (mMatrixStackSize + 1)))
+			if(mMatrixStack.getLength() < mMatrixStackSize + 1)
 			{
 				mMatrixStack.push(new AsMatrix());
 			}
@@ -91,6 +94,10 @@ namespace starling.core
 			mMatrixStackSize = 0;
 			loadIdentity();
 		}
+		public static void transformMatrixForObject(AsMatrix matrix, AsDisplayObject _object)
+		{
+			AsMatrixUtil.prependMatrix(matrix, _object.getTransformationMatrix());
+		}
 		public virtual AsMatrix getMvpMatrix()
 		{
 			mMvpMatrix.copyFrom(mModelViewMatrix);
@@ -101,24 +108,13 @@ namespace starling.core
 		{
 			return AsMatrixUtil.convertTo3D(getMvpMatrix(), mMvpMatrix3D);
 		}
-		public static void transformMatrixForObject(AsMatrix matrix, AsDisplayObject _object)
+		public virtual AsMatrix getModelViewMatrix()
 		{
-			sHelperMatrix.copyFrom(_object.getTransformationMatrix());
-			sHelperMatrix.concat(matrix);
-			matrix.copyFrom(sHelperMatrix);
+			return mModelViewMatrix;
 		}
-		public virtual void pushBlendMode()
+		public virtual AsMatrix getProjectionMatrix()
 		{
-			mBlendModeStack.push(mBlendMode);
-		}
-		public virtual void popBlendMode()
-		{
-			mBlendMode = mBlendModeStack.pop();
-		}
-		public virtual void resetBlendMode()
-		{
-			mBlendModeStack.setLength(0);
-			mBlendMode = AsBlendMode.NORMAL;
+			return mProjectionMatrix;
 		}
 		public virtual void applyBlendMode(bool premultipliedAlpha)
 		{
@@ -130,9 +126,25 @@ namespace starling.core
 		}
 		public virtual void setBlendMode(String _value)
 		{
-			if((_value != AsBlendMode.AUTO))
+			if(_value != AsBlendMode.AUTO)
 			{
 				mBlendMode = _value;
+			}
+		}
+		public virtual AsTexture getRenderTarget()
+		{
+			return mRenderTarget;
+		}
+		public virtual void setRenderTarget(AsTexture target)
+		{
+			mRenderTarget = target;
+			if(target != null)
+			{
+				AsStarling.getContext().setRenderToTexture(target.get_base());
+			}
+			else
+			{
+				AsStarling.getContext().setRenderToBackBuffer();
 			}
 		}
 		public virtual void batchQuad(AsQuad quad, float parentAlpha, AsTexture texture, String smoothing)
@@ -154,13 +166,13 @@ namespace starling.core
 		public virtual void finishQuadBatch()
 		{
 			AsQuadBatch currentBatch = mQuadBatches[mCurrentQuadBatchID];
-			if((currentBatch.getNumQuads() != 0))
+			if(currentBatch.getNumQuads() != 0)
 			{
 				currentBatch.renderCustom(mProjectionMatrix);
 				currentBatch.reset();
 				++mCurrentQuadBatchID;
 				++mDrawCount;
-				if((mQuadBatches.getLength() <= mCurrentQuadBatchID))
+				if(mQuadBatches.getLength() <= mCurrentQuadBatchID)
 				{
 					mQuadBatches.push(new AsQuadBatch());
 				}
@@ -169,7 +181,7 @@ namespace starling.core
 		public virtual void nextFrame()
 		{
 			resetMatrix();
-			resetBlendMode();
+			mBlendMode = AsBlendMode.NORMAL;
 			mCurrentQuadBatchID = 0;
 			mDrawCount = 0;
 		}
@@ -188,7 +200,7 @@ namespace starling.core
 		}
 		public static void clear(uint rgb, float alpha)
 		{
-			AsStarling.getContext().clear((AsColor.getRed(rgb) / 255.0f), (AsColor.getGreen(rgb) / 255.0f), (AsColor.getBlue(rgb) / 255.0f), alpha);
+			AsStarling.getContext().clear(AsColor.getRed(rgb) / 255.0f, AsColor.getGreen(rgb) / 255.0f, AsColor.getBlue(rgb) / 255.0f, alpha);
 		}
 		public static void clear(uint rgb)
 		{
@@ -198,9 +210,21 @@ namespace starling.core
 		{
 			clear((uint)(0), 0.0f);
 		}
+		public virtual void clear(uint rgb, float alpha)
+		{
+			AsRenderSupport.clear(rgb, alpha);
+		}
+		public virtual void clear(uint rgb)
+		{
+			clear(rgb, 0.0f);
+		}
+		public virtual void clear()
+		{
+			clear((uint)(0), 0.0f);
+		}
 		public virtual void raiseDrawCount(uint _value)
 		{
-			mDrawCount = (int)((mDrawCount + _value));
+			mDrawCount = (int)(mDrawCount + _value);
 		}
 		public virtual void raiseDrawCount()
 		{

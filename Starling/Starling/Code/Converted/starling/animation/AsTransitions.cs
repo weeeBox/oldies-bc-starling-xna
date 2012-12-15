@@ -31,7 +31,7 @@ namespace starling.animation
 		}
 		public static AsTransitionCallback getTransition(String name)
 		{
-			if((sTransitions == null))
+			if(sTransitions == null)
 			{
 				registerDefaults();
 			}
@@ -39,7 +39,7 @@ namespace starling.animation
 		}
 		public static void register(String name, AsTransitionCallback func)
 		{
-			if((sTransitions == null))
+			if(sTransitions == null)
 			{
 				registerDefaults();
 			}
@@ -72,12 +72,12 @@ namespace starling.animation
 		}
 		private static float easeIn(float ratio)
 		{
-			return ((ratio * ratio) * ratio);
+			return ratio * ratio * ratio;
 		}
 		private static float easeOut(float ratio)
 		{
-			float invRatio = (ratio - 1.0f);
-			return (((invRatio * invRatio) * invRatio) + 1);
+			float invRatio = ratio - 1.0f;
+			return invRatio * invRatio * invRatio + 1;
 		}
 		private static float easeInOut(float ratio)
 		{
@@ -90,13 +90,13 @@ namespace starling.animation
 		private static float easeInBack(float ratio)
 		{
 			float s = 1.70158f;
-			return (AsMath.pow(ratio, 2) * (((s + 1.0f) * ratio) - s));
+			return AsMath.pow(ratio, 2) * ((s + 1.0f) * ratio - s);
 		}
 		private static float easeOutBack(float ratio)
 		{
-			float invRatio = (ratio - 1.0f);
+			float invRatio = ratio - 1.0f;
 			float s = 1.70158f;
-			return ((AsMath.pow(invRatio, 2) * (((s + 1.0f) * invRatio) + s)) + 1.0f);
+			return AsMath.pow(invRatio, 2) * ((s + 1.0f) * invRatio + s) + 1.0f;
 		}
 		private static float easeInOutBack(float ratio)
 		{
@@ -108,29 +108,29 @@ namespace starling.animation
 		}
 		private static float easeInElastic(float ratio)
 		{
-			if(((ratio == 0) || (ratio == 1)))
+			if(ratio == 0 || ratio == 1)
 			{
 				return ratio;
 			}
 			else
 			{
 				float p = 0.3f;
-				float s = (p / 4.0f);
-				float invRatio = (ratio - 1);
-				return ((-1.0f * AsMath.pow(2.0f, (10.0f * invRatio))) * AsMath.sin((((invRatio - s) * (2.0f * AsMath.PI)) / p)));
+				float s = p / 4.0f;
+				float invRatio = ratio - 1;
+				return -1.0f * AsMath.pow(2.0f, 10.0f * invRatio) * AsMath.sin((invRatio - s) * (2.0f * AsMath.PI) / p);
 			}
 		}
 		private static float easeOutElastic(float ratio)
 		{
-			if(((ratio == 0) || (ratio == 1)))
+			if(ratio == 0 || ratio == 1)
 			{
 				return ratio;
 			}
 			else
 			{
 				float p = 0.3f;
-				float s = (p / 4.0f);
-				return ((AsMath.pow(2.0f, (-10.0f * ratio)) * AsMath.sin((((ratio - s) * (2.0f * AsMath.PI)) / p))) + 1);
+				float s = p / 4.0f;
+				return AsMath.pow(2.0f, -10.0f * ratio) * AsMath.sin((ratio - s) * (2.0f * AsMath.PI) / p) + 1;
 			}
 		}
 		private static float easeInOutElastic(float ratio)
@@ -143,35 +143,35 @@ namespace starling.animation
 		}
 		private static float easeInBounce(float ratio)
 		{
-			return (1.0f - easeOutBounce((1.0f - ratio)));
+			return 1.0f - easeOutBounce(1.0f - ratio);
 		}
 		private static float easeOutBounce(float ratio)
 		{
 			float s = 7.5625f;
 			float p = 2.75f;
 			float l = 0;
-			if((ratio < (1.0f / p)))
+			if(ratio < (1.0f / p))
 			{
-				l = (s * AsMath.pow(ratio, 2));
+				l = s * AsMath.pow(ratio, 2);
 			}
 			else
 			{
-				if((ratio < (2.0f / p)))
+				if(ratio < (2.0f / p))
 				{
-					ratio = (ratio - (1.5f / p));
-					l = ((s * AsMath.pow(ratio, 2)) + 0.75f);
+					ratio = ratio - 1.5f / p;
+					l = s * AsMath.pow(ratio, 2) + 0.75f;
 				}
 				else
 				{
-					if((ratio < (2.5f / p)))
+					if(ratio < 2.5f / p)
 					{
-						ratio = (ratio - (2.25f / p));
-						l = ((s * AsMath.pow(ratio, 2)) + 0.9375f);
+						ratio = ratio - 2.25f / p;
+						l = s * AsMath.pow(ratio, 2) + 0.9375f;
 					}
 					else
 					{
-						ratio = (ratio - (2.625f / p));
-						l = ((s * AsMath.pow(ratio, 2)) + 0.984375f);
+						ratio = ratio - 2.625f / p;
+						l = s * AsMath.pow(ratio, 2) + 0.984375f;
 					}
 				}
 			}
@@ -187,13 +187,13 @@ namespace starling.animation
 		}
 		private static float easeCombined(AsTransitionCallback startFunc, AsTransitionCallback endFunc, float ratio)
 		{
-			if((ratio < 0.5f))
+			if(ratio < 0.5f)
 			{
-				return (0.5f * startFunc((ratio * 2.0f)));
+				return 0.5f * startFunc(ratio * 2.0f);
 			}
 			else
 			{
-				return ((0.5f * endFunc(((ratio - 0.5f) * 2.0f))) + 0.5f);
+				return 0.5f * endFunc((ratio - 0.5f) * 2.0f) + 0.5f;
 			}
 		}
 	}

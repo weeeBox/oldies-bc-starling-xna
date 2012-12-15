@@ -12,13 +12,12 @@ namespace starling.text
 {
 	public class AsBitmapFont : AsObject
 	{
-		private static AsClass MiniXml;
-		private static AsClass MiniTexture;
 		public const int NATIVE_SIZE = -1;
 		public static String MINI = "mini";
 		private const int CHAR_SPACE = 32;
 		private const int CHAR_TAB = 9;
 		private const int CHAR_NEWLINE = 10;
+		private const int CHAR_CARRIAGE_RETURN = 13;
 		private AsTexture mTexture;
 		private AsDictionary mChars;
 		private String mName;
@@ -29,9 +28,10 @@ namespace starling.text
 		private AsVector<AsCharLocation> mCharLocationPool;
 		public AsBitmapFont(AsTexture texture, AsXML fontXml)
 		{
-			if(((texture == null) && (fontXml == null)))
+			if(texture == null && fontXml == null)
 			{
-				NOT.IMPLEMENTED();
+				texture = AsMiniBitmapFont.getTexture();
+				fontXml = AsMiniBitmapFont.getXml();
 			}
 			mName = "unknown";
 			mLineHeight = mSize = mBaseline = 14;
@@ -64,17 +64,17 @@ namespace starling.text
 			float scale = mTexture.getScale();
 			AsRectangle frame = mTexture.getFrame();
 			mName = fontXml.elements("info").attribute("face");
-			mSize = (AsGlobal.parseFloat(fontXml.elements("info").attribute("size")) / scale);
-			mLineHeight = (AsGlobal.parseFloat(fontXml.elements("common").attribute("lineHeight")) / scale);
-			mBaseline = (AsGlobal.parseFloat(fontXml.elements("common").attribute("base")) / scale);
-			if((fontXml.elements("info").attribute("smooth").ToString() == "0"))
+			mSize = AsGlobal.parseFloat(fontXml.elements("info").attribute("size")) / scale;
+			mLineHeight = AsGlobal.parseFloat(fontXml.elements("common").attribute("lineHeight")) / scale;
+			mBaseline = AsGlobal.parseFloat(fontXml.elements("common").attribute("base")) / scale;
+			if(fontXml.elements("info").attribute("smooth").ToString() == "0")
 			{
 				setSmoothing(AsTextureSmoothing.NONE);
 			}
-			if((mSize <= 0))
+			if(mSize <= 0)
 			{
-				AsGlobal.trace((("[Starling] Warning: invalid font size in '" + mName) + "' font."));
-				mSize = (((mSize == 0.0f)) ? (16.0f) : ((mSize * -1.0f)));
+				AsGlobal.trace("[Starling] Warning: invalid font size in '" + mName + "' font.");
+				mSize = mSize == 0.0f ? 16.0f : mSize * -1.0f;
 			}
 			AsXMLList __charElements_ = fontXml.elements("chars").elements("_char");
 			if (__charElements_ != null)
@@ -82,14 +82,14 @@ namespace starling.text
 				foreach (AsXML charElement in __charElements_)
 				{
 					int id = (int)(AsGlobal.parseInt(charElement.attribute("id")));
-					float xOffset = (AsGlobal.parseFloat(charElement.attribute("xoffset")) / scale);
-					float yOffset = (AsGlobal.parseFloat(charElement.attribute("yoffset")) / scale);
-					float xAdvance = (AsGlobal.parseFloat(charElement.attribute("xadvance")) / scale);
+					float xOffset = AsGlobal.parseFloat(charElement.attribute("xoffset")) / scale;
+					float yOffset = AsGlobal.parseFloat(charElement.attribute("yoffset")) / scale;
+					float xAdvance = AsGlobal.parseFloat(charElement.attribute("xadvance")) / scale;
 					AsRectangle region = new AsRectangle();
-					region.x = ((AsGlobal.parseFloat(charElement.attribute("x")) / scale) + frame.x);
-					region.y = ((AsGlobal.parseFloat(charElement.attribute("y")) / scale) + frame.y);
-					region.width = (AsGlobal.parseFloat(charElement.attribute("width")) / scale);
-					region.height = (AsGlobal.parseFloat(charElement.attribute("height")) / scale);
+					region.x = AsGlobal.parseFloat(charElement.attribute("x")) / scale + frame.x;
+					region.y = AsGlobal.parseFloat(charElement.attribute("y")) / scale + frame.y;
+					region.width = AsGlobal.parseFloat(charElement.attribute("width")) / scale;
+					region.height = AsGlobal.parseFloat(charElement.attribute("height")) / scale;
 					AsTexture texture = AsTexture.fromTexture(mTexture, region);
 					AsBitmapChar bitmapChar = new AsBitmapChar(id, texture, xOffset, yOffset, xAdvance);
 					addChar(id, bitmapChar);
@@ -102,7 +102,7 @@ namespace starling.text
 				{
 					int first = (int)(AsGlobal.parseInt(kerningElement.attribute("first")));
 					int second = (int)(AsGlobal.parseInt(kerningElement.attribute("second")));
-					float amount = (AsGlobal.parseFloat(kerningElement.attribute("amount")) / scale);
+					float amount = AsGlobal.parseFloat(kerningElement.attribute("amount")) / scale;
 					if(mChars.containsKey(second))
 					{
 						getChar(second).addKerning(first, amount);
@@ -124,7 +124,7 @@ namespace starling.text
 			int numChars = (int)(charLocations.getLength());
 			AsSprite sprite = new AsSprite();
 			int i = 0;
-			for (; (i < numChars); ++i)
+			for (; i < numChars; ++i)
 			{
 				AsCharLocation charLocation = charLocations[i];
 				AsImage _char = charLocation._char.createImage();
@@ -165,12 +165,12 @@ namespace starling.text
 			AsVector<AsCharLocation> charLocations = arrangeChars(width, height, text, fontSize, hAlign, vAlign, autoScale, kerning);
 			int numChars = (int)(charLocations.getLength());
 			mHelperImage.setColor(color);
-			if((numChars > 8192))
+			if(numChars > 8192)
 			{
 				throw new AsArgumentError("Bitmap Font text is limited to 8192 characters.");
 			}
 			int i = 0;
-			for (; (i < numChars); ++i)
+			for (; i < numChars; ++i)
 			{
 				AsCharLocation charLocation = charLocations[i];
 				mHelperImage.setTexture(charLocation._char.getTexture());
@@ -207,13 +207,13 @@ namespace starling.text
 		}
 		private AsVector<AsCharLocation> arrangeChars(float width, float height, String text, float fontSize, String hAlign, String vAlign, bool autoScale, bool kerning)
 		{
-			if(((text == null) || (text.Length == 0)))
+			if(text == null || text.Length == 0)
 			{
 				return new AsVector<AsCharLocation>();
 			}
-			if((fontSize < 0))
+			if(fontSize < 0)
 			{
-				fontSize = (fontSize * -mSize);
+				fontSize = fontSize * -mSize;
 			}
 			AsVector<AsVector<AsCharLocation>> lines = null;
 			bool finished = false;
@@ -222,13 +222,13 @@ namespace starling.text
 			float containerWidth = 0;
 			float containerHeight = 0;
 			float scale = 0;
-			while(!(finished))
+			while(!finished)
 			{
-				scale = (fontSize / mSize);
-				containerWidth = (width / scale);
-				containerHeight = (height / scale);
+				scale = fontSize / mSize;
+				containerWidth = width / scale;
+				containerHeight = height / scale;
 				lines = new AsVector<AsVector<AsCharLocation>>();
-				if((mLineHeight <= containerHeight))
+				if(mLineHeight <= containerHeight)
 				{
 					int lastWhiteSpace = -1;
 					int lastCharID = -1;
@@ -237,53 +237,58 @@ namespace starling.text
 					AsVector<AsCharLocation> currentLine = new AsVector<AsCharLocation>();
 					numChars = text.Length;
 					int i = 0;
-					for (; (i < numChars); ++i)
+					for (; i < numChars; ++i)
 					{
 						bool lineFull = false;
-						int charID = (int)(String.charCodeAt(text, i));
+						int charID = (int)(AsString.charCodeAt(text, i));
 						AsBitmapChar _char = getChar(charID);
-						if((charID == CHAR_NEWLINE))
+						if(charID == CHAR_NEWLINE || charID == CHAR_CARRIAGE_RETURN)
 						{
 							lineFull = true;
 						}
 						else
 						{
-							if((_char == null))
+							if(_char == null)
 							{
-								AsGlobal.trace(("[Starling] Missing character: " + charID));
+								AsGlobal.trace("[Starling] Missing character: " + charID);
 							}
 							else
 							{
-								if(((charID == CHAR_SPACE) || (charID == CHAR_TAB)))
+								if(charID == CHAR_SPACE || charID == CHAR_TAB)
 								{
 									lastWhiteSpace = i;
 								}
 								if(kerning)
 								{
-									currentX = (currentX + _char.getKerning(lastCharID));
+									currentX = currentX + _char.getKerning(lastCharID);
 								}
-								charLocation = (((mCharLocationPool.getLength()) != 0) ? (mCharLocationPool.pop()) : (new AsCharLocation(_char)));
+								charLocation = mCharLocationPool.getLength() != 0 ? mCharLocationPool.pop() : new AsCharLocation(_char);
 								charLocation._char = _char;
-								charLocation.x = (currentX + _char.getXOffset());
-								charLocation.y = (currentY + _char.getYOffset());
+								charLocation.x = currentX + _char.getXOffset();
+								charLocation.y = currentY + _char.getYOffset();
 								currentLine.push(charLocation);
-								currentX = (currentX + _char.getXAdvance());
+								currentX = currentX + _char.getXAdvance();
 								lastCharID = charID;
-								if(((charLocation.x + _char.getWidth()) > containerWidth))
+								if(currentLine.getLength() == 1)
 								{
-									int numCharsToRemove = (((lastWhiteSpace == -1)) ? (1) : ((i - lastWhiteSpace)));
-									int removeIndex = (int)((currentLine.getLength() - numCharsToRemove));
+									currentX = currentX - _char.getXOffset();
+									charLocation.x = charLocation.x - _char.getXOffset();
+								}
+								if(charLocation.x + _char.getWidth() > containerWidth)
+								{
+									int numCharsToRemove = lastWhiteSpace == -1 ? 1 : i - lastWhiteSpace;
+									int removeIndex = (int)(currentLine.getLength() - numCharsToRemove);
 									currentLine.splice(removeIndex, (uint)(numCharsToRemove));
-									if((currentLine.getLength() == 0))
+									if(currentLine.getLength() == 0)
 									{
 										break;
 									}
-									i = (i - numCharsToRemove);
+									i = i - numCharsToRemove;
 									lineFull = true;
 								}
 							}
 						}
-						if((i == (numChars - 1)))
+						if(i == numChars - 1)
 						{
 							lines.push(currentLine);
 							finished = true;
@@ -293,15 +298,15 @@ namespace starling.text
 							if(lineFull)
 							{
 								lines.push(currentLine);
-								if((lastWhiteSpace == i))
+								if(lastWhiteSpace == i)
 								{
 									currentLine.pop();
 								}
-								if(((currentY + (2 * mLineHeight)) <= containerHeight))
+								if(currentY + 2 * mLineHeight <= containerHeight)
 								{
 									currentLine = new AsVector<AsCharLocation>();
 									currentX = 0;
-									currentY = (currentY + mLineHeight);
+									currentY = currentY + mLineHeight;
 									lastWhiteSpace = -1;
 									lastCharID = -1;
 								}
@@ -313,9 +318,9 @@ namespace starling.text
 						}
 					}
 				}
-				if((autoScale && !(finished)))
+				if(autoScale && !finished)
 				{
-					fontSize = (fontSize - 1);
+					fontSize = fontSize - 1;
 					lines.setLength(0);
 				}
 				else
@@ -325,50 +330,50 @@ namespace starling.text
 			}
 			AsVector<AsCharLocation> finalLocations = new AsVector<AsCharLocation>();
 			int numLines = (int)(lines.getLength());
-			float bottom = (currentY + mLineHeight);
+			float bottom = currentY + mLineHeight;
 			int yOffset = 0;
-			if((vAlign == AsVAlign.BOTTOM))
+			if(vAlign == AsVAlign.BOTTOM)
 			{
-				yOffset = (int)((containerHeight - bottom));
+				yOffset = (int)(containerHeight - bottom);
 			}
 			else
 			{
-				if((vAlign == AsVAlign.CENTER))
+				if(vAlign == AsVAlign.CENTER)
 				{
-					yOffset = (int)(((containerHeight - bottom) / 2));
+					yOffset = (int)((containerHeight - bottom) / 2);
 				}
 			}
 			int lineID = 0;
-			for (; (lineID < numLines); ++lineID)
+			for (; lineID < numLines; ++lineID)
 			{
 				AsVector<AsCharLocation> line = lines[lineID];
 				numChars = (int)(line.getLength());
-				if((numChars == 0))
+				if(numChars == 0)
 				{
 					continue;
 				}
-				AsCharLocation lastLocation = line[(line.getLength() - 1)];
-				float right = (lastLocation.x + lastLocation._char.getWidth());
+				AsCharLocation lastLocation = line[line.getLength() - 1];
+				float right = lastLocation.x + lastLocation._char.getWidth();
 				int xOffset = 0;
-				if((hAlign == AsHAlign.RIGHT))
+				if(hAlign == AsHAlign.RIGHT)
 				{
-					xOffset = (int)((containerWidth - right));
+					xOffset = (int)(containerWidth - right);
 				}
 				else
 				{
-					if((hAlign == AsHAlign.CENTER))
+					if(hAlign == AsHAlign.CENTER)
 					{
-						xOffset = (int)(((containerWidth - right) / 2));
+						xOffset = (int)((containerWidth - right) / 2);
 					}
 				}
 				int c = 0;
-				for (; (c < numChars); ++c)
+				for (; c < numChars; ++c)
 				{
 					charLocation = line[c];
-					charLocation.x = (scale * (charLocation.x + xOffset));
-					charLocation.y = (scale * (charLocation.y + yOffset));
+					charLocation.x = scale * (charLocation.x + xOffset);
+					charLocation.y = scale * (charLocation.y + yOffset);
 					charLocation.scale = scale;
-					if(((charLocation._char.getWidth() > 0) && (charLocation._char.getHeight() > 0)))
+					if(charLocation._char.getWidth() > 0 && charLocation._char.getHeight() > 0)
 					{
 						finalLocations.push(charLocation);
 					}

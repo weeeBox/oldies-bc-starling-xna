@@ -16,7 +16,7 @@ namespace starling.display
 		private static AsMatrix sHelperMatrix = new AsMatrix();
 		public AsQuad(float width, float height, uint color, bool premultipliedAlpha)
 		{
-			mTinted = (color != 0xffffff);
+			mTinted = color != 0xffffff;
 			mVertexData = new AsVertexData(4, premultipliedAlpha);
 			mVertexData.setPosition(0, 0.0f, 0.0f);
 			mVertexData.setPosition(1, width, 0.0f);
@@ -38,32 +38,32 @@ namespace starling.display
 		}
 		public override AsRectangle getBounds(AsDisplayObject targetSpace, AsRectangle resultRect)
 		{
-			if((resultRect == null))
+			if(resultRect == null)
 			{
 				resultRect = new AsRectangle();
 			}
-			if((targetSpace == this))
+			if(targetSpace == this)
 			{
 				mVertexData.getPosition(3, sHelperPoint);
 				resultRect.setTo(0.0f, 0.0f, sHelperPoint.x, sHelperPoint.y);
 			}
 			else
 			{
-				if(((targetSpace == getParent()) && (getRotation() == 0.0f)))
+				if(targetSpace == getParent() && getRotation() == 0.0f)
 				{
 					float scaleX = this.getScaleX();
 					float scaleY = this.getScaleY();
 					mVertexData.getPosition(3, sHelperPoint);
-					resultRect.setTo((getX() - (getPivotX() * scaleX)), (getY() - (getPivotY() * scaleY)), (sHelperPoint.x * scaleX), (sHelperPoint.y * scaleY));
-					if((scaleX < 0))
+					resultRect.setTo(getX() - getPivotX() * scaleX, getY() - getPivotY() * scaleY, sHelperPoint.x * scaleX, sHelperPoint.y * scaleY);
+					if(scaleX < 0)
 					{
-						resultRect.width = (resultRect.width * -1);
-						resultRect.x = (resultRect.x - resultRect.width);
+						resultRect.width = resultRect.width * -1;
+						resultRect.x = resultRect.x - resultRect.width;
 					}
-					if((scaleY < 0))
+					if(scaleY < 0)
 					{
-						resultRect.height = (resultRect.height * -1);
-						resultRect.y = (resultRect.y - resultRect.height);
+						resultRect.height = resultRect.height * -1;
+						resultRect.y = resultRect.y - resultRect.height;
 					}
 				}
 				else
@@ -86,7 +86,7 @@ namespace starling.display
 		{
 			mVertexData.setColor(vertexID, color);
 			onVertexDataChanged();
-			if((color != 0xffffff))
+			if(color != 0xffffff)
 			{
 				mTinted = true;
 			}
@@ -103,7 +103,7 @@ namespace starling.display
 		{
 			mVertexData.setAlpha(vertexID, alpha);
 			onVertexDataChanged();
-			if((alpha != 1.0f))
+			if(alpha != 1.0f)
 			{
 				mTinted = true;
 			}
@@ -119,11 +119,11 @@ namespace starling.display
 		public virtual void setColor(uint _value)
 		{
 			int i = 0;
-			for (; (i < 4); ++i)
+			for (; i < 4; ++i)
 			{
 				setVertexColor(i, _value);
 			}
-			if(((_value != 0xffffff) || (getAlpha() != 1.0f)))
+			if(_value != 0xffffff || getAlpha() != 1.0f)
 			{
 				mTinted = true;
 			}
@@ -135,7 +135,7 @@ namespace starling.display
 		public override void setAlpha(float _value)
 		{
 			base.setAlpha(_value);
-			if((_value < 1.0f))
+			if(_value < 1.0f)
 			{
 				mTinted = true;
 			}

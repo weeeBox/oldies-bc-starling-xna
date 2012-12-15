@@ -31,16 +31,16 @@ namespace starling.display
 		}
 		public override AsDisplayObject hitTest(AsPoint localPoint, bool forTouch)
 		{
-			if((forTouch && (!(getVisible()) || !(getTouchable()))))
+			if(forTouch && (!getVisible() || !getTouchable()))
 			{
 				return null;
 			}
-			if(((((localPoint.x < 0) || (localPoint.x > mWidth)) || (localPoint.y < 0)) || (localPoint.y > mHeight)))
+			if(localPoint.x < 0 || localPoint.x > mWidth || localPoint.y < 0 || localPoint.y > mHeight)
 			{
 				return null;
 			}
 			AsDisplayObject target = base.hitTest(localPoint, forTouch);
-			if((target == null))
+			if(target == null)
 			{
 				target = this;
 			}

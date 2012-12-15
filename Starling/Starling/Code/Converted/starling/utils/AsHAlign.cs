@@ -16,7 +16,7 @@ namespace starling.utils
 		}
 		public static bool isValid(String hAlign)
 		{
-			return (((hAlign == LEFT) || (hAlign == CENTER)) || (hAlign == RIGHT));
+			return hAlign == LEFT || hAlign == CENTER || hAlign == RIGHT;
 		}
 	}
 }

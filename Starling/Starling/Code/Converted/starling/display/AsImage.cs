@@ -17,31 +17,29 @@ namespace starling.display
 		private AsVertexData mVertexDataCache;
 		private bool mVertexDataCacheInvalid;
 		public AsImage(AsTexture texture)
+		 : base(texture.getFrame() != null ? texture.getFrame().width : texture.getWidth(), texture.getFrame() != null ? texture.getFrame().height : texture.getHeight(), 0xffffff, texture.getPremultipliedAlpha())
 		{
-			if(texture != null)
-			{
-				AsRectangle frame = texture.getFrame();
-				float width = ((frame != null) ? (frame.width) : (texture.getWidth()));
-				float height = ((frame != null) ? (frame.height) : (texture.getHeight()));
-				bool pma = texture.getPremultipliedAlpha();
-				__$super$__(width, height, 0xffffff, pma);
-				mVertexData.setTexCoords(0, 0.0f, 0.0f);
-				mVertexData.setTexCoords(1, 1.0f, 0.0f);
-				mVertexData.setTexCoords(2, 0.0f, 1.0f);
-				mVertexData.setTexCoords(3, 1.0f, 1.0f);
-				mTexture = texture;
-				mSmoothing = AsTextureSmoothing.BILINEAR;
-				mVertexDataCache = new AsVertexData(4, pma);
-				mVertexDataCacheInvalid = true;
-			}
-			else
-			{
-				throw new AsArgumentError("Texture cannot be null");
-			}
+			bool pma = texture.getPremultipliedAlpha();
+			mVertexData.setTexCoords(0, 0.0f, 0.0f);
+			mVertexData.setTexCoords(1, 1.0f, 0.0f);
+			mVertexData.setTexCoords(2, 0.0f, 1.0f);
+			mVertexData.setTexCoords(3, 1.0f, 1.0f);
+			mTexture = texture;
+			mSmoothing = AsTextureSmoothing.BILINEAR;
+			mVertexDataCache = new AsVertexData(4, pma);
+			mVertexDataCacheInvalid = true;
+		}
+		public static AsImage fromBitmap(AsBitmap bitmap, bool generateMipMaps, float scale)
+		{
+			return new AsImage(AsTexture.fromBitmap(bitmap, generateMipMaps, false, scale));
+		}
+		public static AsImage fromBitmap(AsBitmap bitmap, bool generateMipMaps)
+		{
+			return fromBitmap(bitmap, generateMipMaps, 1);
 		}
 		public static AsImage fromBitmap(AsBitmap bitmap)
 		{
-			return new AsImage(AsTexture.fromBitmap(bitmap));
+			return fromBitmap(bitmap, true, 1);
 		}
 		protected override void onVertexDataChanged()
 		{
@@ -50,8 +48,8 @@ namespace starling.display
 		public virtual void readjustSize()
 		{
 			AsRectangle frame = getTexture().getFrame();
-			float width = ((frame != null) ? (frame.width) : (getTexture().getWidth()));
-			float height = ((frame != null) ? (frame.height) : (getTexture().getHeight()));
+			float width = frame != null ? frame.width : getTexture().getWidth();
+			float height = frame != null ? frame.height : getTexture().getHeight();
 			mVertexData.setPosition(0, 0.0f, 0.0f);
 			mVertexData.setPosition(1, width, 0.0f);
 			mVertexData.setPosition(2, 0.0f, height);
@@ -65,7 +63,7 @@ namespace starling.display
 		}
 		public virtual AsPoint getTexCoords(int vertexID, AsPoint resultPoint)
 		{
-			if((resultPoint == null))
+			if(resultPoint == null)
 			{
 				resultPoint = new AsPoint();
 			}
@@ -96,13 +94,13 @@ namespace starling.display
 		}
 		public virtual void setTexture(AsTexture _value)
 		{
-			if((_value == null))
+			if(_value == null)
 			{
 				throw new AsArgumentError("Texture cannot be null");
 			}
 			else
 			{
-				if((_value != mTexture))
+				if(_value != mTexture)
 				{
 					mTexture = _value;
 					mVertexData.setPremultipliedAlpha(mTexture.getPremultipliedAlpha());
@@ -122,7 +120,7 @@ namespace starling.display
 			}
 			else
 			{
-				throw new AsArgumentError(("Invalid smoothing mode: " + _value));
+				throw new AsArgumentError("Invalid smoothing mode: " + _value);
 			}
 		}
 		public override void render(AsRenderSupport support, float parentAlpha)

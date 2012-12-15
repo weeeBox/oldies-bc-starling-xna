@@ -18,7 +18,7 @@ namespace starling.events
 		}
 		public virtual float getPassedTime()
 		{
-			return ((getData() is float) ? ((float)(getData())) : null);
+			return getData() as float;
 		}
 	}
 }
