@@ -241,7 +241,7 @@ namespace bc.flash.display
 		{
 			if(_event is AsTouchEvent)
 			{
-				AsTouchEvent touchEvent = ((_event is AsTouchEvent) ? ((AsTouchEvent)(_event)) : null);
+				AsTouchEvent touchEvent = _event as AsTouchEvent;
 				if(touchEvent.getTimestamp() == mLastTouchTimestamp)
 				{
 					return;
@@ -374,7 +374,7 @@ namespace bc.flash.display
 		}
 		public virtual void setAlpha(float _value)
 		{
-			mAlpha = ((_value < 0.0f) ? (0.0f) : (((_value > 1.0f) ? (1.0f) : (_value))));
+			mAlpha = _value < 0.0f ? 0.0f : _value > 1.0f ? 1.0f : _value;
 		}
 		public virtual bool getVisible()
 		{

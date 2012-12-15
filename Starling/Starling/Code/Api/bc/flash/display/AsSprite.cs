@@ -47,7 +47,7 @@ namespace bc.flash.display
 		private void onTouch(AsEvent evt)
 		{
 			AsTouchEvent _event = ((AsTouchEvent)(evt));
-			AsMouse.setCursor(((_event.interactsWith(this)) ? (AsMouseCursor.BUTTON) : (AsMouseCursor.AUTO)));
+			AsMouse.setCursor(_event.interactsWith(this) ? AsMouseCursor.BUTTON : AsMouseCursor.AUTO);
 		}
 		public virtual bool getMouseChildren()
 		{

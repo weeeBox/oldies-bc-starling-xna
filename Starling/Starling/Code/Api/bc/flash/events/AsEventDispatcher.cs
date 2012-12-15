@@ -89,7 +89,7 @@ namespace bc.flash.events
 		}
 		public virtual void dispatchEvent(AsEvent _event)
 		{
-			AsVector<AsEventListenerCallback> listeners = (AsVector<AsEventListenerCallback>)(((mEventListeners != null) ? (mEventListeners[_event.getType()]) : (null)));
+			AsVector<AsEventListenerCallback> listeners = (AsVector<AsEventListenerCallback>)(mEventListeners != null ? mEventListeners[_event.getType()] : null);
 			if(listeners == null && !_event.getBubbles())
 			{
 				return;
@@ -100,7 +100,7 @@ namespace bc.flash.events
 				_event.setTarget(this);
 			}
 			bool stopImmediatePropagation = false;
-			uint numListeners = (uint)(((listeners == null) ? (0) : (listeners.getLength())));
+			uint numListeners = (uint)(listeners == null ? 0 : listeners.getLength());
 			if(numListeners != 0)
 			{
 				_event.setCurrentTarget(this);
@@ -118,7 +118,7 @@ namespace bc.flash.events
 			}
 			if(!stopImmediatePropagation && _event.getBubbles() && !_event.getStopsPropagation() && this is AsDisplayObject)
 			{
-				AsDisplayObject targetDisplayObject = ((this is AsDisplayObject) ? ((AsDisplayObject)(this)) : null);
+				AsDisplayObject targetDisplayObject = this as AsDisplayObject;
 				if(targetDisplayObject.getParent() != null)
 				{
 					_event.setCurrentTarget(null);

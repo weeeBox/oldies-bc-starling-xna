@@ -191,7 +191,7 @@ namespace bc.flash.display
 			for (; i < childsCount; ++i)
 			{
 				AsDisplayObject currentChild = mChildren[i];
-				AsDisplayObjectContainer currentChildContainer = ((currentChild is AsDisplayObjectContainer) ? ((AsDisplayObjectContainer)(currentChild)) : null);
+				AsDisplayObjectContainer currentChildContainer = currentChild as AsDisplayObjectContainer;
 				if(currentChildContainer != null && currentChildContainer.contains(child))
 				{
 					return true;
@@ -238,10 +238,10 @@ namespace bc.flash.display
 					for (; i < childsCount; ++i)
 					{
 						mChildren[i].getBounds(targetSpace, resultRect);
-						minX = ((minX < resultRect.x) ? (minX) : (resultRect.x));
-						maxX = ((maxX > resultRect.getRight()) ? (maxX) : (resultRect.getRight()));
-						minY = ((minY < resultRect.y) ? (minY) : (resultRect.y));
-						maxY = ((maxY > resultRect.getBottom()) ? (maxY) : (resultRect.getBottom()));
+						minX = minX < resultRect.x ? minX : resultRect.x;
+						maxX = maxX > resultRect.getRight() ? maxX : resultRect.getRight();
+						minY = minY < resultRect.y ? minY : resultRect.y;
+						maxY = maxY > resultRect.getBottom() ? maxY : resultRect.getBottom();
 					}
 					resultRect.x = minX;
 					resultRect.y = minY;
@@ -320,7 +320,7 @@ namespace bc.flash.display
 		}
 		private void getChildEventListeners(AsDisplayObject _object, String eventType, AsVector<AsDisplayObject> listeners)
 		{
-			AsDisplayObjectContainer container = ((_object is AsDisplayObjectContainer) ? ((AsDisplayObjectContainer)(_object)) : null);
+			AsDisplayObjectContainer container = _object as AsDisplayObjectContainer;
 			if(_object.hasEventListener(eventType))
 			{
 				listeners.push(_object);
@@ -338,7 +338,7 @@ namespace bc.flash.display
 		}
 		public virtual int getNumChildren()
 		{
-			return ((mChildren == null) ? (0) : (((int)(mChildren.getLength()))));
+			return mChildren == null ? 0 : ((int)(mChildren.getLength()));
 		}
 	}
 }

@@ -35,7 +35,7 @@ namespace bc.flash.events
 		public AsTouchEvent(String type, AsVector<AsTouch> touches, bool shiftKey, bool ctrlKey, bool bubbles)
 		 : base(type, bubbles)
 		{
-			mTouches = ((touches != null) ? (touches) : (new AsVector<AsTouch>()));
+			mTouches = touches != null ? touches : new AsVector<AsTouch>();
 			mShiftKey = shiftKey;
 			mCtrlKey = ctrlKey;
 			mTimestamp = -1.0f;
@@ -69,7 +69,7 @@ namespace bc.flash.events
 			for (; i < numTouches; ++i)
 			{
 				AsTouch touch = mTouches[i];
-				bool correctTarget = (touch.getTarget() == target) || ((target is AsDisplayObjectContainer) && ((target is AsDisplayObjectContainer) ? ((AsDisplayObjectContainer)(target)) : null).contains(touch.getTarget()));
+				bool correctTarget = (touch.getTarget() == target) || ((target is AsDisplayObjectContainer) && target as AsDisplayObjectContainer.contains(touch.getTarget()));
 				bool correctPhase = phase == null || phase == touch.getPhase();
 				if(correctTarget && correctPhase)
 				{
